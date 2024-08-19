@@ -24,6 +24,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer dbConn.Close()
 
 	r := rest.NewREST()
 	opts := []rest.Option{
