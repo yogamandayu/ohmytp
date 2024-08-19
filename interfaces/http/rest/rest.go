@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -40,7 +41,7 @@ func (r *REST) Init() *REST {
 	if r.Config != nil && r.Config.REST != nil {
 		config := r.Config.REST
 		if config.Port != "" {
-			r.Port = config.Port
+			r.Port = fmt.Sprintf(":%s", config.Port)
 		}
 	}
 

@@ -14,6 +14,10 @@ func main() {
 	}
 
 	conf := config.NewConfig()
+	conf.With(
+		config.WithDBConfig(),
+		config.WithRESTConfig(),
+	)
 	r := rest.NewREST()
 	opts := []rest.Option{
 		rest.WithConfig(conf),
