@@ -1,6 +1,8 @@
 package config
 
-import "github.com/yogamandayu/ohmytp/util"
+import (
+	"github.com/yogamandayu/ohmytp/util"
+)
 
 type Config struct {
 	REST *RESTConfig
@@ -25,9 +27,9 @@ func WithDBConfig() Option {
 			Driver:                      util.GetEnv("DB_DRIVER", "mysql"),
 			Host:                        util.GetEnv("DB_HOST", "localhost"),
 			Port:                        util.GetEnv("DB_PORT", "3306"),
-			User:                        util.GetEnv("DB_USER", "root"),
-			Name:                        util.GetEnv("DB_NAME", "ohmytp"),
+			UserName:                    util.GetEnv("DB_USER", "root"),
 			Password:                    util.GetEnv("DB_PASSWORD", "-"),
+			Database:                    util.GetEnv("DB_NAME", "ohmytp"),
 			TimeZone:                    util.GetEnv("APP_TIMEZONE", "Asia/Jakarta"),
 			Log:                         util.GetEnvAsBool("ENABLE_LOGGER", true),
 			DisableForeignKeyConstraint: util.GetEnvAsBool("DISABLE_FOREIGN_KEY_CONSTRAINT", false),

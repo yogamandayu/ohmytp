@@ -2,7 +2,8 @@ package route
 
 import "net/http"
 
-type Router struct{}
+type Router struct {
+}
 
 func NewRouter() *Router {
 	return &Router{}

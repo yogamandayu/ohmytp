@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,12 +11,15 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/go-redis/redis"
 	"github.com/yogamandayu/ohmytp/config"
 	"github.com/yogamandayu/ohmytp/interfaces/http/rest/route"
 )
 
 type REST struct {
-	Config *config.Config
+	config *config.Config
+	db     *sql.DB
+	redis  *redis.Client
 
 	Port    string
 	Handler http.Handler
@@ -38,8 +42,8 @@ func (r *REST) With(opts ...Option) *REST {
 }
 
 func (r *REST) Init() *REST {
-	if r.Config != nil && r.Config.REST != nil {
-		config := r.Config.REST
+	if r.config != nil && r.config.REST != nil {
+		config := r.config.REST
 		if config.Port != "" {
 			r.Port = fmt.Sprintf(":%s", config.Port)
 		}
