@@ -10,6 +10,8 @@ func NewRouter() *Router {
 }
 
 func (r *Router) Handler() http.Handler {
+	mux := http.NewServeMux()
+	HealthRoute(mux)
 
-	return HealthRoute()
+	return mux
 }
