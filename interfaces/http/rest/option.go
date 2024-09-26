@@ -1,9 +1,8 @@
 package rest
 
 import (
-	"database/sql"
-
 	"github.com/go-redis/redis"
+	"github.com/jackc/pgx/v5"
 	"github.com/yogamandayu/ohmytp/config"
 )
 
@@ -13,7 +12,7 @@ func WithConfig(config *config.Config) Option {
 	}
 }
 
-func WithDB(db *sql.DB) Option {
+func WithDB(db *pgx.Conn) Option {
 	return func(r *REST) {
 		r.db = db
 	}

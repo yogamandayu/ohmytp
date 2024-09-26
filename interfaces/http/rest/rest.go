@@ -2,7 +2,6 @@ package rest
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -12,13 +11,14 @@ import (
 	"time"
 
 	"github.com/go-redis/redis"
+	"github.com/jackc/pgx/v5"
 	"github.com/yogamandayu/ohmytp/config"
 	"github.com/yogamandayu/ohmytp/interfaces/http/rest/route"
 )
 
 type REST struct {
 	config *config.Config
-	db     *sql.DB
+	db     *pgx.Conn
 	redis  *redis.Client
 
 	Port    string
@@ -50,7 +50,7 @@ func (r *REST) Init() *REST {
 	}
 
 	router := route.NewRouter()
-	r.Handler = router.Handler()
+	r.Handler = router.Handler(r.db)
 
 	return r
 }
