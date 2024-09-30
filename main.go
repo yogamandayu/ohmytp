@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"log"
 
 	"github.com/joho/godotenv"
@@ -25,7 +24,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer dbConn.Close(context.Background())
+	defer dbConn.Close()
 
 	r := rest.NewREST()
 	opts := []rest.Option{

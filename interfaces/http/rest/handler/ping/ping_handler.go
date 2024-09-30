@@ -1,7 +1,6 @@
 package ping
 
 import (
-	"context"
 	"net/http"
 
 	"encoding/json"
@@ -10,20 +9,16 @@ import (
 )
 
 func (h *Handler) Ping(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
 	pingWorkflow := workflow.NewPingWorkflow(h.db)
-	msg, ts, err := pingWorkflow.Ping(context.Background())
-	var data any
-	if err != nil {
-		data = PingErrResponse{
-			Code:    http.StatusInternalServerError,
-			Error:   nil,
-			Message: err.Error(),
-		}
-	} else {
-		data = PingResponse{
-			Message:   msg,
-			Timestamp: ts,
-		}
+	status := pingWorkflow.Ping(ctx)
+	data := PingResponse{
+		Message:   status.Message,
+		Timestamp: status.Timestamp,
+		StackStatus: StackStatus{
+			Db:    status.StackStatus.Db,
+			Redis: status.StackStatus.Redis,
+		},
 	}
 
 	w.Header().Add("Content-Type", "application/json")

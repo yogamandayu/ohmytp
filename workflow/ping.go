@@ -4,24 +4,44 @@ import (
 	"context"
 	"time"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type PingWorkflow struct {
-	db *pgx.Conn
+	db *pgxpool.Pool
 }
 
-func NewPingWorkflow(db *pgx.Conn) *PingWorkflow {
+type StackStatus struct {
+	Db    string
+	Redis string
+}
+
+type PingStatus struct {
+	Message     string
+	Timestamp   string
+	StackStatus StackStatus
+}
+
+func NewPingWorkflow(db *pgxpool.Pool) *PingWorkflow {
 	return &PingWorkflow{
 		db,
 	}
 }
 
-func (p *PingWorkflow) Ping(ctx context.Context) (message, timestamp string, err error) {
-	err = p.db.Ping(ctx)
+func (p *PingWorkflow) Ping(ctx context.Context) PingStatus {
+	status := PingStatus{
+		Message:   "Pong!",
+		Timestamp: time.Now().Format(time.RFC3339),
+		StackStatus: StackStatus{
+			Db:    "UNDEFINED",
+			Redis: "UNDEFINED",
+		},
+	}
+	err := p.db.Ping(ctx)
+	status.StackStatus.Db = "OK"
 	if err != nil {
-		return "", time.Now().Format(time.RFC3339), err
+		status.StackStatus.Db = "ERROR"
 	}
 
-	return "Pong!", time.Now().Format(time.RFC3339), nil
+	return status
 }

@@ -2,7 +2,7 @@ package rest
 
 import (
 	"github.com/go-redis/redis"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/yogamandayu/ohmytp/config"
 )
 
@@ -12,7 +12,7 @@ func WithConfig(config *config.Config) Option {
 	}
 }
 
-func WithDB(db *pgx.Conn) Option {
+func WithDB(db *pgxpool.Pool) Option {
 	return func(r *REST) {
 		r.db = db
 	}

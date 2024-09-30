@@ -11,14 +11,14 @@ import (
 	"time"
 
 	"github.com/go-redis/redis"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/yogamandayu/ohmytp/config"
 	"github.com/yogamandayu/ohmytp/interfaces/http/rest/route"
 )
 
 type REST struct {
 	config *config.Config
-	db     *pgx.Conn
+	db     *pgxpool.Pool
 	redis  *redis.Client
 
 	Port    string
@@ -60,7 +60,7 @@ func (r *REST) Run() error {
 		Addr:         r.Port,
 		Handler:      r.Handler,
 		ReadTimeout:  30 * time.Second,
-		WriteTimeout: 120 * time.Second,
+		WriteTimeout: 60 * time.Second,
 	}
 
 	go func() {

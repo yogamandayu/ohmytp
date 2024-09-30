@@ -1,14 +1,14 @@
 package ping
 
 import (
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Handler struct {
-	db *pgx.Conn
+	db *pgxpool.Pool
 }
 
-func NewHandler(db *pgx.Conn) *Handler {
+func NewHandler(db *pgxpool.Pool) *Handler {
 	return &Handler{
 		db,
 	}
