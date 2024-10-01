@@ -19,6 +19,7 @@ func NewRouter(app *app.App) *Router {
 func (r *Router) Handler() http.Handler {
 	mux := http.NewServeMux()
 	HealthRoute(mux, r.app)
+	OTPRoute(mux, r.app)
 
 	return mux
 }

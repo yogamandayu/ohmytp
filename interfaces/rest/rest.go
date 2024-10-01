@@ -12,7 +12,7 @@ import (
 
 	"github.com/yogamandayu/ohmytp/app"
 	"github.com/yogamandayu/ohmytp/config"
-	"github.com/yogamandayu/ohmytp/interfaces/http/rest/route"
+	"github.com/yogamandayu/ohmytp/interfaces/rest/route"
 )
 
 type REST struct {

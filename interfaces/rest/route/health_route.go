@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/yogamandayu/ohmytp/app"
-	"github.com/yogamandayu/ohmytp/interfaces/http/rest/handler/ping"
+	"github.com/yogamandayu/ohmytp/interfaces/rest/handler/ping"
 )
 
 func HealthRoute(mux *http.ServeMux, app *app.App) http.Handler {

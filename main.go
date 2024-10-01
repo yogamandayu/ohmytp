@@ -6,9 +6,9 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/yogamandayu/ohmytp/app"
 	"github.com/yogamandayu/ohmytp/config"
-	"github.com/yogamandayu/ohmytp/interfaces/http/rest"
-	"github.com/yogamandayu/ohmytp/repository/cache/redis"
-	"github.com/yogamandayu/ohmytp/repository/persistence/db"
+	"github.com/yogamandayu/ohmytp/interfaces/rest"
+	"github.com/yogamandayu/ohmytp/internal/db"
+	"github.com/yogamandayu/ohmytp/internal/redis"
 )
 
 func main() {
