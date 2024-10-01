@@ -14,13 +14,13 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func NewConnection(config *config.Config) (*pgxpool.Pool, error) {
+func NewConnection(config config.Config) (*pgxpool.Pool, error) {
 	if config.DB == nil {
 		return nil, errors.New("missing config")
 	}
 
 	dbConfig := config.DB
-	connectionString := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", dbConfig.UserName, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.Database)
+	connectionString := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", dbConfig.Username, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.Database)
 	pgxConfig, err := pgxpool.ParseConfig(connectionString)
 	if err != nil {
 		return nil, err

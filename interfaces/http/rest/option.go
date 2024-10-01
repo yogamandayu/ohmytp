@@ -1,25 +1,20 @@
 package rest
 
 import (
-	"github.com/go-redis/redis"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/yogamandayu/ohmytp/app"
 	"github.com/yogamandayu/ohmytp/config"
 )
 
+type Option func(r *REST)
+
 func WithConfig(config *config.Config) Option {
 	return func(r *REST) {
-		r.config = config
+		r.Port = config.REST.Port
 	}
 }
 
-func WithDB(db *pgxpool.Pool) Option {
+func WithApp(app *app.App) Option {
 	return func(r *REST) {
-		r.db = db
-	}
-}
-
-func WithRedis(redis *redis.Client) Option {
-	return func(r *REST) {
-		r.redis = redis
+		r.app = app
 	}
 }

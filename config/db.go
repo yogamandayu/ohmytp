@@ -4,7 +4,7 @@ type DBConfig struct {
 	Driver                      string
 	Host                        string
 	Port                        string
-	UserName                    string
+	Username                    string
 	Password                    string
 	Database                    string
 	TimeZone                    string

@@ -1,7 +1,9 @@
 package ping
 
 import (
+	"context"
 	"net/http"
+	"time"
 
 	"encoding/json"
 
@@ -9,8 +11,8 @@ import (
 )
 
 func (h *Handler) Ping(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	pingWorkflow := workflow.NewPingWorkflow(h.db)
+	ctx, _ := context.WithTimeout(r.Context(), 5*time.Second)
+	pingWorkflow := workflow.NewPingWorkflow(h.db, h.redis)
 	status := pingWorkflow.Ping(ctx)
 	data := PingResponse{
 		Message:   status.Message,

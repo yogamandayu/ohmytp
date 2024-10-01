@@ -3,19 +3,22 @@ package route
 import (
 	"net/http"
 
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/yogamandayu/ohmytp/app"
 )
 
 type Router struct {
+	app *app.App
 }
 
-func NewRouter() *Router {
-	return &Router{}
+func NewRouter(app *app.App) *Router {
+	return &Router{
+		app,
+	}
 }
 
-func (r *Router) Handler(db *pgxpool.Pool) http.Handler {
+func (r *Router) Handler() http.Handler {
 	mux := http.NewServeMux()
-	HealthRoute(mux, db)
+	HealthRoute(mux, r.app)
 
 	return mux
 }

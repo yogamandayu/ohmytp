@@ -5,10 +5,12 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/redis/go-redis/v9"
 )
 
 type PingWorkflow struct {
-	db *pgxpool.Pool
+	db    *pgxpool.Pool
+	redis *redis.Client
 }
 
 type StackStatus struct {
@@ -22,9 +24,10 @@ type PingStatus struct {
 	StackStatus StackStatus
 }
 
-func NewPingWorkflow(db *pgxpool.Pool) *PingWorkflow {
+func NewPingWorkflow(db *pgxpool.Pool, redis *redis.Client) *PingWorkflow {
 	return &PingWorkflow{
-		db,
+		db:    db,
+		redis: redis,
 	}
 }
 
@@ -41,6 +44,12 @@ func (p *PingWorkflow) Ping(ctx context.Context) PingStatus {
 	status.StackStatus.Db = "OK"
 	if err != nil {
 		status.StackStatus.Db = "ERROR"
+	}
+
+	redisStatus := p.redis.Ping(ctx)
+	status.StackStatus.Redis = "OK"
+	if redisStatus.Err() != nil {
+		status.StackStatus.Redis = "ERROR"
 	}
 
 	return status

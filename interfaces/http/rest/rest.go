@@ -10,25 +10,22 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-redis/redis"
-	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/yogamandayu/ohmytp/app"
 	"github.com/yogamandayu/ohmytp/config"
 	"github.com/yogamandayu/ohmytp/interfaces/http/rest/route"
 )
 
 type REST struct {
 	config *config.Config
-	db     *pgxpool.Pool
-	redis  *redis.Client
+	app    *app.App
 
 	Port    string
 	Handler http.Handler
 }
 
-type Option func(r *REST)
-
-func NewREST() *REST {
+func NewREST(app *app.App) *REST {
 	return &REST{
+		app:  app,
 		Port: ":8080",
 	}
 }
@@ -41,24 +38,11 @@ func (r *REST) With(opts ...Option) *REST {
 	return r
 }
 
-func (r *REST) Init() *REST {
-	if r.config != nil && r.config.REST != nil {
-		config := r.config.REST
-		if config.Port != "" {
-			r.Port = fmt.Sprintf(":%s", config.Port)
-		}
-	}
-
-	router := route.NewRouter()
-	r.Handler = router.Handler(r.db)
-
-	return r
-}
-
 func (r *REST) Run() error {
+	router := route.NewRouter(r.app)
 	server := http.Server{
-		Addr:         r.Port,
-		Handler:      r.Handler,
+		Addr:         fmt.Sprintf(":%s", r.Port),
+		Handler:      router.Handler(),
 		ReadTimeout:  30 * time.Second,
 		WriteTimeout: 60 * time.Second,
 	}
