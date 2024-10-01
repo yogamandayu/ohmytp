@@ -1,6 +1,8 @@
 package app
 
 import (
+	"log/slog"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
 )
@@ -8,6 +10,7 @@ import (
 type App struct {
 	DB    *pgxpool.Pool
 	Redis *redis.Client
+	Log   *slog.Logger
 }
 
 func NewApp() *App {

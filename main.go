@@ -9,6 +9,7 @@ import (
 	"github.com/yogamandayu/ohmytp/interfaces/rest"
 	"github.com/yogamandayu/ohmytp/internal/db"
 	"github.com/yogamandayu/ohmytp/internal/redis"
+	"github.com/yogamandayu/ohmytp/internal/slog"
 )
 
 func main() {
@@ -35,7 +36,9 @@ func main() {
 	}
 	defer redisConn.Close()
 
-	app := app.NewApp().WithOptions(app.WithDB(dbConn), app.WithRedis(redisConn))
+	slogger := slog.NewSlog()
+
+	app := app.NewApp().WithOptions(app.WithDB(dbConn), app.WithRedis(redisConn), app.WithSlog(slogger))
 
 	r := rest.NewREST(app)
 	opts := []rest.Option{
