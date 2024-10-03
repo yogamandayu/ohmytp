@@ -12,8 +12,8 @@ type Config struct {
 
 type Option func(c *Config)
 
-func NewConfig() *Config {
-	return &Config{}
+func NewConfig() Config {
+	return Config{}
 }
 
 func (c *Config) With(opts ...Option) {

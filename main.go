@@ -1,15 +1,15 @@
 package main
 
 import (
+	"fmt"
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/urfave/cli/v2"
+	"github.com/yogamandayu/ohmytp/internal/cmd"
 	"log"
+	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/yogamandayu/ohmytp/app"
 	"github.com/yogamandayu/ohmytp/config"
-	"github.com/yogamandayu/ohmytp/interfaces/rest"
-	"github.com/yogamandayu/ohmytp/internal/db"
-	"github.com/yogamandayu/ohmytp/internal/redis"
-	"github.com/yogamandayu/ohmytp/internal/slog"
 )
 
 func main() {
@@ -24,27 +24,20 @@ func main() {
 		config.WithRedisConfig(),
 	)
 
-	dbConn, err := db.NewConnection(*conf)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer dbConn.Close()
-
-	redisConn, err := redis.NewConnection(*conf)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer redisConn.Close()
-
-	slogger := slog.NewSlog()
-
-	app := app.NewApp().WithOptions(app.WithDB(dbConn), app.WithRedis(redisConn), app.WithSlog(slogger))
-
-	r := rest.NewREST(app)
-	opts := []rest.Option{
-		rest.WithConfig(conf),
-	}
-	if err := r.With(opts...).Run(); err != nil {
-		log.Fatal(err)
+	model := cmd.NewBubbleTea()
+	model.SetListItemAndArgs(map[string]string{
+		"DB Migration": "db:migrate",
+		"REST API":     "http:rest",
+	})
+	model.SetCommand(func(args string) error {
+		cmdArgs := []string{os.Args[0], args}
+		cliApp := cli.NewApp()
+		commands := cmd.NewCommand(conf).Commands()
+		cliApp.Commands = commands
+		return cliApp.Run(cmdArgs)
+	})
+	if _, err := tea.NewProgram(model).Run(); err != nil {
+		fmt.Println("Error running program:", err)
+		os.Exit(1)
 	}
 }

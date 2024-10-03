@@ -17,7 +17,7 @@ func NewApp() *App {
 	return &App{}
 }
 
-func (app *App) WithOptions(opts ...AppOption) *App {
+func (app *App) WithOptions(opts ...Option) *App {
 	for _, opt := range opts {
 		opt(app)
 	}

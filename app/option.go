@@ -7,21 +7,21 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-type AppOption func(*App)
+type Option func(*App)
 
-func WithDB(pgxConn *pgxpool.Pool) AppOption {
+func WithDB(pgxConn *pgxpool.Pool) Option {
 	return func(a *App) {
 		a.DB = pgxConn
 	}
 }
 
-func WithRedis(redisConn *redis.Client) AppOption {
+func WithRedis(redisConn *redis.Client) Option {
 	return func(a *App) {
 		a.Redis = redisConn
 	}
 }
 
-func WithSlog(slog *slog.Logger) AppOption {
+func WithSlog(slog *slog.Logger) Option {
 	return func(a *App) {
 		a.Log = slog
 	}
