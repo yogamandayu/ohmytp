@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	tea "github.com/charmbracelet/bubbletea"
 	"github.com/urfave/cli/v2"
 	"github.com/yogamandayu/ohmytp/internal/cmd"
 	"log"
@@ -24,20 +22,11 @@ func main() {
 		config.WithRedisConfig(),
 	)
 
-	model := cmd.NewBubbleTea()
-	model.SetListItemAndArgs(map[string]string{
-		"DB Migration": "db:migrate",
-		"REST API":     "http:rest",
-	})
-	model.SetCommand(func(args string) error {
-		cmdArgs := []string{os.Args[0], args}
-		cliApp := cli.NewApp()
-		commands := cmd.NewCommand(conf).Commands()
-		cliApp.Commands = commands
-		return cliApp.Run(cmdArgs)
-	})
-	if _, err := tea.NewProgram(model).Run(); err != nil {
-		fmt.Println("Error running program:", err)
-		os.Exit(1)
+	cliApp := cli.NewApp()
+	commands := cmd.NewCommand(conf).Commands()
+	cliApp.Commands = commands
+	err := cliApp.Run(os.Args)
+	if err != nil {
+		log.Fatalf("Unable to run CLI command, err: %v", err)
 	}
 }
