@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS public.otps (
     user_agent text,
     created_at timestamp with time zone,
     updated_at timestamp with time zone,
-    deleted_at timestamp with time zone,
+    deleted_at timestamp with time zone
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_otps_id ON public.otps USING btree (id);

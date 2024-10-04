@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+	"github.com/jackc/tern/v2/migrate"
 	"github.com/urfave/cli/v2"
 	"github.com/yogamandayu/ohmytp/app"
 	"github.com/yogamandayu/ohmytp/config"
@@ -8,7 +10,9 @@ import (
 	"github.com/yogamandayu/ohmytp/internal/db"
 	"github.com/yogamandayu/ohmytp/internal/redis"
 	"github.com/yogamandayu/ohmytp/internal/slog"
+	"github.com/yogamandayu/ohmytp/util"
 	"log"
+	"os"
 )
 
 type Command struct {
@@ -59,6 +63,40 @@ func (cmd *Command) Commands() cli.Commands {
 			Aliases: []string{"m"},
 			Usage:   "Run database migration with tern",
 			Action: func(cCtx *cli.Context) error {
+
+				dbConn, err := db.NewConnection(cmd.conf)
+				if err != nil {
+					log.Fatal(err)
+				}
+				defer dbConn.Close()
+
+				migrationsDir := os.DirFS(fmt.Sprintf("%s/internal/tern/migrations", util.RootDir()))
+
+				pgConn, err := dbConn.Acquire(cCtx.Context)
+				if err != nil {
+					return err
+				}
+				defer pgConn.Release()
+
+				migrator, err := migrate.NewMigrator(cCtx.Context, pgConn.Conn(), "schema_version")
+				if err != nil {
+					log.Fatalf("Unable to create migrator: %v\n", err)
+				}
+
+				// Load migrations from the specified directory
+				err = migrator.LoadMigrations(migrationsDir)
+				if err != nil {
+					log.Fatalf("Unable to load migrations: %v\n", err)
+				}
+
+				// Apply the migrations (Up)
+				err = migrator.Migrate(cCtx.Context)
+				if err != nil {
+					log.Fatalf("Migration failed: %v\n", err)
+				}
+
+				log.Println("Migrations applied successfully!")
+
 				return nil
 			},
 		},
