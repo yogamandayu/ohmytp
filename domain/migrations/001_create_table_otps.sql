@@ -2,13 +2,14 @@
 
 CREATE TABLE IF NOT EXISTS public.otps (
     id varchar(36) NOT NULL PRIMARY KEY,
-    request_id varchar(26) NOT NULL ,
+    request_id varchar(36) NOT NULL ,
+    route_type varchar(20),
     code varchar(20),
     requested_at timestamp with time zone,
     confirmed_at timestamp with time zone,
     expired_at timestamp with time zone,
     attempt smallint,
-    last_attempted_at timestamp with time zone,
+    last_attempt_at timestamp with time zone,
     resend_attempt smallint,
     resend_at timestamp with time zone,
     ip_address varchar(100),

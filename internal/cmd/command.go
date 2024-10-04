@@ -70,7 +70,7 @@ func (cmd *Command) Commands() cli.Commands {
 				}
 				defer dbConn.Close()
 
-				migrationsDir := os.DirFS(fmt.Sprintf("%s/internal/tern/migrations", util.RootDir()))
+				migrationsDir := os.DirFS(fmt.Sprintf("%s/domain/migrations", util.RootDir()))
 
 				pgConn, err := dbConn.Acquire(cCtx.Context)
 				if err != nil {
@@ -96,6 +96,47 @@ func (cmd *Command) Commands() cli.Commands {
 				}
 
 				log.Println("Migrations applied successfully!")
+
+				return nil
+			},
+		},
+		{
+			Name:    "db:gen-repo",
+			Aliases: []string{"g"},
+			Usage:   "Run generate repo with sqlc",
+			Action: func(cCtx *cli.Context) error {
+				dbConn, err := db.NewConnection(cmd.conf)
+				if err != nil {
+					log.Fatal(err)
+				}
+				defer dbConn.Close()
+
+				migrationsDir := os.DirFS(fmt.Sprintf("%s/domain/migrations", util.RootDir()))
+
+				pgConn, err := dbConn.Acquire(cCtx.Context)
+				if err != nil {
+					return err
+				}
+				defer pgConn.Release()
+
+				migrator, err := migrate.NewMigrator(cCtx.Context, pgConn.Conn(), "schema_version")
+				if err != nil {
+					log.Fatalf("Unable to create migrator: %v\n", err)
+				}
+
+				// Load migrations from the specified directory
+				err = migrator.LoadMigrations(migrationsDir)
+				if err != nil {
+					log.Fatalf("Unable to load migrations: %v\n", err)
+				}
+
+				// Apply the migrations (Up)
+				err = migrator.Migrate(cCtx.Context)
+				if err != nil {
+					log.Fatalf("Migration failed: %v\n", err)
+				}
+
+				log.Println("Repository generated!")
 
 				return nil
 			},

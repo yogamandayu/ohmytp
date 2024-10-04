@@ -1,0 +1,42 @@
+package tests
+
+import (
+	"database/sql"
+	"github.com/google/uuid"
+	"github.com/yogamandayu/ohmytp/domain/entity"
+	"time"
+)
+
+func FakeOtp() *entity.Otp {
+	return &entity.Otp{
+		ID:        uuid.NewString(),
+		RequestID: uuid.NewString(),
+		RouteType: "EMAIL",
+		Code:      "12345",
+		RequestedAt: sql.NullTime{
+			Time:  time.Now(),
+			Valid: true,
+		},
+		ConfirmedAt: sql.NullTime{},
+		ExpiredAt: sql.NullTime{
+			Time:  time.Now().Add(3 * time.Minute),
+			Valid: true,
+		},
+		Attempt:       0,
+		LastAttemptAt: sql.NullTime{},
+		ResendAttempt: 0,
+		ResendAt:      sql.NullTime{},
+		IPAddress:     "127.0.0.1",
+		UserAgent:     "",
+		Timestamp: entity.Timestamp{
+			CreatedAt: sql.NullTime{
+				Time:  time.Now(),
+				Valid: true,
+			},
+			UpdatedAt: sql.NullTime{
+				Time:  time.Now(),
+				Valid: true,
+			},
+		},
+	}
+}
