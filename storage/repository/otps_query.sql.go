@@ -96,7 +96,7 @@ VALUES (
            $5, $6, $7,
            $8, $9, $10, $11,
            $12, $13,
-           $14, $15
+           NOW(), NOW()
        )
     RETURNING id, request_id, route_type, code, requested_at, confirmed_at, expired_at, attempt, last_attempt_at, resend_attempt, resend_at, ip_address, user_agent, created_at, updated_at, deleted_at
 `
@@ -115,8 +115,6 @@ type SaveOtpParams struct {
 	ResendAt      pgtype.Timestamptz
 	IpAddress     pgtype.Text
 	UserAgent     pgtype.Text
-	CreatedAt     pgtype.Timestamptz
-	UpdatedAt     pgtype.Timestamptz
 }
 
 func (q *Queries) SaveOtp(ctx context.Context, arg SaveOtpParams) (Otp, error) {
@@ -134,8 +132,6 @@ func (q *Queries) SaveOtp(ctx context.Context, arg SaveOtpParams) (Otp, error) {
 		arg.ResendAt,
 		arg.IpAddress,
 		arg.UserAgent,
-		arg.CreatedAt,
-		arg.UpdatedAt,
 	)
 	var i Otp
 	err := row.Scan(

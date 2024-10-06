@@ -33,8 +33,6 @@ func TestSaveOtp(t *testing.T) {
 		ResendAt:      fakeOtp.ResendAt,
 		IpAddress:     fakeOtp.IpAddress,
 		UserAgent:     fakeOtp.UserAgent,
-		CreatedAt:     fakeOtp.CreatedAt,
-		UpdatedAt:     fakeOtp.UpdatedAt,
 	})
 	require.NoError(t, err)
 	assert.NotNil(t, otp)
@@ -62,8 +60,6 @@ func TestFindOtp(t *testing.T) {
 		ResendAt:      fakeOtp.ResendAt,
 		IpAddress:     fakeOtp.IpAddress,
 		UserAgent:     fakeOtp.UserAgent,
-		CreatedAt:     fakeOtp.CreatedAt,
-		UpdatedAt:     fakeOtp.UpdatedAt,
 	})
 	require.NoError(t, err)
 	assert.NotNil(t, otp)
@@ -95,8 +91,6 @@ func TestUpdateOtp(t *testing.T) {
 		ResendAt:      fakeOtp.ResendAt,
 		IpAddress:     fakeOtp.IpAddress,
 		UserAgent:     fakeOtp.UserAgent,
-		CreatedAt:     fakeOtp.CreatedAt,
-		UpdatedAt:     fakeOtp.UpdatedAt,
 	})
 	require.NoError(t, err)
 	assert.NotNil(t, otp)
@@ -110,7 +104,7 @@ func TestUpdateOtp(t *testing.T) {
 		RequestID: fakeOtp.RequestID,
 		RouteType: fakeOtp.RouteType,
 		Code: pgtype.Text{
-			String: "UPDATED",
+			String: "54321",
 			Valid:  true,
 		},
 		RequestedAt:   fakeOtp.RequestedAt,
@@ -128,5 +122,5 @@ func TestUpdateOtp(t *testing.T) {
 	assert.NotEqual(t, otp.Code.String, otp3.Code.String)
 	assert.Equal(t, otp.ID, otp3.ID)
 	assert.Equal(t, otp.RequestID, otp3.RequestID)
-	assert.Equal(t, "UPDATED", otp3.Code.String)
+	assert.Equal(t, "54321", otp3.Code.String)
 }
