@@ -2,6 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"os/exec"
+
 	"github.com/jackc/tern/v2/migrate"
 	"github.com/urfave/cli/v2"
 	"github.com/yogamandayu/ohmytp/app"
@@ -11,20 +15,21 @@ import (
 	"github.com/yogamandayu/ohmytp/internal/redis"
 	"github.com/yogamandayu/ohmytp/internal/slog"
 	"github.com/yogamandayu/ohmytp/util"
-	"log"
-	"os"
 )
 
+// Command is a run service command.
 type Command struct {
 	conf config.Config
 }
 
+// NewCommand is a constructor.
 func NewCommand(conf config.Config) *Command {
 	return &Command{
 		conf: conf,
 	}
 }
 
+// Commands is get list of commands.
 func (cmd *Command) Commands() cli.Commands {
 	return []*cli.Command{
 		{
@@ -138,6 +143,24 @@ func (cmd *Command) Commands() cli.Commands {
 
 				log.Println("Repository generated!")
 
+				return nil
+			},
+		},
+		{
+
+			Name:    "git:pre-commit",
+			Aliases: []string{"pc"},
+			Usage:   "Install pre-commit",
+			Action: func(cCtx *cli.Context) error {
+				err := exec.Command("cp", fmt.Sprintf("%s/.githooks/pre-commit", util.RootDir()), fmt.Sprintf("%s/.git/hooks/pre-commit", util.RootDir())).Run()
+				if err != nil {
+					log.Fatal(err)
+				}
+				err = exec.Command("chmod", "+x", fmt.Sprintf("%s/.git/hooks/pre-commit", util.RootDir())).Run()
+				if err != nil {
+					log.Fatal(err)
+				}
+				log.Println("Pre-commit installed!")
 				return nil
 			},
 		},
