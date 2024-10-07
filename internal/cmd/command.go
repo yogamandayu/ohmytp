@@ -147,7 +147,6 @@ func (cmd *Command) Commands() cli.Commands {
 			},
 		},
 		{
-
 			Name:    "git:pre-commit",
 			Aliases: []string{"pc"},
 			Usage:   "Install pre-commit",
