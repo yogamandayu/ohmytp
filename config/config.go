@@ -4,24 +4,29 @@ import (
 	"github.com/yogamandayu/ohmytp/util"
 )
 
+// Config is a struct to hold all config.
 type Config struct {
 	REST  *RESTConfig
 	DB    *DBConfig
 	Redis *RedisConfig
 }
 
+// Option is an option for config.
 type Option func(c *Config)
 
+// NewConfig is a contructor.
 func NewConfig() Config {
 	return Config{}
 }
 
-func (c *Config) With(opts ...Option) {
+// WithOptions is to set option to config.
+func (c *Config) WithOptions(opts ...Option) {
 	for _, opt := range opts {
 		opt(c)
 	}
 }
 
+// WithDBConfig is to set db config.
 func WithDBConfig() Option {
 	return func(c *Config) {
 		c.DB = &DBConfig{
@@ -37,6 +42,7 @@ func WithDBConfig() Option {
 	}
 }
 
+// WithRedisConfig is to set redis config.
 func WithRedisConfig() Option {
 	return func(c *Config) {
 		c.Redis = &RedisConfig{
@@ -47,6 +53,7 @@ func WithRedisConfig() Option {
 	}
 }
 
+// WithRESTConfig is to set REST API config.
 func WithRESTConfig() Option {
 	return func(c *Config) {
 		c.REST = &RESTConfig{

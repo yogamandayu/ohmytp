@@ -2,6 +2,8 @@ package tests
 
 import (
 	"fmt"
+	"log"
+
 	"github.com/joho/godotenv"
 	"github.com/yogamandayu/ohmytp/app"
 	"github.com/yogamandayu/ohmytp/config"
@@ -9,7 +11,6 @@ import (
 	"github.com/yogamandayu/ohmytp/internal/redis"
 	"github.com/yogamandayu/ohmytp/internal/slog"
 	"github.com/yogamandayu/ohmytp/util"
-	"log"
 )
 
 type TestSuite struct {
@@ -26,7 +27,7 @@ func (t *TestSuite) LoadApp() {
 	}
 
 	conf := config.NewConfig()
-	conf.With(
+	conf.WithOptions(
 		config.WithDBConfig(),
 		config.WithRESTConfig(),
 		config.WithRedisConfig(),

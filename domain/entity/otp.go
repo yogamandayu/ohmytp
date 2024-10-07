@@ -2,10 +2,12 @@ package entity
 
 import (
 	"database/sql"
+
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/yogamandayu/ohmytp/storage/repository"
 )
 
+// Otp is a struct to hold all data related to otp action.
 type Otp struct {
 	ID            string       `json:"id"`
 	RequestID     string       `json:"request_id"`
@@ -23,6 +25,7 @@ type Otp struct {
 	Timestamp
 }
 
+// SetWithOtpRepository is to set entity otp with repository otp.
 func (o *Otp) SetWithOtpRepository(otp repository.Otp) {
 	o.ID = otp.ID
 	o.RequestID = otp.RequestID
@@ -66,6 +69,7 @@ func (o *Otp) SetWithOtpRepository(otp repository.Otp) {
 	}
 }
 
+// TransformToOtpRepository is to transform entity otp to repository otp.
 func (o *Otp) TransformToOtpRepository() (otp repository.Otp) {
 	otp.ID = o.ID
 	otp.RequestID = o.RequestID

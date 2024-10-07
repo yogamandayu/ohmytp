@@ -11,6 +11,7 @@ import (
 	"github.com/yogamandayu/ohmytp/workflow/otp"
 )
 
+// Request is request otp request handler.
 func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	ctx, _ := context.WithTimeout(r.Context(), 5*time.Second)
 
@@ -23,7 +24,7 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 
 	workflow := otp.NewRequestOtpWorkflow(h.app.DB, h.app.Log)
 
-	data := RequestOtpResponse{
+	data := RequestOtpResponseContract{
 		Message: "OK",
 	}
 	err = workflow.Request(ctx, payload.TransformToOtpEntity())

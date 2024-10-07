@@ -15,6 +15,7 @@ import (
 	"github.com/yogamandayu/ohmytp/interfaces/rest/route"
 )
 
+// REST is a http rest api struct.
 type REST struct {
 	config *config.Config
 	app    *app.App
@@ -23,6 +24,7 @@ type REST struct {
 	Handler http.Handler
 }
 
+// NewREST is a constructor.
 func NewREST(app *app.App) *REST {
 	return &REST{
 		app:  app,
@@ -30,6 +32,7 @@ func NewREST(app *app.App) *REST {
 	}
 }
 
+// With is to set option.
 func (r *REST) With(opts ...Option) *REST {
 	for _, opt := range opts {
 		opt(r)
@@ -38,6 +41,7 @@ func (r *REST) With(opts ...Option) *REST {
 	return r
 }
 
+// Run is to run http rest api service.
 func (r *REST) Run() error {
 	router := route.NewRouter(r.app)
 	server := http.Server{

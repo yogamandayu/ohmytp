@@ -7,6 +7,7 @@ import (
 	"github.com/yogamandayu/ohmytp/interfaces/rest/handler/otp"
 )
 
+// OTPRoute is otp route.
 func OTPRoute(mux *http.ServeMux, app *app.App) {
 	otpHandler := otp.NewHandler(app)
 

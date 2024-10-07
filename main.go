@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/urfave/cli/v2"
-	"github.com/yogamandayu/ohmytp/internal/cmd"
 	"log"
 	"os"
+
+	"github.com/urfave/cli/v2"
+	"github.com/yogamandayu/ohmytp/internal/cmd"
 
 	"github.com/joho/godotenv"
 	"github.com/yogamandayu/ohmytp/config"
@@ -16,7 +17,7 @@ func main() {
 	}
 
 	conf := config.NewConfig()
-	conf.With(
+	conf.WithOptions(
 		config.WithDBConfig(),
 		config.WithRESTConfig(),
 		config.WithRedisConfig(),
