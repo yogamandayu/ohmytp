@@ -159,6 +159,7 @@ func (cmd *Command) Commands() cli.Commands {
 				if err != nil {
 					log.Fatal(err)
 				}
+
 				log.Println("Pre-commit installed!")
 				return nil
 			},
