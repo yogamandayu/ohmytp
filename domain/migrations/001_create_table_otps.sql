@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS public.otps (
     user_agent text,
     created_at timestamp with time zone,
     updated_at timestamp with time zone,
+    is_deleted boolean,
     deleted_at timestamp with time zone
 );
 

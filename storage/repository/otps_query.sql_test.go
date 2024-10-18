@@ -99,7 +99,7 @@ func TestUpdateOtp(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, otp.Code.String, otp1.Code.String)
 
-	otp3, err := repo.UpdateOtp(ctx, repository.UpdateOtpParams{
+	otp2, err := repo.UpdateOtp(ctx, repository.UpdateOtpParams{
 		ID:        fakeOtp.ID,
 		RequestID: fakeOtp.RequestID,
 		RouteType: fakeOtp.RouteType,
@@ -119,8 +119,8 @@ func TestUpdateOtp(t *testing.T) {
 	})
 	require.NoError(t, err)
 	assert.NotNil(t, otp)
-	assert.NotEqual(t, otp.Code.String, otp3.Code.String)
-	assert.Equal(t, otp.ID, otp3.ID)
-	assert.Equal(t, otp.RequestID, otp3.RequestID)
-	assert.Equal(t, "54321", otp3.Code.String)
+	assert.NotEqual(t, otp.Code.String, otp2.Code.String)
+	assert.Equal(t, otp.ID, otp2.ID)
+	assert.Equal(t, otp.RequestID, otp2.RequestID)
+	assert.Equal(t, "54321", otp2.Code.String)
 }

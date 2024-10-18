@@ -11,14 +11,12 @@ import (
 	"time"
 
 	"github.com/yogamandayu/ohmytp/app"
-	"github.com/yogamandayu/ohmytp/config"
 	"github.com/yogamandayu/ohmytp/interfaces/rest/route"
 )
 
 // REST is a http rest api struct.
 type REST struct {
-	config *config.Config
-	app    *app.App
+	app *app.App
 
 	Port    string
 	Handler http.Handler

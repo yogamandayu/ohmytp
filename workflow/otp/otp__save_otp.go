@@ -15,17 +15,21 @@ import (
 	"github.com/yogamandayu/ohmytp/storage/repository"
 )
 
+// RequestOtpWorkflow is request OTP workflow.
 type RequestOtpWorkflow struct {
 	repository *repository.Queries
-	slog       slog.Logger
+	slog       *slog.Logger
 }
 
+// NewRequestOtpWorkflow is a constructor.
 func NewRequestOtpWorkflow(db *pgxpool.Pool, slog *slog.Logger) *RequestOtpWorkflow {
 	return &RequestOtpWorkflow{
 		repository: repository.New(db),
+		slog:       slog,
 	}
 }
 
+// Request is requesting OTP.
 func (w *RequestOtpWorkflow) Request(ctx context.Context, otp entity.Otp) error {
 	otpRepo := otp.TransformToOtpRepository()
 

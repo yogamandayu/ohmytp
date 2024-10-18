@@ -8,6 +8,7 @@ import (
 
 	"encoding/json"
 
+	"github.com/yogamandayu/ohmytp/consts"
 	"github.com/yogamandayu/ohmytp/workflow/otp"
 )
 
@@ -20,7 +21,7 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx = context.WithValue(ctx, "X-Request-ID", r.Header.Get("X-Request-ID"))
+	ctx = context.WithValue(ctx, consts.RequestIDHeaderKey, r.Header.Get(string(consts.RequestIDHeaderKey)))
 
 	workflow := otp.NewRequestOtpWorkflow(h.app.DB, h.app.Log)
 

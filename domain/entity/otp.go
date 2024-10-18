@@ -63,6 +63,7 @@ func (o *Otp) SetWithOtpRepository(otp repository.Otp) {
 		Time:  otp.UpdatedAt.Time,
 		Valid: otp.UpdatedAt.Valid,
 	}
+	o.IsDeleted = otp.IsDeleted.Bool && otp.IsDeleted.Valid
 	o.DeletedAt = sql.NullTime{
 		Time:  otp.DeletedAt.Time,
 		Valid: otp.DeletedAt.Valid,

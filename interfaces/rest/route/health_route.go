@@ -11,6 +11,4 @@ import (
 func HealthRoute(mux *http.ServeMux, app *app.App) {
 	pingHandler := ping.NewHandler(app.DB, app.Redis)
 	mux.HandleFunc("/ping", pingHandler.Ping)
-
-	return
 }

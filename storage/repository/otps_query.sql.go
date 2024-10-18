@@ -12,7 +12,7 @@ import (
 )
 
 const findOtp = `-- name: FindOtp :one
-SELECT id, request_id, route_type, code, requested_at, confirmed_at, expired_at, attempt, last_attempt_at, resend_attempt, resend_at, ip_address, user_agent, created_at, updated_at, deleted_at FROM public.otps
+SELECT id, request_id, route_type, code, requested_at, confirmed_at, expired_at, attempt, last_attempt_at, resend_attempt, resend_at, ip_address, user_agent, created_at, updated_at, is_deleted, deleted_at FROM public.otps
 WHERE id = $1
 `
 
@@ -35,13 +35,14 @@ func (q *Queries) FindOtp(ctx context.Context, id string) (Otp, error) {
 		&i.UserAgent,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.IsDeleted,
 		&i.DeletedAt,
 	)
 	return i, err
 }
 
 const getOtps = `-- name: GetOtps :many
-SELECT id, request_id, route_type, code, requested_at, confirmed_at, expired_at, attempt, last_attempt_at, resend_attempt, resend_at, ip_address, user_agent, created_at, updated_at, deleted_at FROM public.otps
+SELECT id, request_id, route_type, code, requested_at, confirmed_at, expired_at, attempt, last_attempt_at, resend_attempt, resend_at, ip_address, user_agent, created_at, updated_at, is_deleted, deleted_at FROM public.otps
 ORDER BY created_at desc
 `
 
@@ -70,6 +71,7 @@ func (q *Queries) GetOtps(ctx context.Context) ([]Otp, error) {
 			&i.UserAgent,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+			&i.IsDeleted,
 			&i.DeletedAt,
 		); err != nil {
 			return nil, err
@@ -98,7 +100,7 @@ VALUES (
            $12, $13,
            NOW(), NOW()
        )
-    RETURNING id, request_id, route_type, code, requested_at, confirmed_at, expired_at, attempt, last_attempt_at, resend_attempt, resend_at, ip_address, user_agent, created_at, updated_at, deleted_at
+    RETURNING id, request_id, route_type, code, requested_at, confirmed_at, expired_at, attempt, last_attempt_at, resend_attempt, resend_at, ip_address, user_agent, created_at, updated_at, is_deleted, deleted_at
 `
 
 type SaveOtpParams struct {
@@ -150,6 +152,7 @@ func (q *Queries) SaveOtp(ctx context.Context, arg SaveOtpParams) (Otp, error) {
 		&i.UserAgent,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.IsDeleted,
 		&i.DeletedAt,
 	)
 	return i, err
@@ -164,7 +167,7 @@ UPDATE public.otps SET
     ip_address = $12, user_agent = $13,
     updated_at = NOW()
 WHERE id = $1
-    RETURNING id, request_id, route_type, code, requested_at, confirmed_at, expired_at, attempt, last_attempt_at, resend_attempt, resend_at, ip_address, user_agent, created_at, updated_at, deleted_at
+    RETURNING id, request_id, route_type, code, requested_at, confirmed_at, expired_at, attempt, last_attempt_at, resend_attempt, resend_at, ip_address, user_agent, created_at, updated_at, is_deleted, deleted_at
 `
 
 type UpdateOtpParams struct {
@@ -216,6 +219,7 @@ func (q *Queries) UpdateOtp(ctx context.Context, arg UpdateOtpParams) (Otp, erro
 		&i.UserAgent,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.IsDeleted,
 		&i.DeletedAt,
 	)
 	return i, err

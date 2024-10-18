@@ -18,20 +18,20 @@ PASS=true
 
 for FILE in $STAGED_GO_FILES
 do
+    go fmt $FILE
+
     goimports -w $FILE
 
     gocritic check $FILE
-
-    golint "-set_exit_status" $FILE
     if [[ $? == 1 ]]; then
         PASS=false
     fi
-
-    go vet $FILE
-    if [[ $? != 0 ]]; then
-        PASS=false
-    fi
 done
+
+staticcheck ./...
+if [[ $? == 1 ]]; then
+        PASS=false
+fi
 
 if ! $PASS; then
     printf "COMMIT FAILED\n"

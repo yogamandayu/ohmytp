@@ -9,17 +9,21 @@ import (
 	"github.com/yogamandayu/ohmytp/tests"
 )
 
+// SaveOtpWorkflow is save OTP workflow.
 type SaveOtpWorkflow struct {
 	repository *repository.Queries
-	slog       slog.Logger
+	slog       *slog.Logger
 }
 
+// NewSaveOtpWorkflow is a constructor.
 func NewSaveOtpWorkflow(db *pgxpool.Pool, slog *slog.Logger) *SaveOtpWorkflow {
 	return &SaveOtpWorkflow{
 		repository: repository.New(db),
+		slog:       slog,
 	}
 }
 
+// Save is saving otp.
 func (w *SaveOtpWorkflow) Save(ctx context.Context) error {
 	otp := tests.FakeOtp().TransformToOtpRepository()
 	data := repository.SaveOtpParams{

@@ -2,11 +2,13 @@ package tests
 
 import (
 	"database/sql"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/yogamandayu/ohmytp/domain/entity"
-	"time"
 )
 
+// FakeOtp return faker otp entity.
 func FakeOtp() *entity.Otp {
 	return &entity.Otp{
 		ID:        uuid.NewString(),

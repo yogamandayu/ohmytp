@@ -24,5 +24,28 @@ type Otp struct {
 	UserAgent     pgtype.Text
 	CreatedAt     pgtype.Timestamptz
 	UpdatedAt     pgtype.Timestamptz
+	IsDeleted     pgtype.Bool
 	DeletedAt     pgtype.Timestamptz
+}
+
+type OtpRouteTypeEmail struct {
+	ID        string
+	OtpID     string
+	RequestID string
+	Email     pgtype.Text
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	IsDeleted pgtype.Bool
+	DeletedAt pgtype.Timestamptz
+}
+
+type OtpRouteTypeSm struct {
+	ID        string
+	OtpID     string
+	RequestID string
+	Phone     pgtype.Text
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+	IsDeleted pgtype.Bool
+	DeletedAt pgtype.Timestamptz
 }
