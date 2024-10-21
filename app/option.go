@@ -5,6 +5,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
+	"github.com/yogamandayu/ohmytp/storage/repository"
 )
 
 type Option func(*App)
@@ -12,6 +13,12 @@ type Option func(*App)
 func WithDB(pgxConn *pgxpool.Pool) Option {
 	return func(a *App) {
 		a.DB = pgxConn
+	}
+}
+
+func WithDBRepository(pgxConn *pgxpool.Pool) Option {
+	return func(a *App) {
+		a.DBRepository = repository.New(pgxConn)
 	}
 }
 

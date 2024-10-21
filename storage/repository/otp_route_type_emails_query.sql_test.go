@@ -14,7 +14,7 @@ import (
 func TestSaveOtpRouteTypeEmail(t *testing.T) {
 	testSuite := tests.NewTestSuite()
 	testSuite.LoadApp()
-	t.Cleanup(testSuite.Clean)
+	defer t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
 	repo := repository.New(testSuite.App.DB)

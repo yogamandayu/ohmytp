@@ -5,13 +5,15 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
+	"github.com/yogamandayu/ohmytp/storage/repository"
 )
 
 // App is a struct to hold all dependecy that used in the otp service.
 type App struct {
-	DB    *pgxpool.Pool
-	Redis *redis.Client
-	Log   *slog.Logger
+	DB           *pgxpool.Pool
+	Redis        *redis.Client
+	DBRepository *repository.Queries
+	Log          *slog.Logger
 }
 
 // NewApp is a constructor.

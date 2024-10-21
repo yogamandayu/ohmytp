@@ -28,7 +28,16 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	data := RequestOtpResponseContract{
 		Message: "OK",
 	}
-	err = workflow.Request(ctx, payload.TransformToOtpEntity())
+	otp := payload.TransformToOtpEntity()
+	workflow.SetOtp(&otp)
+	switch payload.RouteType {
+	case consts.EmailRouteType.ToString():
+		workflow.WithRouteEmail(payload.RouteValue)
+	case consts.SMSRouteType.ToString():
+		workflow.WithRouteSMS(payload.RouteValue)
+	}
+
+	err = workflow.Request(ctx)
 	if err != nil {
 		data.Message = "ERROR"
 	}

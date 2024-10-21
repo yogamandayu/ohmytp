@@ -4,7 +4,8 @@ import "github.com/yogamandayu/ohmytp/domain/entity"
 
 // RequestOtpRequestContract is request otp request contract.
 type RequestOtpRequestContract struct {
-	RouteType string `json:"route_type"`
+	RouteType  string `json:"route_type"`
+	RouteValue string `json:"route_value"`
 }
 
 // TransformToOtpEntity is to transform to otp entity.
