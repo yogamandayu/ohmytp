@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS public.otp_route_type_emails (
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_otp_route_type_emails_id ON public.otp_route_type_emails USING btree (id);
-CREATE INDEX IF NOT EXISTS idx_otp_route_type_emails_otp_id ON public.otp_route_type_emails USING btree (otp_id);
-CREATE INDEX IF NOT EXISTS idx_otp_route_type_emails_request_id ON public.otp_route_type_emails USING btree (request_id);
+CREATE INDEX IF NOT EXISTS idx_otp_route_type_emails_otp_id ON public.otp_route_type_emails USING hash (otp_id);
+CREATE INDEX IF NOT EXISTS idx_otp_route_type_emails_request_id ON public.otp_route_type_emails USING hash (request_id);
 
 ---- create above / drop below ----
 

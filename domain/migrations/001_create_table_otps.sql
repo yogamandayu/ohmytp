@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS public.otps (
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_otps_id ON public.otps USING btree (id);
-CREATE INDEX IF NOT EXISTS idx_otps_request_id ON public.otps USING btree (request_id);
+CREATE INDEX IF NOT EXISTS idx_otps_request_id ON public.otps USING hash (request_id);
 
 ---- create above / drop below ----
 

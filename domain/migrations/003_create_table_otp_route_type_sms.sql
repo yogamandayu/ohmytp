@@ -12,8 +12,8 @@ CREATE TABLE IF NOT EXISTS public.otp_route_type_sms (
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS idx_otp_route_type_sms_id ON public.otp_route_type_sms USING btree (id);
-CREATE INDEX IF NOT EXISTS idx_otp_route_type_sms_otp_id ON public.otp_route_type_sms USING btree (otp_id);
-CREATE INDEX IF NOT EXISTS idx_otp_route_type_sms_request_id ON public.otp_route_type_sms USING btree (request_id);
+CREATE INDEX IF NOT EXISTS idx_otp_route_type_sms_otp_id ON public.otp_route_type_sms USING hash (otp_id);
+CREATE INDEX IF NOT EXISTS idx_otp_route_type_sms_request_id ON public.otp_route_type_sms USING hash (request_id);
 
 ---- create above / drop below ----
 
