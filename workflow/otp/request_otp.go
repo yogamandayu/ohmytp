@@ -4,17 +4,16 @@ import (
 	"context"
 	"crypto/rand"
 	"errors"
-	"log/slog"
 	"math/big"
 	"strconv"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/yogamandayu/ohmytp/app"
 	"github.com/yogamandayu/ohmytp/consts"
 	"github.com/yogamandayu/ohmytp/domain/entity"
+	"github.com/yogamandayu/ohmytp/requester"
 	"github.com/yogamandayu/ohmytp/storage/repository"
 )
 
@@ -24,7 +23,8 @@ type RequestOtpWorkflow struct {
 	RouteTypeEmail *entity.OTPRouteTypeEmail
 	RouteTypeSMS   *entity.OTPRouteTypeSMS
 
-	app *app.App
+	App       *app.App
+	Requester *requester.Requester
 }
 
 func (r *RequestOtpWorkflow) SetOtp(otp *entity.Otp) *RequestOtpWorkflow {
@@ -63,35 +63,31 @@ func (r *RequestOtpWorkflow) WithRouteSMS(phone string) error {
 }
 
 // NewRequestOtpWorkflow is a constructor.
-func NewRequestOtpWorkflow(db *pgxpool.Pool, slog *slog.Logger) *RequestOtpWorkflow {
-	app := app.NewApp().WithOptions(app.WithDB(db), app.WithDBRepository(db), app.WithSlog(slog))
+func NewRequestOtpWorkflow(requester *requester.Requester, app *app.App) *RequestOtpWorkflow {
 	return &RequestOtpWorkflow{
-		app: app,
+		App:       app,
+		Requester: requester,
 	}
 }
 
 // Request is requesting OTP.
 func (r *RequestOtpWorkflow) Request(ctx context.Context) error {
-	otpRepo := r.Otp.TransformToOtpRepository()
 
 	generatedOtp, _ := rand.Int(rand.Reader, big.NewInt(99999))
 	uid, _ := uuid.NewV7()
 
-	tx, err := r.app.DB.Begin(ctx)
+	tx, err := r.App.DB.Begin(ctx)
 	if err != nil {
 		return err
 	}
 
-	requestID, ok := ctx.Value("X-Request-ID").(string)
-	if !ok {
-		uid, _ = uuid.NewV7()
-		requestID = uid.String()
-	}
-
 	dataOtp := repository.SaveOtpParams{
 		ID:        uid.String(),
-		RequestID: requestID,
-		RouteType: otpRepo.RouteType,
+		RequestID: r.Requester.Metadata.RequestID,
+		RouteType: pgtype.Text{
+			Valid:  true,
+			String: r.Otp.RouteType,
+		},
 		Code: pgtype.Text{
 			Valid:  true,
 			String: strconv.Itoa(int(generatedOtp.Int64())),
@@ -100,15 +96,20 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) error {
 			Time:  time.Now(),
 			Valid: true,
 		},
-		ConfirmedAt: otpRepo.ConfirmedAt,
 		ExpiredAt: pgtype.Timestamptz{
 			Time:  time.Now().Add(2 * time.Minute),
 			Valid: true,
 		},
-		IpAddress: otpRepo.IpAddress,
-		UserAgent: otpRepo.UserAgent,
+		IpAddress: pgtype.Text{
+			Valid:  true,
+			String: r.Requester.Metadata.IPAddress,
+		},
+		UserAgent: pgtype.Text{
+			Valid:  true,
+			String: r.Requester.Metadata.UserAgent,
+		},
 	}
-	_, err = r.app.DBRepository.WithTx(tx).SaveOtp(ctx, dataOtp)
+	_, err = r.App.DBRepository.WithTx(tx).SaveOtp(ctx, dataOtp)
 	if err != nil {
 		tx.Rollback(ctx)
 		return err
@@ -125,7 +126,7 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) error {
 				Valid:  true,
 			},
 		}
-		_, err = r.app.DBRepository.WithTx(tx).SaveOtpRouteTypeSMS(ctx, dataSMS)
+		_, err = r.App.DBRepository.WithTx(tx).SaveOtpRouteTypeSMS(ctx, dataSMS)
 		if err != nil {
 			tx.Rollback(ctx)
 			return err
@@ -140,7 +141,7 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) error {
 				Valid:  true,
 			},
 		}
-		_, err = r.app.DBRepository.WithTx(tx).SaveOtpRouteTypeEmail(ctx, dataEmail)
+		_, err = r.App.DBRepository.WithTx(tx).SaveOtpRouteTypeEmail(ctx, dataEmail)
 		if err != nil {
 			tx.Rollback(ctx)
 			return err

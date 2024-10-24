@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/yogamandayu/ohmytp/consts"
 	"github.com/yogamandayu/ohmytp/domain/entity"
+	"github.com/yogamandayu/ohmytp/requester"
 	"github.com/yogamandayu/ohmytp/tests"
 	"github.com/yogamandayu/ohmytp/workflow/otp"
 )
@@ -47,7 +48,8 @@ func TestRequestOtp(t *testing.T) {
 	}
 	for _, scenario := range scenarios {
 		t.Run(scenario.description, func(t *testing.T) {
-			workflow := otp.NewRequestOtpWorkflow(ts.App.DB, ts.App.Log)
+			requester := requester.NewRequester().SetMetadataFromREST(tests.FakeHTTPRequest())
+			workflow := otp.NewRequestOtpWorkflow(requester, ts.App)
 			workflow.SetOtp(&entity.Otp{
 				ID:        uuid.NewString(),
 				RequestID: uuid.NewString(),
