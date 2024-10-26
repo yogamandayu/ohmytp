@@ -27,11 +27,13 @@ type RequestOtpWorkflow struct {
 	Requester *requester.Requester
 }
 
+// SetOtp is to set entity.Otp to RequestOtpWorkflow.
 func (r *RequestOtpWorkflow) SetOtp(otp *entity.Otp) *RequestOtpWorkflow {
 	r.Otp = otp
 	return r
 }
 
+// WithRouteEmail is to set request OTP route type to email.
 func (r *RequestOtpWorkflow) WithRouteEmail(email string) error {
 	if r.Otp == nil {
 		return errors.New("missing otp")
@@ -47,6 +49,7 @@ func (r *RequestOtpWorkflow) WithRouteEmail(email string) error {
 	return nil
 }
 
+// WithRouteSMS is to set request OTP route type to SMS.
 func (r *RequestOtpWorkflow) WithRouteSMS(phone string) error {
 	if r.Otp == nil {
 		return errors.New("missing otp")
