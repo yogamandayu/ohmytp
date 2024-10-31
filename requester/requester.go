@@ -1,8 +1,9 @@
 package requester
 
 import (
-	"github.com/google/uuid"
 	"net/http"
+
+	"github.com/google/uuid"
 )
 
 // Requester is a requester of all action in this project. Mostly will hold all of REST and gRPC metadata.
