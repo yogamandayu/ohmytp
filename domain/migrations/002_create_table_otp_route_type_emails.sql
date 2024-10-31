@@ -2,6 +2,7 @@
 
 CREATE TABLE IF NOT EXISTS public.otp_route_type_emails (
     id varchar(36) NOT NULL PRIMARY KEY,
+    row_id SERIAL UNIQUE,
     otp_id varchar(36) NOT NULL ,
     request_id varchar(36) NOT NULL ,
     email varchar(255),
@@ -17,7 +18,7 @@ CREATE INDEX IF NOT EXISTS idx_otp_route_type_emails_request_id ON public.otp_ro
 
 ---- create above / drop below ----
 
-DROP TABLE otps
+DROP TABLE otp_route_emails;
 
 -- Write your migrate down statements here. If this migration is irreversible
 -- Then delete the separator line above.

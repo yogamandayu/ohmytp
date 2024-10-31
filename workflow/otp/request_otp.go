@@ -22,6 +22,7 @@ type RequestOtpWorkflow struct {
 	Otp            *entity.Otp
 	RouteTypeEmail *entity.OTPRouteTypeEmail
 	RouteTypeSMS   *entity.OTPRouteTypeSMS
+	Expiration     time.Duration
 
 	App       *app.App
 	Requester *requester.Requester

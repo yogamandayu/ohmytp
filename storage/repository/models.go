@@ -10,9 +10,11 @@ import (
 
 type Otp struct {
 	ID            string
+	RowID         pgtype.Int4
 	RequestID     string
 	RouteType     pgtype.Text
 	Code          pgtype.Text
+	Purpose       pgtype.Text
 	RequestedAt   pgtype.Timestamptz
 	ConfirmedAt   pgtype.Timestamptz
 	ExpiredAt     pgtype.Timestamptz
@@ -30,6 +32,7 @@ type Otp struct {
 
 type OtpRouteTypeEmail struct {
 	ID        string
+	RowID     pgtype.Int4
 	OtpID     string
 	RequestID string
 	Email     pgtype.Text
@@ -41,6 +44,7 @@ type OtpRouteTypeEmail struct {
 
 type OtpRouteTypeSm struct {
 	ID        string
+	RowID     pgtype.Int4
 	OtpID     string
 	RequestID string
 	Phone     pgtype.Text

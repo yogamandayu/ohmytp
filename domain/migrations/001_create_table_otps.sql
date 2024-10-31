@@ -2,9 +2,11 @@
 
 CREATE TABLE IF NOT EXISTS public.otps (
     id varchar(36) NOT NULL PRIMARY KEY,
+    row_id SERIAL UNIQUE,
     request_id varchar(36) NOT NULL ,
     route_type varchar(20),
     code varchar(20),
+    purpose varchar(100),
     requested_at timestamp with time zone,
     confirmed_at timestamp with time zone,
     expired_at timestamp with time zone,
@@ -25,7 +27,7 @@ CREATE INDEX IF NOT EXISTS idx_otps_request_id ON public.otps USING hash (reques
 
 ---- create above / drop below ----
 
-DROP TABLE otps
+DROP TABLE otps;
 
 -- Write your migrate down statements here. If this migration is irreversible
 -- Then delete the separator line above.
