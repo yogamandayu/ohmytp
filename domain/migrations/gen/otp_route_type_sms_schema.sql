@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS public.otp_route_type_sms (
     id varchar(36) NOT NULL PRIMARY KEY,
+    row_id SERIAL UNIQUE,
     otp_id varchar(36) NOT NULL ,
     request_id varchar(36) NOT NULL ,
     phone varchar(50),

@@ -1,8 +1,10 @@
 CREATE TABLE IF NOT EXISTS public.otps (
     id varchar(36) NOT NULL PRIMARY KEY,
-    request_id varchar(36) NOT NULL ,
+    row_id SERIAL UNIQUE,
+    request_id varchar(36) NOT NULL,
     route_type varchar(20),
     code varchar(20),
+    purpose varchar(100),
     requested_at timestamp with time zone,
     confirmed_at timestamp with time zone,
     expired_at timestamp with time zone,
