@@ -12,7 +12,8 @@ import (
 )
 
 const findOtpRouteTypeSMS = `-- name: FindOtpRouteTypeSMS :one
-SELECT id, otp_id, request_id, phone, created_at, updated_at, is_deleted, deleted_at FROM public.otp_route_type_sms
+SELECT id, row_id, otp_id, request_id, phone, created_at, updated_at, is_deleted, deleted_at
+FROM public.otp_route_type_sms
 WHERE id = $1
 `
 
@@ -21,6 +22,7 @@ func (q *Queries) FindOtpRouteTypeSMS(ctx context.Context, id string) (OtpRouteT
 	var i OtpRouteTypeSm
 	err := row.Scan(
 		&i.ID,
+		&i.RowID,
 		&i.OtpID,
 		&i.RequestID,
 		&i.Phone,
@@ -33,7 +35,8 @@ func (q *Queries) FindOtpRouteTypeSMS(ctx context.Context, id string) (OtpRouteT
 }
 
 const getOtpRouteTypeSMS = `-- name: GetOtpRouteTypeSMS :many
-SELECT id, otp_id, request_id, phone, created_at, updated_at, is_deleted, deleted_at FROM public.otp_route_type_sms
+SELECT id, row_id, otp_id, request_id, phone, created_at, updated_at, is_deleted, deleted_at
+FROM public.otp_route_type_sms
 ORDER BY created_at desc
 `
 
@@ -48,6 +51,7 @@ func (q *Queries) GetOtpRouteTypeSMS(ctx context.Context) ([]OtpRouteTypeSm, err
 		var i OtpRouteTypeSm
 		if err := rows.Scan(
 			&i.ID,
+			&i.RowID,
 			&i.OtpID,
 			&i.RequestID,
 			&i.Phone,
@@ -67,15 +71,10 @@ func (q *Queries) GetOtpRouteTypeSMS(ctx context.Context) ([]OtpRouteTypeSm, err
 }
 
 const saveOtpRouteTypeSMS = `-- name: SaveOtpRouteTypeSMS :one
-INSERT INTO public.otp_route_type_sms (
-    id, otp_id, request_id, phone,
-    created_at, updated_at
-)
-VALUES (
-           $1, $2, $3, $4,
-           NOW(), NOW()
-       )
-    RETURNING id, otp_id, request_id, phone, created_at, updated_at, is_deleted, deleted_at
+INSERT INTO public.otp_route_type_sms (id, otp_id, request_id, phone,
+                                       created_at, updated_at)
+VALUES ($1, $2, $3, $4,
+        NOW(), NOW()) RETURNING id, row_id, otp_id, request_id, phone, created_at, updated_at, is_deleted, deleted_at
 `
 
 type SaveOtpRouteTypeSMSParams struct {
@@ -95,6 +94,7 @@ func (q *Queries) SaveOtpRouteTypeSMS(ctx context.Context, arg SaveOtpRouteTypeS
 	var i OtpRouteTypeSm
 	err := row.Scan(
 		&i.ID,
+		&i.RowID,
 		&i.OtpID,
 		&i.RequestID,
 		&i.Phone,
@@ -107,11 +107,12 @@ func (q *Queries) SaveOtpRouteTypeSMS(ctx context.Context, arg SaveOtpRouteTypeS
 }
 
 const updateOtpRouteTypeSMS = `-- name: UpdateOtpRouteTypeSMS :one
-UPDATE public.otp_route_type_sms SET
-    otp_id = $2, request_id = $3, phone = $4,
+UPDATE public.otp_route_type_sms
+SET otp_id     = $2,
+    request_id = $3,
+    phone      = $4,
     updated_at = NOW()
-WHERE id = $1
-    RETURNING id, otp_id, request_id, phone, created_at, updated_at, is_deleted, deleted_at
+WHERE id = $1 RETURNING id, row_id, otp_id, request_id, phone, created_at, updated_at, is_deleted, deleted_at
 `
 
 type UpdateOtpRouteTypeSMSParams struct {
@@ -131,6 +132,7 @@ func (q *Queries) UpdateOtpRouteTypeSMS(ctx context.Context, arg UpdateOtpRouteT
 	var i OtpRouteTypeSm
 	err := row.Scan(
 		&i.ID,
+		&i.RowID,
 		&i.OtpID,
 		&i.RequestID,
 		&i.Phone,

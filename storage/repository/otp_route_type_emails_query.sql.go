@@ -12,7 +12,8 @@ import (
 )
 
 const findOtpRouteTypeEmail = `-- name: FindOtpRouteTypeEmail :one
-SELECT id, otp_id, request_id, email, created_at, updated_at, is_deleted, deleted_at FROM public.otp_route_type_emails
+SELECT id, row_id, otp_id, request_id, email, created_at, updated_at, is_deleted, deleted_at
+FROM public.otp_route_type_emails
 WHERE id = $1
 `
 
@@ -21,6 +22,7 @@ func (q *Queries) FindOtpRouteTypeEmail(ctx context.Context, id string) (OtpRout
 	var i OtpRouteTypeEmail
 	err := row.Scan(
 		&i.ID,
+		&i.RowID,
 		&i.OtpID,
 		&i.RequestID,
 		&i.Email,
@@ -33,7 +35,8 @@ func (q *Queries) FindOtpRouteTypeEmail(ctx context.Context, id string) (OtpRout
 }
 
 const getOtpRouteTypeEmails = `-- name: GetOtpRouteTypeEmails :many
-SELECT id, otp_id, request_id, email, created_at, updated_at, is_deleted, deleted_at FROM public.otp_route_type_emails
+SELECT id, row_id, otp_id, request_id, email, created_at, updated_at, is_deleted, deleted_at
+FROM public.otp_route_type_emails
 ORDER BY created_at desc
 `
 
@@ -48,6 +51,7 @@ func (q *Queries) GetOtpRouteTypeEmails(ctx context.Context) ([]OtpRouteTypeEmai
 		var i OtpRouteTypeEmail
 		if err := rows.Scan(
 			&i.ID,
+			&i.RowID,
 			&i.OtpID,
 			&i.RequestID,
 			&i.Email,
@@ -67,15 +71,10 @@ func (q *Queries) GetOtpRouteTypeEmails(ctx context.Context) ([]OtpRouteTypeEmai
 }
 
 const saveOtpRouteTypeEmail = `-- name: SaveOtpRouteTypeEmail :one
-INSERT INTO public.otp_route_type_emails (
-    id, otp_id, request_id, email,
-    created_at, updated_at
-)
-VALUES (
-           $1, $2, $3, $4,
-           NOW(), NOW()
-       )
-    RETURNING id, otp_id, request_id, email, created_at, updated_at, is_deleted, deleted_at
+INSERT INTO public.otp_route_type_emails (id, otp_id, request_id, email,
+                                          created_at, updated_at)
+VALUES ($1, $2, $3, $4,
+        NOW(), NOW()) RETURNING id, row_id, otp_id, request_id, email, created_at, updated_at, is_deleted, deleted_at
 `
 
 type SaveOtpRouteTypeEmailParams struct {
@@ -95,6 +94,7 @@ func (q *Queries) SaveOtpRouteTypeEmail(ctx context.Context, arg SaveOtpRouteTyp
 	var i OtpRouteTypeEmail
 	err := row.Scan(
 		&i.ID,
+		&i.RowID,
 		&i.OtpID,
 		&i.RequestID,
 		&i.Email,
@@ -107,11 +107,12 @@ func (q *Queries) SaveOtpRouteTypeEmail(ctx context.Context, arg SaveOtpRouteTyp
 }
 
 const updateOtpRouteTypeEmail = `-- name: UpdateOtpRouteTypeEmail :one
-UPDATE public.otp_route_type_emails SET
-    otp_id = $2, request_id = $3, email = $4,
+UPDATE public.otp_route_type_emails
+SET otp_id     = $2,
+    request_id = $3,
+    email      = $4,
     updated_at = NOW()
-WHERE id = $1
-    RETURNING id, otp_id, request_id, email, created_at, updated_at, is_deleted, deleted_at
+WHERE id = $1 RETURNING id, row_id, otp_id, request_id, email, created_at, updated_at, is_deleted, deleted_at
 `
 
 type UpdateOtpRouteTypeEmailParams struct {
@@ -131,6 +132,7 @@ func (q *Queries) UpdateOtpRouteTypeEmail(ctx context.Context, arg UpdateOtpRout
 	var i OtpRouteTypeEmail
 	err := row.Scan(
 		&i.ID,
+		&i.RowID,
 		&i.OtpID,
 		&i.RequestID,
 		&i.Email,
