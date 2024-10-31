@@ -1,6 +1,7 @@
 package requester
 
 import (
+	"github.com/google/uuid"
 	"net/http"
 )
 
@@ -24,7 +25,13 @@ func NewRequester() *Requester {
 // SetMetadataFromREST is to set metadata from REST API.
 func (req *Requester) SetMetadataFromREST(r *http.Request) *Requester {
 	req.Metadata = Metadata{
-		RequestID: r.Header.Get("X-Request-ID"),
+		RequestID: func() string {
+			requestID := r.Header.Get("X-Request-ID")
+			if requestID == "" {
+				return uuid.NewString()
+			}
+			return requestID
+		}(),
 		IPAddress: r.RemoteAddr,
 		UserAgent: r.UserAgent(),
 	}
