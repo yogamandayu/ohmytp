@@ -1,8 +1,9 @@
 package otp
 
 import (
-	"github.com/yogamandayu/ohmytp/domain/entity"
 	"strings"
+
+	"github.com/yogamandayu/ohmytp/domain/entity"
 )
 
 // RequestOtpRequestContract is request otp request contract.
