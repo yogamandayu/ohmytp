@@ -2,7 +2,6 @@ package otp
 
 import (
 	"context"
-	"github.com/yogamandayu/ohmytp/interfaces/rest/response"
 	"log"
 	"net/http"
 	"time"
