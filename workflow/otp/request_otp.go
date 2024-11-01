@@ -2,11 +2,10 @@ package otp
 
 import (
 	"context"
-	"crypto/rand"
 	"errors"
-	"math/big"
-	"strconv"
 	"time"
+
+	"github.com/yogamandayu/ohmytp/util"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -23,6 +22,7 @@ type RequestOtpWorkflow struct {
 	RouteTypeEmail *entity.OTPRouteTypeEmail
 	RouteTypeSMS   *entity.OTPRouteTypeSMS
 	Expiration     time.Duration
+	OtpLength      uint16
 
 	App       *app.App
 	Requester *requester.Requester
@@ -35,6 +35,16 @@ func (r *RequestOtpWorkflow) SetOtp(otp *entity.Otp) *RequestOtpWorkflow {
 }
 
 // WithRouteEmail is to set request OTP route type to email.
+func (r *RequestOtpWorkflow) SetOtpLength(length uint16) *RequestOtpWorkflow {
+	r.OtpLength = length
+	return r
+}
+
+func (r *RequestOtpWorkflow) SetOtpExpiration(expiration time.Duration) *RequestOtpWorkflow {
+	r.Expiration = expiration
+	return r
+}
+
 func (r *RequestOtpWorkflow) WithRouteEmail(email string) error {
 	if r.Otp == nil {
 		return errors.New("missing otp")
@@ -69,15 +79,17 @@ func (r *RequestOtpWorkflow) WithRouteSMS(phone string) error {
 // NewRequestOtpWorkflow is a constructor.
 func NewRequestOtpWorkflow(requester *requester.Requester, app *app.App) *RequestOtpWorkflow {
 	return &RequestOtpWorkflow{
-		App:       app,
-		Requester: requester,
+		App:        app,
+		Requester:  requester,
+		OtpLength:  5,
+		Expiration: 2 * time.Minute,
 	}
 }
 
 // Request is requesting OTP.
 func (r *RequestOtpWorkflow) Request(ctx context.Context) error {
 
-	generatedOtp, _ := rand.Int(rand.Reader, big.NewInt(99999))
+	generatedOtp := util.RandomStringWithSample(int(r.OtpLength), "0123456789")
 	uid, _ := uuid.NewV7()
 
 	tx, err := r.App.DB.Begin(ctx)
@@ -92,16 +104,20 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) error {
 			Valid:  true,
 			String: r.Otp.RouteType,
 		},
+		Purpose: pgtype.Text{
+			Valid:  true,
+			String: r.Otp.Purpose,
+		},
 		Code: pgtype.Text{
 			Valid:  true,
-			String: strconv.Itoa(int(generatedOtp.Int64())),
+			String: generatedOtp,
 		},
 		RequestedAt: pgtype.Timestamptz{
 			Time:  time.Now(),
 			Valid: true,
 		},
 		ExpiredAt: pgtype.Timestamptz{
-			Time:  time.Now().Add(2 * time.Minute),
+			Time:  time.Now().Add(r.Expiration),
 			Valid: true,
 		},
 		IpAddress: pgtype.Text{

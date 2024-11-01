@@ -2,9 +2,12 @@ package otp
 
 import (
 	"context"
+	"github.com/yogamandayu/ohmytp/interfaces/rest/response"
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/yogamandayu/ohmytp/interfaces/rest/response"
 
 	"encoding/json"
 
@@ -22,27 +25,23 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	requester := requester.NewRequester().SetMetadataFromREST(r)
-	workflow := otp.NewRequestOtpWorkflow(requester, h.app)
 
-	data := RequestOtpResponseContract{
-		Message: "OK",
-	}
+	rq := requester.NewRequester().SetMetadataFromREST(r)
+	workflow := otp.NewRequestOtpWorkflow(rq, h.app)
+
 	otpEntity := payload.TransformToOtpEntity()
 	workflow.SetOtp(&otpEntity)
 	switch otpEntity.RouteType {
 	case consts.EmailRouteType.ToString():
-		workflow.WithRouteEmail(payload.RouteValue)
+		_ = workflow.WithRouteEmail(payload.RouteValue)
 	case consts.SMSRouteType.ToString():
-		workflow.WithRouteSMS(payload.RouteValue)
+		_ = workflow.WithRouteSMS(payload.RouteValue)
 	}
 	err = workflow.Request(ctx)
 	if err != nil {
 		h.app.Log.Error("error : %v", err)
-		data.Message = "ERROR"
 	}
 
 	w.Header().Add("Content-Type", "application/json")
-	b, _ := json.Marshal(data)
-	w.Write(b)
+	response.NewHTTPSuccessResponse(w, http.StatusCreated, nil, "Success")
 }

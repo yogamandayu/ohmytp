@@ -18,11 +18,12 @@ type RequestOtpRequestContract struct {
 // TransformToOtpEntity is to transform to otp entity.
 func (r RequestOtpRequestContract) TransformToOtpEntity() entity.Otp {
 	return entity.Otp{
+		Purpose:   r.Purpose,
 		RouteType: strings.ToUpper(r.RouteType),
 	}
 }
 
 // RequestOtpResponseContract is request otp response contract.
 type RequestOtpResponseContract struct {
-	Message string `json:"message"`
+	ExpiredAt string `json:"expired_at"`
 }

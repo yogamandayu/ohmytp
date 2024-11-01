@@ -80,6 +80,10 @@ func (o *Otp) TransformToOtpRepository() (otp repository.Otp) {
 		Valid:  true,
 		String: o.RouteType,
 	}
+	otp.Purpose = pgtype.Text{
+		Valid:  true,
+		String: o.Purpose,
+	}
 	otp.Code = pgtype.Text{
 		Valid:  true,
 		String: o.Code,
