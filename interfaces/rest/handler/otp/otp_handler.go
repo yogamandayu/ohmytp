@@ -30,16 +30,20 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	workflow := otp.NewRequestOtpWorkflow(rq, h.app)
 
 	otpEntity := payload.TransformToOtpEntity()
-	workflow.SetOtp(&otpEntity)
+	workflow.SetOtp(&otpEntity).SetOtpExpiration(time.Duration(payload.Expiration) * time.Second).SetOtpLength(payload.Length)
 	switch otpEntity.RouteType {
 	case consts.EmailRouteType.ToString():
 		_ = workflow.WithRouteEmail(payload.RouteValue)
 	case consts.SMSRouteType.ToString():
 		_ = workflow.WithRouteSMS(payload.RouteValue)
 	}
-	err = workflow.Request(ctx)
+	expiredAt, err := workflow.Request(ctx)
 	if err != nil {
 		h.app.Log.Error("error : %v", err)
+		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusBadRequest).AsJSON(w)
+		return
 	}
-	response.NewHTTPSuccessResponse(nil, "Success").WithStatusCode(http.StatusCreated).AsJSON(w)
+	response.NewHTTPSuccessResponse(RequestOtpResponseContract{
+		ExpiredAt: expiredAt.Format(time.RFC3339),
+	}, "Success").WithStatusCode(http.StatusCreated).AsJSON(w)
 }

@@ -89,14 +89,14 @@ func NewRequestOtpWorkflow(requester *requester.Requester, app *app.App) *Reques
 }
 
 // Request is requesting OTP.
-func (r *RequestOtpWorkflow) Request(ctx context.Context) error {
+func (r *RequestOtpWorkflow) Request(ctx context.Context) (expiredAt time.Time, err error) {
 
 	generatedOtp := util.RandomStringWithSample(int(r.OtpLength), "0123456789")
 	uid, _ := uuid.NewV7()
 
 	tx, err := r.App.DB.Begin(ctx)
 	if err != nil {
-		return err
+		return time.Time{}, err
 	}
 
 	dataOtp := repository.SaveOtpParams{
@@ -131,10 +131,10 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) error {
 			String: r.Requester.Metadata.UserAgent,
 		},
 	}
-	_, err = r.App.DBRepository.WithTx(tx).SaveOtp(ctx, dataOtp)
+	otp, err := r.App.DBRepository.WithTx(tx).SaveOtp(ctx, dataOtp)
 	if err != nil {
 		tx.Rollback(ctx)
-		return err
+		return time.Time{}, err
 	}
 
 	switch r.Otp.RouteType {
@@ -151,7 +151,7 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) error {
 		_, err = r.App.DBRepository.WithTx(tx).SaveOtpRouteTypeSMS(ctx, dataSMS)
 		if err != nil {
 			tx.Rollback(ctx)
-			return err
+			return time.Time{}, err
 		}
 	case "EMAIL":
 		dataEmail := repository.SaveOtpRouteTypeEmailParams{
@@ -166,13 +166,13 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) error {
 		_, err = r.App.DBRepository.WithTx(tx).SaveOtpRouteTypeEmail(ctx, dataEmail)
 		if err != nil {
 			tx.Rollback(ctx)
-			return err
+			return time.Time{}, err
 		}
 	default:
 		tx.Rollback(ctx)
-		return errors.New("invalid route type")
+		return time.Time{}, errors.New("invalid route type")
 	}
 
 	tx.Commit(ctx)
-	return nil
+	return otp.ExpiredAt.Time, nil
 }

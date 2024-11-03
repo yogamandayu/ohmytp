@@ -11,7 +11,7 @@ type RequestOtpRequestContract struct {
 	RouteType  string `json:"route_type"`
 	RouteValue string `json:"route_value"`
 	Purpose    string `json:"purpose"`
-	Length     int    `json:"length"`
+	Length     uint16 `json:"length"`
 	Expiration int    `json:"expiration"`
 }
 

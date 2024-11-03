@@ -64,7 +64,7 @@ func TestRequestOtp(t *testing.T) {
 				workflow.WithRouteSMS(scenario.phone)
 			}
 
-			err := workflow.Request(context.Background())
+			_, err := workflow.Request(context.Background())
 			if !scenario.isErr {
 				require.NoError(t, err)
 			} else {
