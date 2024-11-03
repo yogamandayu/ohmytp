@@ -6,17 +6,25 @@ import (
 )
 
 type SuccessResponse struct {
-	Data    interface{} `json:"data"`
-	Message string      `json:"message"`
+	Data           interface{} `json:"data"`
+	Message        string      `json:"message"`
+	HTTPStatusCode int         `json:"-"`
 }
 
-func NewHTTPSuccessResponse(w http.ResponseWriter, code int, data interface{}, message string) {
-	res := &SuccessResponse{
+func NewHTTPSuccessResponse(data interface{}, message string) *SuccessResponse {
+	return &SuccessResponse{
 		Data:    data,
 		Message: message,
 	}
-	b, _ := json.Marshal(res)
-	w.Write(b)
-	w.WriteHeader(code)
-	return
+}
+
+func (s *SuccessResponse) WithStatusCode(code int) *SuccessResponse {
+	s.HTTPStatusCode = code
+	return s
+}
+
+func (s *SuccessResponse) AsJSON(w http.ResponseWriter) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(s.HTTPStatusCode)
+	_ = json.NewEncoder(w).Encode(s)
 }

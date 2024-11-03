@@ -2,7 +2,6 @@ package otp
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"time"
 
@@ -22,7 +21,9 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	var payload RequestOtpRequestContract
 	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
-		log.Fatal(err)
+		h.app.Log.Warn(err.Error())
+		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusBadRequest).AsJSON(w)
+		return
 	}
 
 	rq := requester.NewRequester().SetMetadataFromREST(r)
@@ -40,7 +41,5 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.app.Log.Error("error : %v", err)
 	}
-
-	w.Header().Add("Content-Type", "application/json")
-	response.NewHTTPSuccessResponse(w, http.StatusCreated, nil, "Success")
+	response.NewHTTPSuccessResponse(nil, "Success").WithStatusCode(http.StatusCreated).AsJSON(w)
 }
