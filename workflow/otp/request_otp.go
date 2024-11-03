@@ -5,6 +5,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/yogamandayu/ohmytp/storage/cache"
+
 	"github.com/yogamandayu/ohmytp/util"
 
 	"github.com/google/uuid"
@@ -172,7 +174,12 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) (expiredAt time.Time, 
 		tx.Rollback(ctx)
 		return time.Time{}, errors.New("invalid route type")
 	}
-
 	tx.Commit(ctx)
+
+	if r.App.Redis != nil {
+		otpCache := cache.NewOTPCache(r.App.Redis)
+		otpCache.SetRequestOTP(ctx, r.Requester.Metadata.RequestID, generatedOtp, r.Expiration)
+	}
+
 	return otp.ExpiredAt.Time, nil
 }
