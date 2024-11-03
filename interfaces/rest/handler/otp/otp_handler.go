@@ -39,7 +39,7 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	}
 	expiredAt, err := workflow.Request(ctx)
 	if err != nil {
-		h.app.Log.Error("error : %v", err)
+		h.app.Log.Error(err.Error())
 		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusBadRequest).AsJSON(w)
 		return
 	}
