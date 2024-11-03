@@ -34,17 +34,19 @@ func (r *RequestOtpWorkflow) SetOtp(otp *entity.Otp) *RequestOtpWorkflow {
 	return r
 }
 
-// WithRouteEmail is to set request OTP route type to email.
+// SetOtpLength is to set generated OTP length.
 func (r *RequestOtpWorkflow) SetOtpLength(length uint16) *RequestOtpWorkflow {
 	r.OtpLength = length
 	return r
 }
 
+// SetOtpExpiration is to set OTP expiration time.
 func (r *RequestOtpWorkflow) SetOtpExpiration(expiration time.Duration) *RequestOtpWorkflow {
 	r.Expiration = expiration
 	return r
 }
 
+// WithRouteEmail is to set request OTP route type to email.
 func (r *RequestOtpWorkflow) WithRouteEmail(email string) error {
 	if r.Otp == nil {
 		return errors.New("missing otp")
