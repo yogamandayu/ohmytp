@@ -40,7 +40,7 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	resOtpEntity, err := workflow.Request(ctx)
 	if err != nil {
 		h.app.Log.Error(err.Error())
-		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusBadRequest).AsJSON(w)
+		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusInternalServerError).AsJSON(w)
 		return
 	}
 	response.NewHTTPSuccessResponse(RequestOtpResponseContract{
@@ -67,7 +67,7 @@ func (h *Handler) Confirm(w http.ResponseWriter, r *http.Request) {
 	err = workflow.Confirm(ctx)
 	if err != nil {
 		h.app.Log.Error(err.Error())
-		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusBadRequest).AsJSON(w)
+		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusUnprocessableEntity).AsJSON(w)
 		return
 	}
 	response.NewHTTPSuccessResponse(nil, "Success").WithStatusCode(http.StatusCreated).AsJSON(w)
