@@ -13,3 +13,14 @@ type ConfirmOtpWorkflow struct {
 	App       *app.App
 	Requester *requester.Requester
 }
+
+// SetOtp is to set entity.Otp to RequestOtpWorkflow.
+func (c *ConfirmOtpWorkflow) SetOtp(otp *entity.Otp) *ConfirmOtpWorkflow {
+	c.Otp = otp
+	return c
+}
+
+func (c *ConfirmOtpWorkflow) Confirm() error {
+
+	return nil
+}
