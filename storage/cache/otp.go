@@ -2,7 +2,9 @@ package cache
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/yogamandayu/ohmytp/domain/entity"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -20,16 +22,24 @@ func NewOTPCache(redis *redis.Client) *OTPCache {
 	}
 }
 
-// SetRequestOTP is to save request otp cache.
-func (o *OTPCache) SetRequestOTP(ctx context.Context, requestID, otp string, ttl time.Duration) {
+// SetOTP is to save request otp cache.
+func (o *OTPCache) SetOTP(ctx context.Context, requestID string, otp entity.Otp, ttl time.Duration) {
 	key := fmt.Sprintf("otp:%s", requestID)
-	o.redis.Set(ctx, key, otp, ttl)
+	b, _ := json.Marshal(otp)
+	o.redis.Set(ctx, key, string(b), ttl)
 }
 
-// GetRequestOTP is to get request otp cache.
-func (o *OTPCache) GetRequestOTP(ctx context.Context, requestID string) (val any) {
+// GetOTP is to get request otp cache.
+func (o *OTPCache) GetOTP(ctx context.Context, requestID string) (otp entity.Otp) {
 	key := fmt.Sprintf("otp:%s", requestID)
 	cmd := o.redis.Get(ctx, key)
-	val = cmd.Val()
+	val := cmd.Val()
+	_ = json.Unmarshal([]byte(val), &otp)
 	return
+}
+
+// InvalidateOTP is to invalidate request otp cache.
+func (o *OTPCache) InvalidateOTP(ctx context.Context, requestID string) {
+	key := fmt.Sprintf("otp:%s", requestID)
+	o.redis.Del(ctx, key)
 }

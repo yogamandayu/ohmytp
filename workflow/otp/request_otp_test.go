@@ -48,8 +48,8 @@ func TestRequestOtp(t *testing.T) {
 	}
 	for _, scenario := range scenarios {
 		t.Run(scenario.description, func(t *testing.T) {
-			requester := requester.NewRequester().SetMetadataFromREST(tests.FakeHTTPRequest())
-			workflow := otp.NewRequestOtpWorkflow(requester, ts.App)
+			rqs := requester.NewRequester().SetMetadataFromREST(tests.FakeHTTPRequest())
+			workflow := otp.NewRequestOtpWorkflow(rqs, ts.App)
 			workflow.SetOtp(&entity.Otp{
 				ID:        uuid.NewString(),
 				RequestID: uuid.NewString(),
@@ -59,9 +59,9 @@ func TestRequestOtp(t *testing.T) {
 			})
 			switch scenario.routeType {
 			case consts.EmailRouteType.ToString():
-				workflow.WithRouteEmail(scenario.email)
+				_ = workflow.WithRouteEmail(scenario.email)
 			case consts.SMSRouteType.ToString():
-				workflow.WithRouteSMS(scenario.phone)
+				_ = workflow.WithRouteSMS(scenario.phone)
 			}
 
 			_, err := workflow.Request(context.Background())
@@ -72,5 +72,4 @@ func TestRequestOtp(t *testing.T) {
 			}
 		})
 	}
-
 }

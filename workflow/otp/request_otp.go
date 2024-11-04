@@ -81,27 +81,27 @@ func (r *RequestOtpWorkflow) WithRouteSMS(phone string) error {
 }
 
 // NewRequestOtpWorkflow is a constructor.
-func NewRequestOtpWorkflow(requester *requester.Requester, app *app.App) *RequestOtpWorkflow {
+func NewRequestOtpWorkflow(rqs *requester.Requester, app *app.App) *RequestOtpWorkflow {
 	return &RequestOtpWorkflow{
 		App:        app,
-		Requester:  requester,
+		Requester:  rqs,
 		OtpLength:  5,
 		Expiration: 2 * time.Minute,
 	}
 }
 
 // Request is requesting OTP.
-func (r *RequestOtpWorkflow) Request(ctx context.Context) (expiredAt time.Time, err error) {
+func (r *RequestOtpWorkflow) Request(ctx context.Context) (otp entity.Otp, err error) {
 
 	generatedOtp := util.RandomStringWithSample(int(r.OtpLength), "0123456789")
 	uid, _ := uuid.NewV7()
 
 	tx, err := r.App.DB.Begin(ctx)
 	if err != nil {
-		return time.Time{}, err
+		return entity.Otp{}, err
 	}
 
-	dataOtp := repository.SaveOtpParams{
+	saveOtpParams := repository.SaveOtpParams{
 		ID:        uid.String(),
 		RequestID: r.Requester.Metadata.RequestID,
 		RouteType: pgtype.Text{
@@ -133,18 +133,18 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) (expiredAt time.Time, 
 			String: r.Requester.Metadata.UserAgent,
 		},
 	}
-	otp, err := r.App.DBRepository.WithTx(tx).SaveOtp(ctx, dataOtp)
+	saveOtpRes, err := r.App.DBRepository.WithTx(tx).SaveOtp(ctx, saveOtpParams)
 	if err != nil {
-		tx.Rollback(ctx)
-		return time.Time{}, err
+		_ = tx.Rollback(ctx)
+		return entity.Otp{}, err
 	}
 
 	switch r.Otp.RouteType {
 	case "SMS":
 		dataSMS := repository.SaveOtpRouteTypeSMSParams{
 			ID:        uid.String(),
-			RequestID: dataOtp.RequestID,
-			OtpID:     dataOtp.ID,
+			RequestID: r.Requester.Metadata.RequestID,
+			OtpID:     saveOtpRes.ID,
 			Phone: pgtype.Text{
 				String: r.RouteTypeSMS.Phone,
 				Valid:  true,
@@ -152,14 +152,14 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) (expiredAt time.Time, 
 		}
 		_, err = r.App.DBRepository.WithTx(tx).SaveOtpRouteTypeSMS(ctx, dataSMS)
 		if err != nil {
-			tx.Rollback(ctx)
-			return time.Time{}, err
+			_ = tx.Rollback(ctx)
+			return entity.Otp{}, err
 		}
 	case "EMAIL":
 		dataEmail := repository.SaveOtpRouteTypeEmailParams{
 			ID:        uid.String(),
-			RequestID: dataOtp.RequestID,
-			OtpID:     dataOtp.ID,
+			RequestID: r.Requester.Metadata.RequestID,
+			OtpID:     saveOtpRes.ID,
 			Email: pgtype.Text{
 				String: r.RouteTypeEmail.Email,
 				Valid:  true,
@@ -167,19 +167,24 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) (expiredAt time.Time, 
 		}
 		_, err = r.App.DBRepository.WithTx(tx).SaveOtpRouteTypeEmail(ctx, dataEmail)
 		if err != nil {
-			tx.Rollback(ctx)
-			return time.Time{}, err
+			_ = tx.Rollback(ctx)
+			return entity.Otp{}, err
 		}
 	default:
-		tx.Rollback(ctx)
-		return time.Time{}, errors.New("invalid route type")
+		_ = tx.Rollback(ctx)
+		return entity.Otp{}, errors.New("otp.error.request_otp.invalid_route_type")
 	}
-	tx.Commit(ctx)
+	_ = tx.Commit(ctx)
 
 	if r.App.Redis != nil {
-		otpCache := cache.NewOTPCache(r.App.Redis)
-		otpCache.SetRequestOTP(ctx, r.Requester.Metadata.RequestID, generatedOtp, r.Expiration)
-	}
+		var otp entity.Otp
 
-	return otp.ExpiredAt.Time, nil
+		otp.SetWithOtpRepository(saveOtpRes)
+
+		otpCache := cache.NewOTPCache(r.App.Redis)
+		otpCache.SetOTP(ctx, r.Requester.Metadata.RequestID, otp, r.Expiration+(30*time.Second))
+	}
+	otp.SetWithOtpRepository(saveOtpRes)
+
+	return otp, nil
 }

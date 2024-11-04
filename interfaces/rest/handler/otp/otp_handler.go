@@ -37,13 +37,13 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	case consts.SMSRouteType.ToString():
 		_ = workflow.WithRouteSMS(payload.RouteValue)
 	}
-	expiredAt, err := workflow.Request(ctx)
+	resOtpEntity, err := workflow.Request(ctx)
 	if err != nil {
 		h.app.Log.Error(err.Error())
 		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusBadRequest).AsJSON(w)
 		return
 	}
 	response.NewHTTPSuccessResponse(RequestOtpResponseContract{
-		ExpiredAt: expiredAt.Format(time.RFC3339),
+		ExpiredAt: resOtpEntity.ExpiredAt.Time.Format(time.RFC3339),
 	}, "Success").WithStatusCode(http.StatusCreated).AsJSON(w)
 }

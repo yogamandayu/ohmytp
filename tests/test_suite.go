@@ -44,7 +44,7 @@ func (t *TestSuite) LoadApp() {
 
 	slogger := slog.NewSlog()
 
-	t.App = app.NewApp().WithOptions(app.WithDB(dbConn), app.WithRedis(redisConn), app.WithSlog(slogger))
+	t.App = app.NewApp().WithOptions(app.WithDB(dbConn), app.WithRedis(redisConn), app.WithSlog(slogger), app.WithDBRepository(dbConn))
 }
 
 func (t *TestSuite) Clean() {

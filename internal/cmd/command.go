@@ -51,7 +51,7 @@ func (cmd *Command) Commands() cli.Commands {
 
 				slogger := slog.NewSlog()
 
-				a := app.NewApp().WithOptions(app.WithDB(dbConn), app.WithRedis(redisConn), app.WithSlog(slogger))
+				a := app.NewApp().WithOptions(app.WithDB(dbConn), app.WithRedis(redisConn), app.WithSlog(slogger), app.WithDBRepository(dbConn))
 
 				r := rest.NewREST(a)
 				opts := []rest.Option{

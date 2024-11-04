@@ -64,7 +64,7 @@ func TestFindOtp(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, resSave)
 
-	resFind, err := repo.FindOtpByID(ctx, resSave.ID)
+	resFind, err := repo.FindOtp(ctx, resSave.ID)
 	require.NoError(t, err)
 	assert.Equal(t, fakeOtp.Code.String, resFind.Code.String)
 }
@@ -95,7 +95,7 @@ func TestUpdateOtp(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, otp)
 
-	otp1, err := repo.FindOtpByID(ctx, otp.ID)
+	otp1, err := repo.FindOtp(ctx, otp.ID)
 	require.NoError(t, err)
 	assert.Equal(t, otp.Code.String, otp1.Code.String)
 
