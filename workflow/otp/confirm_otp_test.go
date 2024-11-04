@@ -2,6 +2,9 @@ package otp_test
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -11,8 +14,6 @@ import (
 	"github.com/yogamandayu/ohmytp/tests"
 	"github.com/yogamandayu/ohmytp/util"
 	"github.com/yogamandayu/ohmytp/workflow/otp"
-	"testing"
-	"time"
 )
 
 func TestConfirmOtp(t *testing.T) {

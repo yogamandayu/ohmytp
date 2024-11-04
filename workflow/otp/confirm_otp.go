@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
+
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/yogamandayu/ohmytp/app"
 	"github.com/yogamandayu/ohmytp/domain/entity"
@@ -11,7 +13,6 @@ import (
 	"github.com/yogamandayu/ohmytp/storage/cache"
 	"github.com/yogamandayu/ohmytp/storage/repository"
 	"github.com/yogamandayu/ohmytp/util"
-	"time"
 )
 
 // ConfirmOtpWorkflow is request OTP workflow.
