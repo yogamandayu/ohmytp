@@ -59,6 +59,10 @@ func (c *ConfirmOtpWorkflow) Confirm(ctx context.Context) error {
 		otpEntity.SetWithFindOtpRepositoryByRequestID(findOtpRes)
 	}
 
+	if otpEntity.ConfirmedAt.Valid {
+		return errors.New("otp.error.confirm_otp.otp_already_confirmed")
+	}
+
 	if int(otpEntity.Attempt) >= util.GetEnvAsInt("MAX_CONFIRM_OTP_ATTEMPT", 3) {
 		return errors.New("otp.error.confirm_otp.max_attempt_reached")
 	}
