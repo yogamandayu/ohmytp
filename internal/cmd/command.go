@@ -65,7 +65,7 @@ func (cmd *Command) Commands() cli.Commands {
 		},
 		{
 			Name:    "db:migrate",
-			Aliases: []string{"m"},
+			Aliases: []string{"dbm"},
 			Usage:   "Run database migration with tern",
 			Action: func(cCtx *cli.Context) error {
 
@@ -106,8 +106,27 @@ func (cmd *Command) Commands() cli.Commands {
 			},
 		},
 		{
+			Name:    "db:generate",
+			Aliases: []string{"dbg"},
+			Usage:   "Run database migration with tern",
+			Action: func(cCtx *cli.Context) error {
+				err := exec.Command("cd", fmt.Sprintf("%s", util.RootDir())).Run()
+				if err != nil {
+					log.Fatal(err)
+				}
+				err = exec.Command("sqlc", "generate").Run()
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				log.Println("Database generate successfully!")
+
+				return nil
+			},
+		},
+		{
 			Name:    "git:pre-commit",
-			Aliases: []string{"pc"},
+			Aliases: []string{"hooks"},
 			Usage:   "Install pre-commit",
 			Action: func(cCtx *cli.Context) error {
 				err := exec.Command("cp", fmt.Sprintf("%s/.githooks/pre-commit", util.RootDir()), fmt.Sprintf("%s/.git/hooks/pre-commit", util.RootDir())).Run()
