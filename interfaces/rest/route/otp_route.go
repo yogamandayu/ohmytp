@@ -13,4 +13,5 @@ func OTPRoute(mux *http.ServeMux, app *app.App) {
 
 	groupV1 := "/api/v1"
 	mux.HandleFunc(Group("POST", groupV1, "otp/request"), otpHandler.Request)
+	mux.HandleFunc(Group("POST", groupV1, "otp/confirm"), otpHandler.Confirm)
 }

@@ -47,3 +47,28 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 		ExpiredAt: resOtpEntity.ExpiredAt.Time.Format(time.RFC3339),
 	}, "Success").WithStatusCode(http.StatusCreated).AsJSON(w)
 }
+
+// Confirm is request otp confirm handler.
+func (h *Handler) Confirm(w http.ResponseWriter, r *http.Request) {
+	ctx, _ := context.WithTimeout(r.Context(), 5*time.Second)
+
+	var payload ConfirmOtpRequestContract
+	err := json.NewDecoder(r.Body).Decode(&payload)
+	if err != nil {
+		h.app.Log.Warn(err.Error())
+		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusBadRequest).AsJSON(w)
+		return
+	}
+
+	rq := requester.NewRequester().SetMetadataFromREST(r)
+	workflow := otp.NewConfirmOtpWorkflow(rq, h.app)
+
+	workflow.SetOtpCode(payload.Code)
+	err = workflow.Confirm(ctx)
+	if err != nil {
+		h.app.Log.Error(err.Error())
+		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusBadRequest).AsJSON(w)
+		return
+	}
+	response.NewHTTPSuccessResponse(nil, "Success").WithStatusCode(http.StatusCreated).AsJSON(w)
+}

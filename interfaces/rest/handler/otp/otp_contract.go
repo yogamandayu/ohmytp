@@ -27,3 +27,8 @@ func (r RequestOtpRequestContract) TransformToOtpEntity() entity.Otp {
 type RequestOtpResponseContract struct {
 	ExpiredAt string `json:"expired_at"`
 }
+
+// ConfirmOtpRequestContract is request otp request contract.
+type ConfirmOtpRequestContract struct {
+	Code string `json:"code"`
+}
