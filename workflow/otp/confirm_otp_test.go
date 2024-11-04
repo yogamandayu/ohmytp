@@ -24,42 +24,53 @@ func TestConfirmOtp(t *testing.T) {
 	scenarios := []struct {
 		id           string
 		description  string
-		requestID    string
+		otp          entity.Otp
 		totalAttempt int
 		expiration   time.Duration
 		isErr        bool
 		errMsg       string
-		code         string
 	}{
 		{
-			id:           uuid.NewString(),
-			description:  "Positive case to confirm otp with valid otp",
-			requestID:    uuid.NewString(),
+			id:          uuid.NewString(),
+			description: "Positive case to confirm otp with valid otp",
+			otp: entity.Otp{
+				Identifier: uuid.NewString(),
+				Purpose:    "TEST",
+			},
 			totalAttempt: 1,
 			isErr:        false,
 		},
 		{
-			id:           uuid.NewString(),
-			description:  "Negative case to confirm otp with invalid otp",
-			requestID:    uuid.NewString(),
+			id:          uuid.NewString(),
+			description: "Negative case to confirm otp with invalid otp",
+			otp: entity.Otp{
+				Identifier: uuid.NewString(),
+				Purpose:    "TEST",
+				Code:       "INVALID",
+			},
 			totalAttempt: 1,
 			isErr:        true,
 			errMsg:       "otp.error.confirm_otp.invalid_otp_code",
-			code:         "INVALID",
 		},
 		{
-			id:           uuid.NewString(),
-			description:  "Negative case to confirm otp with invalid otp and try again after reach max attempt",
-			requestID:    uuid.NewString(),
+			id:          uuid.NewString(),
+			description: "Negative case to confirm otp with invalid otp and try again after reach max attempt",
+			otp: entity.Otp{
+				Identifier: uuid.NewString(),
+				Purpose:    "TEST",
+				Code:       "INVALID",
+			},
 			totalAttempt: util.GetEnvAsInt("MAX_CONFIRM_OTP_ATTEMPT", 3) + 1,
 			isErr:        true,
 			errMsg:       "otp.error.confirm_otp.max_attempt_reached",
-			code:         "INVALID",
 		},
 		{
-			id:           uuid.NewString(),
-			description:  "Negative case to confirm otp with valid otp but already expired",
-			requestID:    uuid.NewString(),
+			id:          uuid.NewString(),
+			description: "Negative case to confirm otp with valid otp but already expired",
+			otp: entity.Otp{
+				Identifier: uuid.NewString(),
+				Purpose:    "TEST",
+			},
 			expiration:   1 * time.Second,
 			totalAttempt: 1,
 			isErr:        true,
@@ -69,7 +80,7 @@ func TestConfirmOtp(t *testing.T) {
 	for _, scenario := range scenarios {
 		t.Run(scenario.description, func(t *testing.T) {
 			rqs := requester.NewRequester().SetMetadataFromREST(tests.FakeHTTPRequest())
-			rqs.Metadata.RequestID = scenario.requestID
+			rqs.Metadata.RequestID = uuid.NewString()
 			requestWorkflow := otp.NewRequestOtpWorkflow(rqs, ts.App)
 			requestWorkflow.SetOtp(&entity.Otp{
 				RouteType: consts.EmailRouteType.ToString(),
@@ -85,10 +96,11 @@ func TestConfirmOtp(t *testing.T) {
 
 			for i := range scenario.totalAttempt {
 				confirmWorkflow := otp.NewConfirmOtpWorkflow(rqs, ts.App)
-				confirmWorkflow.SetOtpCode(resOtpEntity.Code)
-				if scenario.code != "" {
-					confirmWorkflow.SetOtpCode(scenario.code)
+				if scenario.otp.Code == "" {
+					scenario.otp.Code = resOtpEntity.Code
 				}
+
+				confirmWorkflow.SetOtp(&scenario.otp)
 
 				if scenario.expiration != 0 {
 					duration := scenario.expiration + (1 * time.Second)

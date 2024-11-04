@@ -8,6 +8,7 @@ import (
 
 // RequestOtpRequestContract is request otp request contract.
 type RequestOtpRequestContract struct {
+	Identifier string `json:"identifier"`
 	RouteType  string `json:"route_type"`
 	RouteValue string `json:"route_value"`
 	Purpose    string `json:"purpose"`
@@ -18,8 +19,9 @@ type RequestOtpRequestContract struct {
 // TransformToOtpEntity is to transform to otp entity.
 func (r RequestOtpRequestContract) TransformToOtpEntity() entity.Otp {
 	return entity.Otp{
-		Purpose:   r.Purpose,
-		RouteType: strings.ToUpper(r.RouteType),
+		Purpose:    r.Purpose,
+		Identifier: r.Identifier,
+		RouteType:  strings.ToUpper(r.RouteType),
 	}
 }
 
@@ -30,5 +32,16 @@ type RequestOtpResponseContract struct {
 
 // ConfirmOtpRequestContract is request otp request contract.
 type ConfirmOtpRequestContract struct {
-	Code string `json:"code"`
+	Identifier string `json:"identifier"`
+	Code       string `json:"code"`
+	Purpose    string `json:"purpose"`
+}
+
+// TransformToOtpEntity is to transform to otp entity.
+func (r ConfirmOtpRequestContract) TransformToOtpEntity() entity.Otp {
+	return entity.Otp{
+		Identifier: r.Identifier,
+		Code:       r.Code,
+		Purpose:    r.Purpose,
+	}
 }

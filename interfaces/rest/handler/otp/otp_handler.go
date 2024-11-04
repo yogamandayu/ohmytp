@@ -28,8 +28,8 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 
 	rq := requester.NewRequester().SetMetadataFromREST(r)
 	workflow := otp.NewRequestOtpWorkflow(rq, h.app)
-
 	otpEntity := payload.TransformToOtpEntity()
+
 	workflow.SetOtp(&otpEntity).SetOtpExpiration(time.Duration(payload.Expiration) * time.Second).SetOtpLength(payload.Length)
 	switch otpEntity.RouteType {
 	case consts.EmailRouteType.ToString():
@@ -62,8 +62,9 @@ func (h *Handler) Confirm(w http.ResponseWriter, r *http.Request) {
 
 	rq := requester.NewRequester().SetMetadataFromREST(r)
 	workflow := otp.NewConfirmOtpWorkflow(rq, h.app)
+	otpEntity := payload.TransformToOtpEntity()
 
-	workflow.SetOtpCode(payload.Code)
+	workflow.SetOtp(&otpEntity)
 	err = workflow.Confirm(ctx)
 	if err != nil {
 		h.app.Log.Error(err.Error())

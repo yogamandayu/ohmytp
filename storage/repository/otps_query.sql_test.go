@@ -22,8 +22,10 @@ func TestSaveOtp(t *testing.T) {
 	otp, err := repo.SaveOtp(ctx, repository.SaveOtpParams{
 		ID:            fakeOtp.ID,
 		RequestID:     fakeOtp.RequestID,
+		Identifier:    fakeOtp.Identifier,
 		RouteType:     fakeOtp.RouteType,
 		Code:          fakeOtp.Code,
+		Purpose:       fakeOtp.Purpose,
 		RequestedAt:   fakeOtp.RequestedAt,
 		ConfirmedAt:   fakeOtp.ConfirmedAt,
 		ExpiredAt:     fakeOtp.ExpiredAt,

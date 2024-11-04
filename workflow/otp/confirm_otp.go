@@ -17,15 +17,15 @@ import (
 
 // ConfirmOtpWorkflow is request OTP workflow.
 type ConfirmOtpWorkflow struct {
-	OtpCode string
+	Otp *entity.Otp
 
 	App       *app.App
 	Requester *requester.Requester
 }
 
-// SetOtpCode is to set otp code to RequestOtpWorkflow.
-func (c *ConfirmOtpWorkflow) SetOtpCode(code string) *ConfirmOtpWorkflow {
-	c.OtpCode = code
+// SetOtp is to set entity.Otp to ConfirmOtpWorkflow.
+func (c *ConfirmOtpWorkflow) SetOtp(otp *entity.Otp) *ConfirmOtpWorkflow {
+	c.Otp = otp
 	return c
 }
 
@@ -47,12 +47,22 @@ func (c *ConfirmOtpWorkflow) Confirm(ctx context.Context) error {
 		otpEntity = otpCache.GetOTP(ctx, c.Requester.Metadata.RequestID)
 	}
 	if otpEntity.Code == "" {
-		var findOtpRes repository.FindOtpByRequestIDRow
-		findOtpRes, err = c.App.DBRepository.FindOtpByRequestID(ctx, c.Requester.Metadata.RequestID)
+		var findOtpRes repository.FindOtpByIdentifierAndPurposeRow
+		findOtpParams := repository.FindOtpByIdentifierAndPurposeParams{
+			Identifier: pgtype.Text{
+				String: c.Otp.Identifier,
+				Valid:  true,
+			},
+			Purpose: pgtype.Text{
+				String: c.Otp.Purpose,
+				Valid:  true,
+			},
+		}
+		findOtpRes, err = c.App.DBRepository.FindOtpByIdentifierAndPurpose(ctx, findOtpParams)
 		if err != nil {
 			return err
 		}
-		otpEntity.SetWithFindOtpRepositoryByRequestID(findOtpRes)
+		otpEntity.SetWithFindOtpRepositoryByIdentifierAndPurpose(findOtpRes)
 	}
 
 	if otpEntity.ConfirmedAt.Valid {
@@ -73,7 +83,7 @@ func (c *ConfirmOtpWorkflow) Confirm(ctx context.Context) error {
 		return err
 	}
 
-	if otpEntity.Code != c.OtpCode {
+	if otpEntity.Code != c.Otp.Code {
 		err = errors.New("otp.error.confirm_otp.invalid_otp_code")
 		c.UpdateOTP(ctx, otpEntity, err)
 		return err
@@ -116,5 +126,4 @@ func (c *ConfirmOtpWorkflow) UpdateOTP(ctx context.Context, otpEntity entity.Otp
 			otpCache.SetOTP(ctx, c.Requester.Metadata.RequestID, otp, time.Duration(updateOtpAttemptRes.ExpiredAt.Time.Second()-time.Now().Second())+(30*time.Second))
 		}
 	}
-	return
 }

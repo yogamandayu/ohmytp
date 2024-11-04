@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS public.otps (
     id varchar(36) NOT NULL PRIMARY KEY,
     row_id SERIAL UNIQUE,
     request_id varchar(36) NOT NULL,
+    identifier varchar(255),
     route_type varchar(20),
     code varchar(20),
     purpose varchar(100),

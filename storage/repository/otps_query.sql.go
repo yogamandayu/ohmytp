@@ -14,6 +14,7 @@ import (
 const findOtp = `-- name: FindOtp :one
 SELECT id,
        request_id,
+       identifier,
        route_type,
        code,
        purpose,
@@ -35,6 +36,7 @@ WHERE id = $1
 type FindOtpRow struct {
 	ID            string
 	RequestID     string
+	Identifier    pgtype.Text
 	RouteType     pgtype.Text
 	Code          pgtype.Text
 	Purpose       pgtype.Text
@@ -57,6 +59,7 @@ func (q *Queries) FindOtp(ctx context.Context, id string) (FindOtpRow, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.RequestID,
+		&i.Identifier,
 		&i.RouteType,
 		&i.Code,
 		&i.Purpose,
@@ -75,9 +78,10 @@ func (q *Queries) FindOtp(ctx context.Context, id string) (FindOtpRow, error) {
 	return i, err
 }
 
-const findOtpByRequestID = `-- name: FindOtpByRequestID :one
+const findOtpByIdentifierAndPurpose = `-- name: FindOtpByIdentifierAndPurpose :one
 SELECT id,
        request_id,
+       identifier,
        route_type,
        code,
        purpose,
@@ -93,12 +97,19 @@ SELECT id,
        created_at,
        updated_at
 FROM public.otps
-WHERE request_id = $1
+WHERE identifier = $1
+  AND purpose = $2
 `
 
-type FindOtpByRequestIDRow struct {
+type FindOtpByIdentifierAndPurposeParams struct {
+	Identifier pgtype.Text
+	Purpose    pgtype.Text
+}
+
+type FindOtpByIdentifierAndPurposeRow struct {
 	ID            string
 	RequestID     string
+	Identifier    pgtype.Text
 	RouteType     pgtype.Text
 	Code          pgtype.Text
 	Purpose       pgtype.Text
@@ -115,12 +126,13 @@ type FindOtpByRequestIDRow struct {
 	UpdatedAt     pgtype.Timestamptz
 }
 
-func (q *Queries) FindOtpByRequestID(ctx context.Context, requestID string) (FindOtpByRequestIDRow, error) {
-	row := q.db.QueryRow(ctx, findOtpByRequestID, requestID)
-	var i FindOtpByRequestIDRow
+func (q *Queries) FindOtpByIdentifierAndPurpose(ctx context.Context, arg FindOtpByIdentifierAndPurposeParams) (FindOtpByIdentifierAndPurposeRow, error) {
+	row := q.db.QueryRow(ctx, findOtpByIdentifierAndPurpose, arg.Identifier, arg.Purpose)
+	var i FindOtpByIdentifierAndPurposeRow
 	err := row.Scan(
 		&i.ID,
 		&i.RequestID,
+		&i.Identifier,
 		&i.RouteType,
 		&i.Code,
 		&i.Purpose,
@@ -140,7 +152,7 @@ func (q *Queries) FindOtpByRequestID(ctx context.Context, requestID string) (Fin
 }
 
 const saveOtp = `-- name: SaveOtp :one
-INSERT INTO public.otps (id, request_id, route_type, code,
+INSERT INTO public.otps (id, request_id, identifier, route_type, code,
                          purpose, requested_at, confirmed_at, expired_at,
                          attempt, last_attempt_at,
                          resend_attempt, resend_at,
@@ -149,13 +161,14 @@ INSERT INTO public.otps (id, request_id, route_type, code,
 VALUES ($1, $2, $3, $4,
         $5, $6, $7,
         $8, $9, $10, $11,
-        $12, $13, $14,
-        NOW(), NOW()) RETURNING id, row_id, request_id, route_type, code, purpose, requested_at, confirmed_at, expired_at, attempt, last_attempt_at, resend_attempt, resend_at, ip_address, user_agent, created_at, updated_at, is_deleted, deleted_at
+        $12, $13, $14, $15,
+        NOW(), NOW()) RETURNING id, row_id, request_id, identifier, route_type, code, purpose, requested_at, confirmed_at, expired_at, attempt, last_attempt_at, resend_attempt, resend_at, ip_address, user_agent, created_at, updated_at, is_deleted, deleted_at
 `
 
 type SaveOtpParams struct {
 	ID            string
 	RequestID     string
+	Identifier    pgtype.Text
 	RouteType     pgtype.Text
 	Code          pgtype.Text
 	Purpose       pgtype.Text
@@ -174,6 +187,7 @@ func (q *Queries) SaveOtp(ctx context.Context, arg SaveOtpParams) (Otp, error) {
 	row := q.db.QueryRow(ctx, saveOtp,
 		arg.ID,
 		arg.RequestID,
+		arg.Identifier,
 		arg.RouteType,
 		arg.Code,
 		arg.Purpose,
@@ -192,6 +206,7 @@ func (q *Queries) SaveOtp(ctx context.Context, arg SaveOtpParams) (Otp, error) {
 		&i.ID,
 		&i.RowID,
 		&i.RequestID,
+		&i.Identifier,
 		&i.RouteType,
 		&i.Code,
 		&i.Purpose,
@@ -215,20 +230,21 @@ func (q *Queries) SaveOtp(ctx context.Context, arg SaveOtpParams) (Otp, error) {
 const updateOtp = `-- name: UpdateOtp :one
 UPDATE public.otps
 SET request_id      = $2,
-    route_type      = $3,
-    code            = $4,
-    purpose         = $5,
-    requested_at    = $6,
-    confirmed_at    = $7,
-    expired_at      = $8,
-    attempt         = $9,
-    last_attempt_at = $10,
-    resend_attempt  = $11,
-    resend_at       = $12,
-    ip_address      = $13,
-    user_agent      = $14,
+    identifier      = $3,
+    route_type      = $4,
+    code            = $5,
+    purpose         = $6,
+    requested_at    = $7,
+    confirmed_at    = $8,
+    expired_at      = $9,
+    attempt         = $10,
+    last_attempt_at = $11,
+    resend_attempt  = $12,
+    resend_at       = $13,
+    ip_address      = $14,
+    user_agent      = $15,
     updated_at      = NOW()
-WHERE id = $1 RETURNING id, request_id, route_type, code,
+WHERE id = $1 RETURNING id, request_id, identifier, route_type, code,
                          purpose, requested_at, confirmed_at, expired_at,
                          attempt, last_attempt_at,
                          resend_attempt, resend_at,
@@ -239,6 +255,7 @@ WHERE id = $1 RETURNING id, request_id, route_type, code,
 type UpdateOtpParams struct {
 	ID            string
 	RequestID     string
+	Identifier    pgtype.Text
 	RouteType     pgtype.Text
 	Code          pgtype.Text
 	Purpose       pgtype.Text
@@ -256,6 +273,7 @@ type UpdateOtpParams struct {
 type UpdateOtpRow struct {
 	ID            string
 	RequestID     string
+	Identifier    pgtype.Text
 	RouteType     pgtype.Text
 	Code          pgtype.Text
 	Purpose       pgtype.Text
@@ -276,6 +294,7 @@ func (q *Queries) UpdateOtp(ctx context.Context, arg UpdateOtpParams) (UpdateOtp
 	row := q.db.QueryRow(ctx, updateOtp,
 		arg.ID,
 		arg.RequestID,
+		arg.Identifier,
 		arg.RouteType,
 		arg.Code,
 		arg.Purpose,
@@ -293,6 +312,7 @@ func (q *Queries) UpdateOtp(ctx context.Context, arg UpdateOtpParams) (UpdateOtp
 	err := row.Scan(
 		&i.ID,
 		&i.RequestID,
+		&i.Identifier,
 		&i.RouteType,
 		&i.Code,
 		&i.Purpose,
@@ -317,7 +337,7 @@ SET attempt         = $2,
     last_attempt_at = $3,
     confirmed_at    = $4,
     updated_at      = NOW()
-WHERE id = $1 RETURNING id, request_id, route_type, code,
+WHERE id = $1 RETURNING id, request_id, identifier, route_type, code,
                          purpose, requested_at, confirmed_at, expired_at,
                          attempt, last_attempt_at,
                          resend_attempt, resend_at,
@@ -335,6 +355,7 @@ type UpdateOtpAttemptParams struct {
 type UpdateOtpAttemptRow struct {
 	ID            string
 	RequestID     string
+	Identifier    pgtype.Text
 	RouteType     pgtype.Text
 	Code          pgtype.Text
 	Purpose       pgtype.Text
@@ -362,6 +383,7 @@ func (q *Queries) UpdateOtpAttempt(ctx context.Context, arg UpdateOtpAttemptPara
 	err := row.Scan(
 		&i.ID,
 		&i.RequestID,
+		&i.Identifier,
 		&i.RouteType,
 		&i.Code,
 		&i.Purpose,

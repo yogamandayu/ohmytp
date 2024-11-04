@@ -11,10 +11,12 @@ import (
 // FakeOtp return faker otp entity.
 func FakeOtp() *entity.Otp {
 	return &entity.Otp{
-		ID:        uuid.NewString(),
-		RequestID: uuid.NewString(),
-		RouteType: "EMAIL",
-		Code:      "12345",
+		ID:         uuid.NewString(),
+		RequestID:  uuid.NewString(),
+		Identifier: uuid.NewString(),
+		RouteType:  "EMAIL",
+		Code:       "12345",
+		Purpose:    "TEST",
 		RequestedAt: sql.NullTime{
 			Time:  time.Now(),
 			Valid: true,

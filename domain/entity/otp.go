@@ -9,6 +9,7 @@ type Otp struct {
 	ID            string       `json:"id"`
 	RowID         int          `json:"row_id"`
 	RequestID     string       `json:"request_id"`
+	Identifier    string       `json:"identifier"`
 	RouteType     string       `json:"route"`
 	Code          string       `json:"code"`
 	Purpose       string       `json:"purpose"`

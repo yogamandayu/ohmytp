@@ -110,7 +110,7 @@ func (cmd *Command) Commands() cli.Commands {
 			Aliases: []string{"dbg"},
 			Usage:   "Run database migration with tern",
 			Action: func(cCtx *cli.Context) error {
-				err := exec.Command("cd", fmt.Sprintf("%s", util.RootDir())).Run()
+				err := exec.Command("cd", util.RootDir()).Run()
 				if err != nil {
 					log.Fatal(err)
 				}

@@ -12,6 +12,7 @@ type Otp struct {
 	ID            string
 	RowID         pgtype.Int4
 	RequestID     string
+	Identifier    pgtype.Text
 	RouteType     pgtype.Text
 	Code          pgtype.Text
 	Purpose       pgtype.Text

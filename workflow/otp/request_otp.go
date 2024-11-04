@@ -104,6 +104,10 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) (otp entity.Otp, err e
 	saveOtpParams := repository.SaveOtpParams{
 		ID:        uid.String(),
 		RequestID: r.Requester.Metadata.RequestID,
+		Identifier: pgtype.Text{
+			String: r.Otp.Identifier,
+			Valid:  true,
+		},
 		RouteType: pgtype.Text{
 			Valid:  true,
 			String: r.Otp.RouteType,

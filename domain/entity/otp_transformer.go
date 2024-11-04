@@ -11,6 +11,8 @@ import (
 func (o *Otp) SetWithOtpRepository(otp repository.Otp) {
 	o.ID = otp.ID
 	o.RequestID = otp.RequestID
+	o.Identifier = otp.Identifier.String
+	o.Purpose = otp.Purpose.String
 	o.RouteType = otp.RouteType.String
 	o.Code = otp.Code.String
 	o.RequestedAt = sql.NullTime{
@@ -52,10 +54,12 @@ func (o *Otp) SetWithOtpRepository(otp repository.Otp) {
 	}
 }
 
-// SetWithFindOtpRepositoryByRequestID is to set entity otp with find otp by request id repository.
-func (o *Otp) SetWithFindOtpRepositoryByRequestID(otp repository.FindOtpByRequestIDRow) {
+// SetWithFindOtpRepositoryByIdentifierAndPurpose is to set entity otp with find otp by identifier and purpose repository.
+func (o *Otp) SetWithFindOtpRepositoryByIdentifierAndPurpose(otp repository.FindOtpByIdentifierAndPurposeRow) {
 	o.ID = otp.ID
 	o.RequestID = otp.RequestID
+	o.Identifier = otp.Identifier.String
+	o.Purpose = otp.Purpose.String
 	o.RouteType = otp.RouteType.String
 	o.Code = otp.Code.String
 	o.RequestedAt = sql.NullTime{
@@ -96,6 +100,8 @@ func (o *Otp) SetWithFindOtpRepositoryByRequestID(otp repository.FindOtpByReques
 func (o *Otp) SetWithUpdateOtpAttemptRepository(otp repository.UpdateOtpAttemptRow) {
 	o.ID = otp.ID
 	o.RequestID = otp.RequestID
+	o.Identifier = otp.Identifier.String
+	o.Purpose = otp.Purpose.String
 	o.RouteType = otp.RouteType.String
 	o.Code = otp.Code.String
 	o.RequestedAt = sql.NullTime{
@@ -136,6 +142,10 @@ func (o *Otp) SetWithUpdateOtpAttemptRepository(otp repository.UpdateOtpAttemptR
 func (o *Otp) TransformToOtpRepository() (otp repository.Otp) {
 	otp.ID = o.ID
 	otp.RequestID = o.RequestID
+	otp.Identifier = pgtype.Text{
+		Valid:  true,
+		String: o.Identifier,
+	}
 	otp.RouteType = pgtype.Text{
 		Valid:  true,
 		String: o.RouteType,
