@@ -42,10 +42,6 @@ func (c *ConfirmOtpWorkflow) Confirm(ctx context.Context) error {
 	var err error
 	var otpEntity entity.Otp
 
-	defer func(err error) {
-		c.UpdateOTP(ctx, otpEntity, err)
-	}(err)
-
 	if c.App.Redis != nil {
 		otpCache := cache.NewOTPCache(c.App.Redis)
 		otpEntity = otpCache.GetOTP(ctx, c.Requester.Metadata.RequestID)
@@ -60,21 +56,29 @@ func (c *ConfirmOtpWorkflow) Confirm(ctx context.Context) error {
 	}
 
 	if otpEntity.ConfirmedAt.Valid {
-		return errors.New("otp.error.confirm_otp.otp_already_confirmed")
+		err = errors.New("otp.error.confirm_otp.otp_already_confirmed")
+		c.UpdateOTP(ctx, otpEntity, err)
+		return err
 	}
 
 	if int(otpEntity.Attempt) >= util.GetEnvAsInt("MAX_CONFIRM_OTP_ATTEMPT", 3) {
-		return errors.New("otp.error.confirm_otp.max_attempt_reached")
+		err = errors.New("otp.error.confirm_otp.max_attempt_reached")
+		c.UpdateOTP(ctx, otpEntity, err)
+		return err
 	}
 
 	if time.Now().After(otpEntity.ExpiredAt.Time) {
-		return errors.New("otp.error.confirm_otp.otp_is_expired")
+		err = errors.New("otp.error.confirm_otp.otp_is_expired")
+		c.UpdateOTP(ctx, otpEntity, err)
+		return err
 	}
 
 	if otpEntity.Code != c.OtpCode {
-		return errors.New("otp.error.confirm_otp.invalid_otp_code")
+		err = errors.New("otp.error.confirm_otp.invalid_otp_code")
+		c.UpdateOTP(ctx, otpEntity, err)
+		return err
 	}
-
+	c.UpdateOTP(ctx, otpEntity, nil)
 	return nil
 }
 
