@@ -46,7 +46,7 @@ func TestFindOtp(t *testing.T) {
 	ctx := context.Background()
 	repo := repository.New(testSuite.App.DB)
 	fakeOtp := tests.FakeOtp().TransformToOtpRepository()
-	otp, err := repo.SaveOtp(ctx, repository.SaveOtpParams{
+	resSave, err := repo.SaveOtp(ctx, repository.SaveOtpParams{
 		ID:            fakeOtp.ID,
 		RequestID:     fakeOtp.RequestID,
 		RouteType:     fakeOtp.RouteType,
@@ -62,11 +62,11 @@ func TestFindOtp(t *testing.T) {
 		UserAgent:     fakeOtp.UserAgent,
 	})
 	require.NoError(t, err)
-	assert.NotNil(t, otp)
+	assert.NotNil(t, resSave)
 
-	otp, err = repo.FindOtp(ctx, otp.ID)
+	resFind, err := repo.FindOtpByID(ctx, resSave.ID)
 	require.NoError(t, err)
-	assert.Equal(t, fakeOtp.Code.String, otp.Code.String)
+	assert.Equal(t, fakeOtp.Code.String, resFind.Code.String)
 }
 
 func TestUpdateOtp(t *testing.T) {
@@ -95,7 +95,7 @@ func TestUpdateOtp(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, otp)
 
-	otp1, err := repo.FindOtp(ctx, otp.ID)
+	otp1, err := repo.FindOtpByID(ctx, otp.ID)
 	require.NoError(t, err)
 	assert.Equal(t, otp.Code.String, otp1.Code.String)
 
