@@ -11,15 +11,45 @@ VALUES ($1, $2, $3, $4,
         $12, $13, $14,
         NOW(), NOW()) RETURNING *;
 
--- name: FindOtp :one
-SELECT *
+-- name: FindOtpByID :one
+SELECT id,
+       request_id,
+       route_type,
+       code,
+       purpose,
+       requested_at,
+       confirmed_at,
+       expired_at,
+       attempt,
+       last_attempt_at,
+       resend_attempt,
+       resend_at,
+       ip_address,
+       user_agent,
+       created_at,
+       updated_at
 FROM public.otps
 WHERE id = $1;
 
--- name: GetOtps :many
-SELECT *
+-- name: FindOtpByRequestID :one
+SELECT id,
+       request_id,
+       route_type,
+       code,
+       purpose,
+       requested_at,
+       confirmed_at,
+       expired_at,
+       attempt,
+       last_attempt_at,
+       resend_attempt,
+       resend_at,
+       ip_address,
+       user_agent,
+       created_at,
+       updated_at
 FROM public.otps
-ORDER BY created_at desc;
+WHERE request_id = $1;
 
 -- name: UpdateOtp :one
 UPDATE public.otps
@@ -37,4 +67,9 @@ SET request_id      = $2,
     ip_address      = $13,
     user_agent      = $14,
     updated_at      = NOW()
-WHERE id = $1 RETURNING *;
+WHERE id = $1 RETURNING id, request_id, route_type, code,
+                         purpose, requested_at, confirmed_at, expired_at,
+                         attempt, last_attempt_at,
+                         resend_attempt, resend_at,
+                         ip_address, user_agent,
+                         created_at, updated_at;

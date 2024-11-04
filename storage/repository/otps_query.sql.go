@@ -11,18 +11,51 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const findOtp = `-- name: FindOtp :one
-SELECT id, row_id, request_id, route_type, code, purpose, requested_at, confirmed_at, expired_at, attempt, last_attempt_at, resend_attempt, resend_at, ip_address, user_agent, created_at, updated_at, is_deleted, deleted_at
+const findOtpByID = `-- name: FindOtpByID :one
+SELECT id,
+       request_id,
+       route_type,
+       code,
+       purpose,
+       requested_at,
+       confirmed_at,
+       expired_at,
+       attempt,
+       last_attempt_at,
+       resend_attempt,
+       resend_at,
+       ip_address,
+       user_agent,
+       created_at,
+       updated_at
 FROM public.otps
 WHERE id = $1
 `
 
-func (q *Queries) FindOtp(ctx context.Context, id string) (Otp, error) {
-	row := q.db.QueryRow(ctx, findOtp, id)
-	var i Otp
+type FindOtpByIDRow struct {
+	ID            string
+	RequestID     string
+	RouteType     pgtype.Text
+	Code          pgtype.Text
+	Purpose       pgtype.Text
+	RequestedAt   pgtype.Timestamptz
+	ConfirmedAt   pgtype.Timestamptz
+	ExpiredAt     pgtype.Timestamptz
+	Attempt       pgtype.Int2
+	LastAttemptAt pgtype.Timestamptz
+	ResendAttempt pgtype.Int2
+	ResendAt      pgtype.Timestamptz
+	IpAddress     pgtype.Text
+	UserAgent     pgtype.Text
+	CreatedAt     pgtype.Timestamptz
+	UpdatedAt     pgtype.Timestamptz
+}
+
+func (q *Queries) FindOtpByID(ctx context.Context, id string) (FindOtpByIDRow, error) {
+	row := q.db.QueryRow(ctx, findOtpByID, id)
+	var i FindOtpByIDRow
 	err := row.Scan(
 		&i.ID,
-		&i.RowID,
 		&i.RequestID,
 		&i.RouteType,
 		&i.Code,
@@ -38,56 +71,72 @@ func (q *Queries) FindOtp(ctx context.Context, id string) (Otp, error) {
 		&i.UserAgent,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.IsDeleted,
-		&i.DeletedAt,
 	)
 	return i, err
 }
 
-const getOtps = `-- name: GetOtps :many
-SELECT id, row_id, request_id, route_type, code, purpose, requested_at, confirmed_at, expired_at, attempt, last_attempt_at, resend_attempt, resend_at, ip_address, user_agent, created_at, updated_at, is_deleted, deleted_at
+const findOtpByRequestID = `-- name: FindOtpByRequestID :one
+SELECT id,
+       request_id,
+       route_type,
+       code,
+       purpose,
+       requested_at,
+       confirmed_at,
+       expired_at,
+       attempt,
+       last_attempt_at,
+       resend_attempt,
+       resend_at,
+       ip_address,
+       user_agent,
+       created_at,
+       updated_at
 FROM public.otps
-ORDER BY created_at desc
+WHERE request_id = $1
 `
 
-func (q *Queries) GetOtps(ctx context.Context) ([]Otp, error) {
-	rows, err := q.db.Query(ctx, getOtps)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []Otp
-	for rows.Next() {
-		var i Otp
-		if err := rows.Scan(
-			&i.ID,
-			&i.RowID,
-			&i.RequestID,
-			&i.RouteType,
-			&i.Code,
-			&i.Purpose,
-			&i.RequestedAt,
-			&i.ConfirmedAt,
-			&i.ExpiredAt,
-			&i.Attempt,
-			&i.LastAttemptAt,
-			&i.ResendAttempt,
-			&i.ResendAt,
-			&i.IpAddress,
-			&i.UserAgent,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.IsDeleted,
-			&i.DeletedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+type FindOtpByRequestIDRow struct {
+	ID            string
+	RequestID     string
+	RouteType     pgtype.Text
+	Code          pgtype.Text
+	Purpose       pgtype.Text
+	RequestedAt   pgtype.Timestamptz
+	ConfirmedAt   pgtype.Timestamptz
+	ExpiredAt     pgtype.Timestamptz
+	Attempt       pgtype.Int2
+	LastAttemptAt pgtype.Timestamptz
+	ResendAttempt pgtype.Int2
+	ResendAt      pgtype.Timestamptz
+	IpAddress     pgtype.Text
+	UserAgent     pgtype.Text
+	CreatedAt     pgtype.Timestamptz
+	UpdatedAt     pgtype.Timestamptz
+}
+
+func (q *Queries) FindOtpByRequestID(ctx context.Context, requestID string) (FindOtpByRequestIDRow, error) {
+	row := q.db.QueryRow(ctx, findOtpByRequestID, requestID)
+	var i FindOtpByRequestIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.RequestID,
+		&i.RouteType,
+		&i.Code,
+		&i.Purpose,
+		&i.RequestedAt,
+		&i.ConfirmedAt,
+		&i.ExpiredAt,
+		&i.Attempt,
+		&i.LastAttemptAt,
+		&i.ResendAttempt,
+		&i.ResendAt,
+		&i.IpAddress,
+		&i.UserAgent,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const saveOtp = `-- name: SaveOtp :one
@@ -179,7 +228,12 @@ SET request_id      = $2,
     ip_address      = $13,
     user_agent      = $14,
     updated_at      = NOW()
-WHERE id = $1 RETURNING id, row_id, request_id, route_type, code, purpose, requested_at, confirmed_at, expired_at, attempt, last_attempt_at, resend_attempt, resend_at, ip_address, user_agent, created_at, updated_at, is_deleted, deleted_at
+WHERE id = $1 RETURNING id, request_id, route_type, code,
+                         purpose, requested_at, confirmed_at, expired_at,
+                         attempt, last_attempt_at,
+                         resend_attempt, resend_at,
+                         ip_address, user_agent,
+                         created_at, updated_at
 `
 
 type UpdateOtpParams struct {
@@ -199,7 +253,26 @@ type UpdateOtpParams struct {
 	UserAgent     pgtype.Text
 }
 
-func (q *Queries) UpdateOtp(ctx context.Context, arg UpdateOtpParams) (Otp, error) {
+type UpdateOtpRow struct {
+	ID            string
+	RequestID     string
+	RouteType     pgtype.Text
+	Code          pgtype.Text
+	Purpose       pgtype.Text
+	RequestedAt   pgtype.Timestamptz
+	ConfirmedAt   pgtype.Timestamptz
+	ExpiredAt     pgtype.Timestamptz
+	Attempt       pgtype.Int2
+	LastAttemptAt pgtype.Timestamptz
+	ResendAttempt pgtype.Int2
+	ResendAt      pgtype.Timestamptz
+	IpAddress     pgtype.Text
+	UserAgent     pgtype.Text
+	CreatedAt     pgtype.Timestamptz
+	UpdatedAt     pgtype.Timestamptz
+}
+
+func (q *Queries) UpdateOtp(ctx context.Context, arg UpdateOtpParams) (UpdateOtpRow, error) {
 	row := q.db.QueryRow(ctx, updateOtp,
 		arg.ID,
 		arg.RequestID,
@@ -216,10 +289,9 @@ func (q *Queries) UpdateOtp(ctx context.Context, arg UpdateOtpParams) (Otp, erro
 		arg.IpAddress,
 		arg.UserAgent,
 	)
-	var i Otp
+	var i UpdateOtpRow
 	err := row.Scan(
 		&i.ID,
-		&i.RowID,
 		&i.RequestID,
 		&i.RouteType,
 		&i.Code,
@@ -235,8 +307,6 @@ func (q *Queries) UpdateOtp(ctx context.Context, arg UpdateOtpParams) (Otp, erro
 		&i.UserAgent,
 		&i.CreatedAt,
 		&i.UpdatedAt,
-		&i.IsDeleted,
-		&i.DeletedAt,
 	)
 	return i, err
 }
