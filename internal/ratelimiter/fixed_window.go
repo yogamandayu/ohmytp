@@ -2,9 +2,10 @@ package ratelimiter
 
 import (
 	"context"
-	"github.com/redis/go-redis/v9"
 	"log/slog"
 	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
 // FixedWindow is rate limit strategy.
