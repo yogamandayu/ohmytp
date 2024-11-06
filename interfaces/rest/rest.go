@@ -2,6 +2,7 @@ package rest
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -64,7 +65,7 @@ func (r *REST) Run() error {
 	}()
 
 	log.Println("HTTP server is starting ...")
-	if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+	if err := server.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Fatalf("listen %s error: %v", r.Port, err)
 	}
 	log.Println("Shutting down HTTP server gracefully...")
