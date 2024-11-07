@@ -46,6 +46,7 @@ func WithDBConfig() Option {
 func WithRedisConfig() Option {
 	return func(c *Config) {
 		c.Redis = &RedisConfig{
+			DB:       util.GetEnvAsInt("REDIS_DB", 0),
 			Host:     util.GetEnv("REDIS_HOST", "localhost"),
 			Port:     util.GetEnv("REDIS_PORT", "6379"),
 			Password: util.GetEnv("REDIS_PASSWORD", "-"),
