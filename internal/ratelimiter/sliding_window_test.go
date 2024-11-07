@@ -3,11 +3,12 @@ package ratelimiter_test
 import (
 	"context"
 	"fmt"
+	"testing"
+
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/yogamandayu/ohmytp/internal/ratelimiter"
 	"github.com/yogamandayu/ohmytp/tests"
-	"testing"
 )
 
 func TestRateLimiterSlidingWindow(t *testing.T) {
