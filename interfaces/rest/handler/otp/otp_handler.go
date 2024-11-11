@@ -3,9 +3,10 @@ package otp
 import (
 	"context"
 	"errors"
-	"github.com/yogamandayu/ohmytp/internal/throttle"
 	"net/http"
 	"time"
+
+	"github.com/yogamandayu/ohmytp/internal/throttle"
 
 	"github.com/yogamandayu/ohmytp/interfaces/rest/response"
 
