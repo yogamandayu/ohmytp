@@ -21,6 +21,8 @@ type SlidingWindow struct {
 var _ Interface = &SlidingWindow{}
 
 // NewSlidingWindow is a constructor.
+//
+// Deprecated:not working yet.
 func NewSlidingWindow(log *slog.Logger, redis *redis.Client) *SlidingWindow {
 	return &SlidingWindow{
 		Duration:    1 * time.Minute,
