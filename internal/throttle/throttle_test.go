@@ -20,7 +20,7 @@ func TestThrottle(t *testing.T) {
 	}()
 	testSuite.LoadApp()
 
-	t.Run("Try to run process 3 times first threshold (3-5-7)", func(t *testing.T) {
+	t.Run("Try to run process 3 times to test first threshold (3-5-7)", func(t *testing.T) {
 		th := throttle.NewThrottle(testSuite.App.Redis, "example_process", uuid.NewString()).SetThresholds([]throttle.Threshold{
 			{
 				MaxAttempt:      3,
