@@ -179,16 +179,11 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) (otp entity.Otp, err e
 		return entity.Otp{}, errors.New("otp.error.request_otp.invalid_route_type")
 	}
 	_ = tx.Commit(ctx)
-
+	otp.SetWithOtpRepository(saveOtpRes)
 	if r.App.Redis != nil {
-		var otp entity.Otp
-
-		otp.SetWithOtpRepository(saveOtpRes)
-
 		otpCache := cache.NewOTPCache(r.App.Redis)
 		otpCache.SetOTP(ctx, r.Requester.Metadata.RequestID, otp, r.Expiration+(30*time.Second))
 	}
-	otp.SetWithOtpRepository(saveOtpRes)
 
 	return otp, nil
 }
