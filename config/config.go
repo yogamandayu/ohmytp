@@ -50,6 +50,7 @@ func WithRedisConfig() Option {
 			Host:     util.GetEnv("REDIS_HOST", "localhost"),
 			Port:     util.GetEnv("REDIS_PORT", "6379"),
 			Password: util.GetEnv("REDIS_PASSWORD", "-"),
+			PoolSize: util.GetEnvAsInt("REDIS_POOL_SIZE", 0),
 		}
 	}
 }

@@ -2,6 +2,8 @@ package otp
 
 import (
 	"context"
+	"errors"
+	"github.com/yogamandayu/ohmytp/internal/throttle"
 	"net/http"
 	"time"
 
@@ -25,8 +27,24 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusBadRequest).AsJSON(w)
 		return
 	}
-
 	rq := requester.NewRequester().SetMetadataFromREST(r)
+
+	ok, _ := throttle.NewThrottle(h.app.Redis, "request_otp", rq.Metadata.RequestID).SetThresholds([]throttle.Threshold{
+		{
+			MaxAttempt:      3,
+			WaitingDuration: 30 * time.Second,
+		}, {
+			MaxAttempt:      5,
+			WaitingDuration: 60 * time.Second,
+		},
+	}).IsAllowed(ctx)
+	if !ok {
+		err = errors.New("otp.error.request_otp.throttled")
+		h.app.Log.Error(err.Error())
+		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusTooManyRequests).AsJSON(w)
+		return
+	}
+
 	workflow := otp.NewRequestOtpWorkflow(rq, h.app)
 	otpEntity := payload.TransformToOtpEntity()
 
@@ -61,9 +79,25 @@ func (h *Handler) Confirm(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rq := requester.NewRequester().SetMetadataFromREST(r)
+
+	ok, _ := throttle.NewThrottle(h.app.Redis, "request_otp", rq.Metadata.RequestID).SetThresholds([]throttle.Threshold{
+		{
+			MaxAttempt:      3,
+			WaitingDuration: 30 * time.Second,
+		}, {
+			MaxAttempt:      5,
+			WaitingDuration: 60 * time.Second,
+		},
+	}).IsAllowed(ctx)
+	if !ok {
+		err = errors.New("otp.error.confirm_otp.throttled")
+		h.app.Log.Error(err.Error())
+		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusTooManyRequests).AsJSON(w)
+		return
+	}
+
 	workflow := otp.NewConfirmOtpWorkflow(rq, h.app)
 	otpEntity := payload.TransformToOtpEntity()
-
 	workflow.SetOtp(&otpEntity)
 	err = workflow.Confirm(ctx)
 	if err != nil {

@@ -13,6 +13,9 @@ func NewConnection(config config.Config) (*redis.Client, error) {
 		DB:       config.Redis.DB,
 		Password: config.Redis.Password,
 		Addr:     fmt.Sprintf("%s:%s", config.Redis.Host, config.Redis.Port),
+		PoolSize: func() int {
+			return config.Redis.PoolSize
+		}(),
 	})
 
 	redisStatus := rdb.Ping(context.Background())

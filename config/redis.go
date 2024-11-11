@@ -5,4 +5,5 @@ type RedisConfig struct {
 	Host     string
 	Port     string
 	DB       int
+	PoolSize int
 }
