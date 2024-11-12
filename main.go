@@ -22,6 +22,7 @@ func main() {
 		config.WithDBConfig(),
 		config.WithRESTConfig(),
 		config.WithRedisConfig(),
+		config.WithTelegramBotConfig(),
 	)
 
 	cliApp := cli.NewApp()

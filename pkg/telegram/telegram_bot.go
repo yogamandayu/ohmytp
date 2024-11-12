@@ -35,12 +35,12 @@ func NewTelegramBot(log *slog.Logger, config *Config) *Bot {
 func (b *Bot) SendMessage(message string) error {
 	url := fmt.Sprintf("https://api.telegram.org/bot%s/sendMessage", b.Config.Token)
 
-	msg := MessagePayload{
+	payload := MessagePayload{
 		ChatID: b.Config.ChatID,
 		Text:   message,
 	}
 
-	body, err := json.Marshal(msg)
+	body, err := json.Marshal(payload)
 	if err != nil {
 		return err
 	}

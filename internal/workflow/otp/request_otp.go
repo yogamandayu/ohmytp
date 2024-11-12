@@ -3,6 +3,8 @@ package otp
 import (
 	"context"
 	"errors"
+	"fmt"
+	"github.com/yogamandayu/ohmytp/pkg/telegram"
 	"time"
 
 	"github.com/yogamandayu/ohmytp/internal/app"
@@ -184,6 +186,23 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) (otpEntity entity.Otp,
 		otpCache := cache.NewOTPCache(r.App.Redis)
 		otpCache.SetOTP(ctx, r.Requester.Metadata.RequestID, otpEntity, r.Expiration+(30*time.Second))
 	}
-
+	if r.App.Config.TelegramBot != nil {
+		err = r.SendOTPToTelegram(otpEntity)
+		if err != nil {
+			r.App.Log.Error("error sending otp to telegram", "error", err)
+		}
+	}
 	return
+}
+
+func (r *RequestOtpWorkflow) SendOTPToTelegram(otpEntity entity.Otp) error {
+	var message string
+	switch r.Otp.RouteType {
+	case "SMS":
+		message = fmt.Sprintf("Your OhMyTP via sms is %s", otpEntity.Code)
+	case "EMAIL":
+		message = fmt.Sprintf("Your OhMyTP via email is %s", otpEntity.Code)
+	}
+	bot := telegram.NewTelegramBot(r.App.Log, r.App.Config.TelegramBot.Config)
+	return bot.SendMessage(message)
 }
