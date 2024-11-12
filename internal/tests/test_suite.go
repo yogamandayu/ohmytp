@@ -33,12 +33,12 @@ func (t *TestSuite) LoadApp() {
 		config.WithRESTConfig(),
 		config.WithRedisConfig(),
 	)
-	dbConn, err := db.NewConnection(conf)
+	dbConn, err := db.NewConnection(conf.DB.Config)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	redisConn, err := redis.NewConnection(conf)
+	redisConn, err := redis.NewConnection(conf.Redis.Config)
 	if err != nil {
 		log.Fatal(err)
 	}

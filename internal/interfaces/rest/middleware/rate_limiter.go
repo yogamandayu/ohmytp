@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/yogamandayu/ohmytp/consts"
+
 	"github.com/yogamandayu/ohmytp/internal/app"
 	"github.com/yogamandayu/ohmytp/internal/interfaces/rest/response"
 	"github.com/yogamandayu/ohmytp/internal/requester"
@@ -19,21 +21,21 @@ type RateLimiterMiddleware struct {
 
 	fw *ratelimiter.FixedWindow
 
-	strategy    string
-	filterBy    string
+	strategy    consts.RateLimiterStrategy
+	filterBy    consts.RateLimiterFilter
 	handlerName string
 }
 
 // WithFixedWindow is to set rate limit with fixed window strategy.
 func (rl *RateLimiterMiddleware) WithFixedWindow(limit int64, duration time.Duration) *RateLimiterMiddleware {
-	rl.strategy = "FIXED_WINDOW"
+	rl.strategy = consts.FixedWindowStrategy
 	rl.fw = ratelimiter.NewFixedWindow(rl.app.Log, rl.app.Redis).SetLimit(limit).SetDuration(duration)
 	return rl
 }
 
 // LimitByIPAddress is to rate limit by ip address.
 func (rl *RateLimiterMiddleware) LimitByIPAddress() *RateLimiterMiddleware {
-	rl.filterBy = "IP_ADDRESS"
+	rl.filterBy = consts.IPAddressFilter
 	return rl
 }
 
@@ -41,8 +43,8 @@ func (rl *RateLimiterMiddleware) LimitByIPAddress() *RateLimiterMiddleware {
 func RateLimit(app *app.App, handlerName string) *RateLimiterMiddleware {
 	return &RateLimiterMiddleware{
 		app:         app,
-		strategy:    "FIXED_WINDOW",
-		filterBy:    "IP_ADDRESS",
+		strategy:    consts.FixedWindowStrategy,
+		filterBy:    consts.IPAddressFilter,
 		handlerName: handlerName,
 	}
 }
@@ -53,8 +55,8 @@ func (rl *RateLimiterMiddleware) Apply(next http.Handler) http.Handler {
 		ctx, _ := context.WithTimeout(r.Context(), 5*time.Second)
 		rq := requester.NewRequester().SetMetadataFromREST(r)
 
-		if rl.strategy == "FIXED_WINDOW" {
-			if rl.filterBy == "IP_ADDRESS" {
+		if rl.strategy == consts.FixedWindowStrategy {
+			if rl.filterBy == consts.IPAddressFilter {
 				rl.fw.SetRedisKey(fmt.Sprintf("rate_limit:fixed_window:%s:ip_address:%s", rl.handlerName, rq.Metadata.IPAddress))
 			}
 			ok, _ := rl.fw.IsLimitReached(ctx)
