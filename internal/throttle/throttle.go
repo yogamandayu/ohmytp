@@ -15,6 +15,7 @@ type Throttle struct {
 	Identifier string
 
 	Thresholds []Threshold
+	Attempt    Attempt
 }
 
 type Threshold struct {
@@ -47,41 +48,44 @@ func (t *Throttle) IsAllowed(ctx context.Context) (bool, error) {
 		return true, nil
 	}
 
-	var attempt Attempt
 	now := time.Now()
 
 	key := fmt.Sprintf("throttle:%s:%s", t.Process, t.Identifier)
 	val, _ := t.Redis.Get(ctx, key).Result()
 	if val == "" {
-		attempt = Attempt{
+		t.Attempt = Attempt{
 			CurrentAttempt: 0,
 		}
 	}
 
 	if val != "" {
-		err := json.Unmarshal([]byte(val), &attempt)
+		err := json.Unmarshal([]byte(val), &t.Attempt)
 		if err != nil {
 			return false, err
 		}
 	}
 
-	if now.Before(attempt.WaitUntil) {
+	if now.Before(t.Attempt.WaitUntil) {
 		return false, nil
 	}
 
-	attempt.CurrentAttempt++
-	if attempt.CurrentAttempt == t.ThresholdTotalAttemptByCurrentAttempt(attempt.CurrentAttempt) {
-		threshold := t.ThresholdByCurrentAttempt(attempt.CurrentAttempt)
-		attempt.WaitUntil = time.Now().Add(threshold.WaitingDuration)
+	t.Attempt.CurrentAttempt++
+	if t.Attempt.CurrentAttempt == t.ThresholdTotalAttemptByCurrentAttempt(t.Attempt.CurrentAttempt) {
+		threshold := t.ThresholdByCurrentAttempt(t.Attempt.CurrentAttempt)
+		t.Attempt.WaitUntil = time.Now().Add(threshold.WaitingDuration)
 	}
 
-	b, _ := json.Marshal(attempt)
+	b, _ := json.Marshal(t.Attempt)
 	err := t.Redis.Set(ctx, key, string(b), 24*time.Hour).Err()
 	if err != nil {
 		return false, err
 	}
 
 	return true, nil
+}
+
+func (t *Throttle) WaitUntil() time.Time {
+	return t.Attempt.WaitUntil
 }
 
 func (t *Throttle) ThresholdByCurrentAttempt(currentAttempt uint8) Threshold {

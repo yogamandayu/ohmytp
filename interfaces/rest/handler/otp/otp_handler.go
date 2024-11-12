@@ -3,6 +3,7 @@ package otp
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -30,7 +31,7 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	}
 	rq := requester.NewRequester().SetMetadataFromREST(r)
 
-	ok, _ := throttle.NewThrottle(h.app.Redis, "request_otp", rq.Metadata.RequestID).SetThresholds([]throttle.Threshold{
+	th := throttle.NewThrottle(h.app.Redis, "request_otp", rq.Metadata.RequestID).SetThresholds([]throttle.Threshold{
 		{
 			MaxAttempt:      3,
 			WaitingDuration: 30 * time.Second,
@@ -38,9 +39,10 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 			MaxAttempt:      5,
 			WaitingDuration: 60 * time.Second,
 		},
-	}).IsAllowed(ctx)
+	})
+	ok, _ := th.IsAllowed(ctx)
 	if !ok {
-		err = errors.New("otp.error.request_otp.throttled")
+		err = errors.New(fmt.Sprintf("otp.error.request_otp.throttled:%s", th.WaitUntil().Format(time.RFC3339)))
 		h.app.Log.Error(err.Error())
 		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusTooManyRequests).AsJSON(w)
 		return
@@ -81,7 +83,7 @@ func (h *Handler) Confirm(w http.ResponseWriter, r *http.Request) {
 
 	rq := requester.NewRequester().SetMetadataFromREST(r)
 
-	ok, _ := throttle.NewThrottle(h.app.Redis, "request_otp", rq.Metadata.RequestID).SetThresholds([]throttle.Threshold{
+	th := throttle.NewThrottle(h.app.Redis, "confirm_otp", rq.Metadata.RequestID).SetThresholds([]throttle.Threshold{
 		{
 			MaxAttempt:      3,
 			WaitingDuration: 30 * time.Second,
@@ -89,9 +91,11 @@ func (h *Handler) Confirm(w http.ResponseWriter, r *http.Request) {
 			MaxAttempt:      5,
 			WaitingDuration: 60 * time.Second,
 		},
-	}).IsAllowed(ctx)
+	})
+
+	ok, _ := th.IsAllowed(ctx)
 	if !ok {
-		err = errors.New("otp.error.confirm_otp.throttled")
+		err = errors.New(fmt.Sprintf("otp.error.confirm_otp.throttled:%s", th.WaitUntil().Format(time.RFC3339)))
 		h.app.Log.Error(err.Error())
 		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusTooManyRequests).AsJSON(w)
 		return
