@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/yogamandayu/ohmytp/internal/config"
 	"log/slog"
 
 	"github.com/yogamandayu/ohmytp/internal/storage/repository"
@@ -9,12 +10,13 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-// App is a struct to hold all dependecy that used in the otp service.
+// App is a struct to hold all dependency that used in the otp service.
 type App struct {
 	DB           *pgxpool.Pool
 	Redis        *redis.Client
 	DBRepository *repository.Queries
 	Log          *slog.Logger
+	Config       *config.Config
 }
 
 // NewApp is a constructor.

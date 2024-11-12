@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/yogamandayu/ohmytp/internal/config"
 	"log/slog"
 
 	"github.com/yogamandayu/ohmytp/internal/storage/repository"
@@ -32,5 +33,11 @@ func WithRedis(redisConn *redis.Client) Option {
 func WithSlog(slog *slog.Logger) Option {
 	return func(a *App) {
 		a.Log = slog
+	}
+}
+
+func WithConfig(config *config.Config) Option {
+	return func(a *App) {
+		a.Config = config
 	}
 }

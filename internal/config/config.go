@@ -1,22 +1,26 @@
 package config
 
 import (
+	"github.com/yogamandayu/ohmytp/pkg/db"
+	"github.com/yogamandayu/ohmytp/pkg/redis"
+	"github.com/yogamandayu/ohmytp/pkg/telegram"
 	"github.com/yogamandayu/ohmytp/util"
 )
 
 // Config is a struct to hold all config.
 type Config struct {
-	REST  *RESTConfig
-	DB    *DBConfig
-	Redis *RedisConfig
+	REST        *RESTConfig
+	DB          *DBConfig
+	Redis       *RedisConfig
+	TelegramBot *TelegramBotConfig
 }
 
 // Option is an option for config.
 type Option func(c *Config)
 
 // NewConfig is a constructor.
-func NewConfig() Config {
-	return Config{}
+func NewConfig() *Config {
+	return &Config{}
 }
 
 // WithOptions is to set option to config.
@@ -32,14 +36,16 @@ func WithDBConfig() Option {
 		if c.DB == nil {
 			c.DB = &DBConfig{}
 		}
-		c.DB.Driver = util.GetEnv("DB_DRIVER", "mysql")
-		c.DB.Host = util.GetEnv("DB_HOST", "localhost")
-		c.DB.Port = util.GetEnv("DB_PORT", "3306")
-		c.DB.Username = util.GetEnv("DB_USER", "root")
-		c.DB.Password = util.GetEnv("DB_PASSWORD", "-")
-		c.DB.Database = util.GetEnv("DB_NAME", "ohmytp")
-		c.DB.TimeZone = util.GetEnv("APP_TIMEZONE", "Asia/Jakarta")
-		c.DB.Log = util.GetEnvAsBool("DB_LOGGER", false)
+		c.DB.Config = &db.Config{
+			Driver:   util.GetEnv("DB_DRIVER", "mysql"),
+			Host:     util.GetEnv("DB_HOST", "localhost"),
+			Port:     util.GetEnv("DB_PORT", "3306"),
+			Username: util.GetEnv("DB_USER", "root"),
+			Password: util.GetEnv("DB_PASSWORD", "-"),
+			Database: util.GetEnv("DB_NAME", "ohmytp"),
+			TimeZone: util.GetEnv("APP_TIMEZONE", "Asia/Jakarta"),
+			Log:      util.GetEnvAsBool("DB_LOGGER", false),
+		}
 	}
 }
 
@@ -49,11 +55,13 @@ func WithRedisConfig() Option {
 		if c.Redis == nil {
 			c.Redis = &RedisConfig{}
 		}
-		c.Redis.DB = util.GetEnvAsInt("REDIS_DB", 0)
-		c.Redis.Host = util.GetEnv("REDIS_HOST", "localhost")
-		c.Redis.Port = util.GetEnv("REDIS_PORT", "6379")
-		c.Redis.Password = util.GetEnv("REDIS_PASSWORD", "-")
-		c.Redis.PoolSize = util.GetEnvAsInt("REDIS_POOL_SIZE", 0)
+		c.Redis.Config = &redis.Config{
+			DB:       util.GetEnvAsInt("REDIS_DB", 0),
+			Host:     util.GetEnv("REDIS_HOST", "localhost"),
+			Port:     util.GetEnv("REDIS_PORT", "6379"),
+			Password: util.GetEnv("REDIS_PASSWORD", "-"),
+			PoolSize: util.GetEnvAsInt("REDIS_POOL_SIZE", 0),
+		}
 	}
 }
 
@@ -65,6 +73,19 @@ func WithRESTConfig() Option {
 		}
 		c.REST = &RESTConfig{
 			Port: util.GetEnv("APP_PORT", "8080"),
+		}
+	}
+}
+
+// WithTelegramBotConfig is to set TelegramBot config.
+func WithTelegramBotConfig() Option {
+	return func(c *Config) {
+		if c.TelegramBot == nil {
+			c.TelegramBot = &TelegramBotConfig{}
+		}
+		c.TelegramBot.Config = &telegram.Config{
+			Token:  util.GetEnv("TELEGRAM_BOT_TOKEN", "example-token"),
+			ChatID: util.GetEnv("TELEGRAM_BOT_CHAT_ID", "example-id"),
 		}
 	}
 }

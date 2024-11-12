@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	app2 "github.com/yogamandayu/ohmytp/internal/app"
+	"github.com/yogamandayu/ohmytp/internal/app"
 	"github.com/yogamandayu/ohmytp/internal/config"
 	"github.com/yogamandayu/ohmytp/pkg/db"
 	"github.com/yogamandayu/ohmytp/pkg/redis"
@@ -15,7 +15,7 @@ import (
 )
 
 type TestSuite struct {
-	App *app2.App
+	App *app.App
 }
 
 func NewTestSuite() *TestSuite {
@@ -32,6 +32,7 @@ func (t *TestSuite) LoadApp() {
 		config.WithDBConfig(),
 		config.WithRESTConfig(),
 		config.WithRedisConfig(),
+		config.WithTelegramBotConfig(),
 	)
 	dbConn, err := db.NewConnection(conf.DB.Config)
 	if err != nil {
@@ -45,7 +46,7 @@ func (t *TestSuite) LoadApp() {
 
 	slogger := slog.NewSlog()
 
-	t.App = app2.NewApp().WithOptions(app2.WithDB(dbConn), app2.WithRedis(redisConn), app2.WithSlog(slogger), app2.WithDBRepository(dbConn))
+	t.App = app.NewApp().WithOptions(app.WithDB(dbConn), app.WithRedis(redisConn), app.WithSlog(slogger), app.WithDBRepository(dbConn), app.WithConfig(conf))
 }
 
 func (t *TestSuite) Clean() {

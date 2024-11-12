@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/redis/go-redis/v9"
@@ -17,7 +18,11 @@ type Config struct {
 }
 
 // NewConnection is to set new redis connection.
-func NewConnection(config Config) (*redis.Client, error) {
+func NewConnection(config *Config) (*redis.Client, error) {
+	if config == nil {
+		return nil, errors.New("redis.error.missing_config")
+	}
+
 	rdb := redis.NewClient(&redis.Options{
 		DB:       config.DB,
 		Password: config.Password,

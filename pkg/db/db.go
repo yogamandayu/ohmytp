@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 
@@ -27,7 +28,10 @@ type Config struct {
 }
 
 // NewConnection is to set new db connection.
-func NewConnection(config Config) (*pgxpool.Pool, error) {
+func NewConnection(config *Config) (*pgxpool.Pool, error) {
+	if config == nil {
+		return nil, errors.New("db.error.missing_config")
+	}
 
 	connectionString := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", config.Username, config.Password, config.Host, config.Port, config.Database)
 	pgxConfig, err := pgxpool.ParseConfig(connectionString)

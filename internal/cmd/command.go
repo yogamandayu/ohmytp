@@ -20,11 +20,11 @@ import (
 
 // Command is a run service command.
 type Command struct {
-	conf config.Config
+	conf *config.Config
 }
 
 // NewCommand is a constructor.
-func NewCommand(conf config.Config) *Command {
+func NewCommand(conf *config.Config) *Command {
 	return &Command{
 		conf: conf,
 	}
@@ -52,13 +52,13 @@ func (cmd *Command) Commands() cli.Commands {
 
 				slogger := slog.NewSlog()
 
-				a := app.NewApp().WithOptions(app.WithDB(dbConn), app.WithRedis(redisConn), app.WithSlog(slogger), app.WithDBRepository(dbConn))
+				a := app.NewApp().WithOptions(app.WithDB(dbConn), app.WithRedis(redisConn), app.WithSlog(slogger), app.WithDBRepository(dbConn), app.WithConfig(cmd.conf))
 
 				r := rest.NewREST(a)
 				opts := []rest.Option{
-					rest.WithConfig(cmd.conf),
+					rest.SetByConfig(cmd.conf),
 				}
-				if err := r.With(opts...).Run(); err != nil {
+				if err = r.With(opts...).Run(); err != nil {
 					return err
 				}
 				return nil
