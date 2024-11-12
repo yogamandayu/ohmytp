@@ -1,12 +1,8 @@
 package config
 
+import "github.com/yogamandayu/ohmytp/pkg/db"
+
+// DBConfig is a db config.
 type DBConfig struct {
-	Driver   string
-	Host     string
-	Port     string
-	Username string
-	Password string
-	Database string
-	TimeZone string
-	Log      bool
+	db.Config
 }

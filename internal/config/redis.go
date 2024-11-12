@@ -1,9 +1,8 @@
 package config
 
+import "github.com/yogamandayu/ohmytp/pkg/redis"
+
+// RedisConfig is redis config.
 type RedisConfig struct {
-	Password string
-	Host     string
-	Port     string
-	DB       int
-	PoolSize int
+	redis.Config
 }

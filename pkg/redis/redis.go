@@ -4,18 +4,26 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/yogamandayu/ohmytp/internal/config"
-
 	"github.com/redis/go-redis/v9"
 )
 
-func NewConnection(config config.Config) (*redis.Client, error) {
+// Config is a redis config.
+type Config struct {
+	Password string
+	Host     string
+	Port     string
+	DB       int
+	PoolSize int
+}
+
+// NewConnection is to set new redis connection.
+func NewConnection(config Config) (*redis.Client, error) {
 	rdb := redis.NewClient(&redis.Options{
-		DB:       config.Redis.DB,
-		Password: config.Redis.Password,
-		Addr:     fmt.Sprintf("%s:%s", config.Redis.Host, config.Redis.Port),
+		DB:       config.DB,
+		Password: config.Password,
+		Addr:     fmt.Sprintf("%s:%s", config.Host, config.Port),
 		PoolSize: func() int {
-			return config.Redis.PoolSize
+			return config.PoolSize
 		}(),
 	})
 

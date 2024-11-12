@@ -2,12 +2,10 @@ package db
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log/slog"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/yogamandayu/ohmytp/internal/config"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jackc/pgx"
@@ -16,19 +14,28 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func NewConnection(config config.Config) (*pgxpool.Pool, error) {
-	if config.DB == nil {
-		return nil, errors.New("missing config")
-	}
+// Config is db config.
+type Config struct {
+	Driver   string
+	Host     string
+	Port     string
+	Username string
+	Password string
+	Database string
+	TimeZone string
+	Log      bool
+}
 
-	dbConfig := config.DB
-	connectionString := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", dbConfig.Username, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.Database)
+// NewConnection is to set new db connection.
+func NewConnection(config Config) (*pgxpool.Pool, error) {
+
+	connectionString := fmt.Sprintf("postgres://%s:%s@%s:%s/%s", config.Username, config.Password, config.Host, config.Port, config.Database)
 	pgxConfig, err := pgxpool.ParseConfig(connectionString)
 	if err != nil {
 		return nil, err
 	}
 
-	if config.DB.Log {
+	if config.Log {
 		tracer := &CustomTracer{}
 		pgxConfig.ConnConfig.Tracer = tracer
 	}
