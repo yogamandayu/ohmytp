@@ -38,13 +38,13 @@ func (cmd *Command) Commands() cli.Commands {
 			Aliases: []string{"r"},
 			Usage:   "Run REST API",
 			Action: func(cCtx *cli.Context) error {
-				dbConn, err := db.NewConnection(cmd.conf)
+				dbConn, err := db.NewConnection(cmd.conf.DB.Config)
 				if err != nil {
 					log.Fatal(err)
 				}
 				defer dbConn.Close()
 
-				redisConn, err := redis.NewConnection(cmd.conf)
+				redisConn, err := redis.NewConnection(cmd.conf.Redis.Config)
 				if err != nil {
 					log.Fatal(err)
 				}
@@ -70,13 +70,13 @@ func (cmd *Command) Commands() cli.Commands {
 			Usage:   "Run database migration with tern",
 			Action: func(cCtx *cli.Context) error {
 
-				dbConn, err := db.NewConnection(cmd.conf)
+				dbConn, err := db.NewConnection(cmd.conf.DB.Config)
 				if err != nil {
 					log.Fatal(err)
 				}
 				defer dbConn.Close()
 
-				migrationsDir := os.DirFS(fmt.Sprintf("%s/domain/migrations", util.RootDir()))
+				migrationsDir := os.DirFS(fmt.Sprintf("%s/internal/domain/migrations", util.RootDir()))
 
 				pgConn, err := dbConn.Acquire(cCtx.Context)
 				if err != nil {
