@@ -2,15 +2,16 @@ package cmd
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"os/exec"
+
 	app2 "github.com/yogamandayu/ohmytp/internal/app"
 	"github.com/yogamandayu/ohmytp/internal/config"
 	rest2 "github.com/yogamandayu/ohmytp/internal/interfaces/rest"
 	"github.com/yogamandayu/ohmytp/pkg/db"
 	"github.com/yogamandayu/ohmytp/pkg/redis"
 	"github.com/yogamandayu/ohmytp/pkg/slog"
-	"log"
-	"os"
-	"os/exec"
 
 	"github.com/jackc/tern/v2/migrate"
 	"github.com/urfave/cli/v2"

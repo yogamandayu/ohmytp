@@ -1,8 +1,9 @@
 package app
 
 import (
-	"github.com/yogamandayu/ohmytp/internal/storage/repository"
 	"log/slog"
+
+	"github.com/yogamandayu/ohmytp/internal/storage/repository"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"

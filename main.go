@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/yogamandayu/ohmytp/internal/config"
 	"log"
 	"os"
+
+	"github.com/yogamandayu/ohmytp/internal/config"
 
 	"github.com/urfave/cli/v2"
 	"github.com/yogamandayu/ohmytp/internal/cmd"

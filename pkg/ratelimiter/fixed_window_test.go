@@ -2,9 +2,10 @@ package ratelimiter_test
 
 import (
 	"context"
+	"testing"
+
 	"github.com/yogamandayu/ohmytp/internal/tests"
 	"github.com/yogamandayu/ohmytp/pkg/ratelimiter"
-	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

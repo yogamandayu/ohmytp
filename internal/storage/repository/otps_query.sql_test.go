@@ -2,9 +2,10 @@ package repository_test
 
 import (
 	"context"
+	"testing"
+
 	repository2 "github.com/yogamandayu/ohmytp/internal/storage/repository"
 	tests2 "github.com/yogamandayu/ohmytp/internal/tests"
-	"testing"
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"

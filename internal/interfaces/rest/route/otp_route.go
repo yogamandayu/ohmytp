@@ -1,11 +1,12 @@
 package route
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/yogamandayu/ohmytp/internal/app"
 	"github.com/yogamandayu/ohmytp/internal/interfaces/rest/handler/otp"
 	"github.com/yogamandayu/ohmytp/internal/interfaces/rest/middleware"
-	"net/http"
-	"time"
 )
 
 // OTPRoute is route for all otp handler.

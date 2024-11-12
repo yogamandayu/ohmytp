@@ -2,11 +2,12 @@ package otp_test
 
 import (
 	"context"
+	"testing"
+
 	"github.com/yogamandayu/ohmytp/internal/domain/entity"
 	"github.com/yogamandayu/ohmytp/internal/requester"
 	tests2 "github.com/yogamandayu/ohmytp/internal/tests"
 	"github.com/yogamandayu/ohmytp/internal/workflow/otp"
-	"testing"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"

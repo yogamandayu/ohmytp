@@ -1,9 +1,10 @@
 package route
 
 import (
+	"net/http"
+
 	"github.com/yogamandayu/ohmytp/internal/app"
 	"github.com/yogamandayu/ohmytp/internal/interfaces/rest/handler/ping"
-	"net/http"
 )
 
 // HealthRoute is a health route to monitor service health.

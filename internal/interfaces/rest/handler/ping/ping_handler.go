@@ -2,9 +2,10 @@ package ping
 
 import (
 	"context"
-	"github.com/yogamandayu/ohmytp/internal/workflow"
 	"net/http"
 	"time"
+
+	"github.com/yogamandayu/ohmytp/internal/workflow"
 
 	"encoding/json"
 )

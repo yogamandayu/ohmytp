@@ -4,14 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/yogamandayu/ohmytp/internal/app"
-	"github.com/yogamandayu/ohmytp/internal/interfaces/rest/route"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/yogamandayu/ohmytp/internal/app"
+	"github.com/yogamandayu/ohmytp/internal/interfaces/rest/route"
 )
 
 // REST is a http rest api struct.

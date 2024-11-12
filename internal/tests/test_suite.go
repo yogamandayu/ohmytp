@@ -2,12 +2,13 @@ package tests
 
 import (
 	"fmt"
+	"log"
+
 	app2 "github.com/yogamandayu/ohmytp/internal/app"
 	"github.com/yogamandayu/ohmytp/internal/config"
 	"github.com/yogamandayu/ohmytp/pkg/db"
 	"github.com/yogamandayu/ohmytp/pkg/redis"
 	"github.com/yogamandayu/ohmytp/pkg/slog"
-	"log"
 
 	"github.com/joho/godotenv"
 	"github.com/yogamandayu/ohmytp/util"

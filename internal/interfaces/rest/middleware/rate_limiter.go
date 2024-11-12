@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/yogamandayu/ohmytp/internal/app"
 	"github.com/yogamandayu/ohmytp/internal/interfaces/rest/response"
 	"github.com/yogamandayu/ohmytp/internal/requester"
 	"github.com/yogamandayu/ohmytp/pkg/ratelimiter"
-	"net/http"
-	"time"
 )
 
 // RateLimiterMiddleware is a middleware to apply rate limiter to route handler.

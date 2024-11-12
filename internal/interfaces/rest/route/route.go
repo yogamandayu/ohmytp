@@ -1,8 +1,9 @@
 package route
 
 import (
-	"github.com/yogamandayu/ohmytp/internal/app"
 	"net/http"
+
+	"github.com/yogamandayu/ohmytp/internal/app"
 )
 
 // Router is a struct to hold all dependency to provide route.

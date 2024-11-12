@@ -4,9 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/yogamandayu/ohmytp/internal/config"
-	"log/slog"
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jackc/pgx"

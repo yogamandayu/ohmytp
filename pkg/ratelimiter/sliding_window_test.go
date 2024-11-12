@@ -3,9 +3,10 @@ package ratelimiter_test
 import (
 	"context"
 	"fmt"
+	"testing"
+
 	"github.com/yogamandayu/ohmytp/internal/tests"
 	"github.com/yogamandayu/ohmytp/pkg/ratelimiter"
-	"testing"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"

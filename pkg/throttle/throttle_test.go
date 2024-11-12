@@ -2,10 +2,11 @@ package throttle_test
 
 import (
 	"context"
-	"github.com/yogamandayu/ohmytp/internal/tests"
-	"github.com/yogamandayu/ohmytp/pkg/throttle"
 	"testing"
 	"time"
+
+	"github.com/yogamandayu/ohmytp/internal/tests"
+	"github.com/yogamandayu/ohmytp/pkg/throttle"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"

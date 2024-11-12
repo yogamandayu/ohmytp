@@ -2,8 +2,9 @@ package tests
 
 import (
 	"database/sql"
-	entity2 "github.com/yogamandayu/ohmytp/internal/domain/entity"
 	"time"
+
+	entity2 "github.com/yogamandayu/ohmytp/internal/domain/entity"
 
 	"github.com/google/uuid"
 )

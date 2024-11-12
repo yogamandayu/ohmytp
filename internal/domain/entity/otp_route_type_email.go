@@ -2,6 +2,7 @@ package entity
 
 import (
 	"database/sql"
+
 	"github.com/yogamandayu/ohmytp/internal/storage/repository"
 
 	"github.com/jackc/pgx/v5/pgtype"
