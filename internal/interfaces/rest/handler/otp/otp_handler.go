@@ -46,7 +46,7 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	})
 	ok, _ := th.IsAllowed(ctx)
 	if !ok {
-		err = fmt.Errorf("otp.error.request_otp.throttled:%s", th.WaitUntil().Format(time.RFC3339))
+		err = fmt.Errorf("otp.error.request_otp.throttled_until:%s", th.WaitUntil().Format(time.RFC3339))
 		h.app.Log.Error(err.Error())
 		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusTooManyRequests).AsJSON(w)
 		return
@@ -105,7 +105,7 @@ func (h *Handler) Confirm(w http.ResponseWriter, r *http.Request) {
 
 	ok, _ := th.IsAllowed(ctx)
 	if !ok {
-		err = fmt.Errorf("otp.error.confirm_otp.throttled:%s", th.WaitUntil().Format(time.RFC3339))
+		err = fmt.Errorf("otp.error.confirm_otp.throttled_until:%s", th.WaitUntil().Format(time.RFC3339))
 		h.app.Log.Error(err.Error())
 		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusTooManyRequests).AsJSON(w)
 		return
