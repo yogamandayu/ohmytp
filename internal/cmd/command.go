@@ -2,18 +2,18 @@ package cmd
 
 import (
 	"fmt"
+	app2 "github.com/yogamandayu/ohmytp/internal/app"
+	"github.com/yogamandayu/ohmytp/internal/config"
+	rest2 "github.com/yogamandayu/ohmytp/internal/interfaces/rest"
+	"github.com/yogamandayu/ohmytp/pkg/db"
+	"github.com/yogamandayu/ohmytp/pkg/redis"
+	"github.com/yogamandayu/ohmytp/pkg/slog"
 	"log"
 	"os"
 	"os/exec"
 
 	"github.com/jackc/tern/v2/migrate"
 	"github.com/urfave/cli/v2"
-	"github.com/yogamandayu/ohmytp/app"
-	"github.com/yogamandayu/ohmytp/config"
-	"github.com/yogamandayu/ohmytp/interfaces/rest"
-	"github.com/yogamandayu/ohmytp/internal/db"
-	"github.com/yogamandayu/ohmytp/internal/redis"
-	"github.com/yogamandayu/ohmytp/internal/slog"
 	"github.com/yogamandayu/ohmytp/util"
 )
 
@@ -51,11 +51,11 @@ func (cmd *Command) Commands() cli.Commands {
 
 				slogger := slog.NewSlog()
 
-				a := app.NewApp().WithOptions(app.WithDB(dbConn), app.WithRedis(redisConn), app.WithSlog(slogger), app.WithDBRepository(dbConn))
+				a := app2.NewApp().WithOptions(app2.WithDB(dbConn), app2.WithRedis(redisConn), app2.WithSlog(slogger), app2.WithDBRepository(dbConn))
 
-				r := rest.NewREST(a)
-				opts := []rest.Option{
-					rest.WithConfig(cmd.conf),
+				r := rest2.NewREST(a)
+				opts := []rest2.Option{
+					rest2.WithConfig(cmd.conf),
 				}
 				if err := r.With(opts...).Run(); err != nil {
 					return err

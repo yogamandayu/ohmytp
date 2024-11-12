@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/yogamandayu/ohmytp/internal/config"
 	"log"
 	"os"
 
@@ -8,7 +9,6 @@ import (
 	"github.com/yogamandayu/ohmytp/internal/cmd"
 
 	"github.com/joho/godotenv"
-	"github.com/yogamandayu/ohmytp/config"
 )
 
 func main() {
