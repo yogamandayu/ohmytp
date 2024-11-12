@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	response2 "github.com/yogamandayu/ohmytp/internal/interfaces/rest/response"
+	"github.com/yogamandayu/ohmytp/internal/interfaces/rest/response"
 	"github.com/yogamandayu/ohmytp/internal/requester"
-	otp2 "github.com/yogamandayu/ohmytp/internal/workflow/otp"
+	"github.com/yogamandayu/ohmytp/internal/workflow/otp"
 	"github.com/yogamandayu/ohmytp/pkg/throttle"
 
 	"encoding/json"
@@ -25,7 +25,7 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
 		h.app.Log.Warn(err.Error())
-		response2.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusBadRequest).AsJSON(w)
+		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusBadRequest).AsJSON(w)
 		return
 	}
 	rq := requester.NewRequester().SetMetadataFromREST(r)
@@ -43,11 +43,11 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		err = errors.New(fmt.Sprintf("otp.error.request_otp.throttled:%s", th.WaitUntil().Format(time.RFC3339)))
 		h.app.Log.Error(err.Error())
-		response2.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusTooManyRequests).AsJSON(w)
+		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusTooManyRequests).AsJSON(w)
 		return
 	}
 
-	workflow := otp2.NewRequestOtpWorkflow(rq, h.app)
+	workflow := otp.NewRequestOtpWorkflow(rq, h.app)
 	otpEntity := payload.TransformToOtpEntity()
 
 	workflow.SetOtp(&otpEntity).SetOtpExpiration(time.Duration(payload.Expiration) * time.Second).SetOtpLength(payload.Length)
@@ -60,10 +60,10 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	resOtpEntity, err := workflow.Request(ctx)
 	if err != nil {
 		h.app.Log.Error(err.Error())
-		response2.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusInternalServerError).AsJSON(w)
+		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusInternalServerError).AsJSON(w)
 		return
 	}
-	response2.NewHTTPSuccessResponse(RequestOtpResponseContract{
+	response.NewHTTPSuccessResponse(RequestOtpResponseContract{
 		ExpiredAt: resOtpEntity.ExpiredAt.Time.Format(time.RFC3339),
 	}, "Success").WithStatusCode(http.StatusCreated).AsJSON(w)
 }
@@ -76,7 +76,7 @@ func (h *Handler) Confirm(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
 		h.app.Log.Warn(err.Error())
-		response2.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusBadRequest).AsJSON(w)
+		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusBadRequest).AsJSON(w)
 		return
 	}
 
@@ -96,18 +96,18 @@ func (h *Handler) Confirm(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		err = errors.New(fmt.Sprintf("otp.error.confirm_otp.throttled:%s", th.WaitUntil().Format(time.RFC3339)))
 		h.app.Log.Error(err.Error())
-		response2.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusTooManyRequests).AsJSON(w)
+		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusTooManyRequests).AsJSON(w)
 		return
 	}
 
-	workflow := otp2.NewConfirmOtpWorkflow(rq, h.app)
+	workflow := otp.NewConfirmOtpWorkflow(rq, h.app)
 	otpEntity := payload.TransformToOtpEntity()
 	workflow.SetOtp(&otpEntity)
 	err = workflow.Confirm(ctx)
 	if err != nil {
 		h.app.Log.Error(err.Error())
-		response2.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusUnprocessableEntity).AsJSON(w)
+		response.NewHTTPFailedResponse("ERR101", err, "Error").WithStatusCode(http.StatusUnprocessableEntity).AsJSON(w)
 		return
 	}
-	response2.NewHTTPSuccessResponse(nil, "Success").WithStatusCode(http.StatusCreated).AsJSON(w)
+	response.NewHTTPSuccessResponse(nil, "Success").WithStatusCode(http.StatusCreated).AsJSON(w)
 }

@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/yogamandayu/ohmytp/internal/app"
-	entity2 "github.com/yogamandayu/ohmytp/internal/domain/entity"
+	"github.com/yogamandayu/ohmytp/internal/domain/entity"
 	"github.com/yogamandayu/ohmytp/internal/requester"
 	"github.com/yogamandayu/ohmytp/internal/storage/cache"
-	repository2 "github.com/yogamandayu/ohmytp/internal/storage/repository"
+	"github.com/yogamandayu/ohmytp/internal/storage/repository"
 
 	"github.com/yogamandayu/ohmytp/util"
 
@@ -20,9 +20,9 @@ import (
 
 // RequestOtpWorkflow is request OTP workflow.
 type RequestOtpWorkflow struct {
-	Otp            *entity2.Otp
-	RouteTypeEmail *entity2.OTPRouteTypeEmail
-	RouteTypeSMS   *entity2.OTPRouteTypeSMS
+	Otp            *entity.Otp
+	RouteTypeEmail *entity.OTPRouteTypeEmail
+	RouteTypeSMS   *entity.OTPRouteTypeSMS
 	Expiration     time.Duration
 	OtpLength      uint16
 
@@ -31,7 +31,7 @@ type RequestOtpWorkflow struct {
 }
 
 // SetOtp is to set entity.Otp to RequestOtpWorkflow.
-func (r *RequestOtpWorkflow) SetOtp(otp *entity2.Otp) *RequestOtpWorkflow {
+func (r *RequestOtpWorkflow) SetOtp(otp *entity.Otp) *RequestOtpWorkflow {
 	r.Otp = otp
 	return r
 }
@@ -55,7 +55,7 @@ func (r *RequestOtpWorkflow) WithRouteEmail(email string) error {
 	}
 	r.Otp.RouteType = consts.EmailRouteType.ToString()
 	uid, _ := uuid.NewV7()
-	r.RouteTypeEmail = &entity2.OTPRouteTypeEmail{
+	r.RouteTypeEmail = &entity.OTPRouteTypeEmail{
 		ID:        uid.String(),
 		OtpID:     r.Otp.ID,
 		RequestID: r.Otp.RequestID,
@@ -71,7 +71,7 @@ func (r *RequestOtpWorkflow) WithRouteSMS(phone string) error {
 	}
 	r.Otp.RouteType = consts.SMSRouteType.ToString()
 	uid, _ := uuid.NewV7()
-	r.RouteTypeSMS = &entity2.OTPRouteTypeSMS{
+	r.RouteTypeSMS = &entity.OTPRouteTypeSMS{
 		ID:        uid.String(),
 		OtpID:     r.Otp.ID,
 		RequestID: r.Otp.RequestID,
@@ -91,17 +91,17 @@ func NewRequestOtpWorkflow(rqs *requester.Requester, app *app.App) *RequestOtpWo
 }
 
 // Request is requesting OTP.
-func (r *RequestOtpWorkflow) Request(ctx context.Context) (otp entity2.Otp, err error) {
+func (r *RequestOtpWorkflow) Request(ctx context.Context) (otp entity.Otp, err error) {
 
 	generatedOtp := util.RandomStringWithSample(int(r.OtpLength), "0123456789")
 	uid, _ := uuid.NewV7()
 
 	tx, err := r.App.DB.Begin(ctx)
 	if err != nil {
-		return entity2.Otp{}, err
+		return entity.Otp{}, err
 	}
 
-	saveOtpParams := repository2.SaveOtpParams{
+	saveOtpParams := repository.SaveOtpParams{
 		ID:        uid.String(),
 		RequestID: r.Requester.Metadata.RequestID,
 		Identifier: pgtype.Text{
@@ -140,12 +140,12 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) (otp entity2.Otp, err 
 	saveOtpRes, err := r.App.DBRepository.WithTx(tx).SaveOtp(ctx, saveOtpParams)
 	if err != nil {
 		_ = tx.Rollback(ctx)
-		return entity2.Otp{}, err
+		return entity.Otp{}, err
 	}
 
 	switch r.Otp.RouteType {
 	case "SMS":
-		dataSMS := repository2.SaveOtpRouteTypeSMSParams{
+		dataSMS := repository.SaveOtpRouteTypeSMSParams{
 			ID:        uid.String(),
 			RequestID: r.Requester.Metadata.RequestID,
 			OtpID:     saveOtpRes.ID,
@@ -157,10 +157,10 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) (otp entity2.Otp, err 
 		_, err = r.App.DBRepository.WithTx(tx).SaveOtpRouteTypeSMS(ctx, dataSMS)
 		if err != nil {
 			_ = tx.Rollback(ctx)
-			return entity2.Otp{}, err
+			return entity.Otp{}, err
 		}
 	case "EMAIL":
-		dataEmail := repository2.SaveOtpRouteTypeEmailParams{
+		dataEmail := repository.SaveOtpRouteTypeEmailParams{
 			ID:        uid.String(),
 			RequestID: r.Requester.Metadata.RequestID,
 			OtpID:     saveOtpRes.ID,
@@ -172,11 +172,11 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) (otp entity2.Otp, err 
 		_, err = r.App.DBRepository.WithTx(tx).SaveOtpRouteTypeEmail(ctx, dataEmail)
 		if err != nil {
 			_ = tx.Rollback(ctx)
-			return entity2.Otp{}, err
+			return entity.Otp{}, err
 		}
 	default:
 		_ = tx.Rollback(ctx)
-		return entity2.Otp{}, errors.New("otp.error.request_otp.invalid_route_type")
+		return entity.Otp{}, errors.New("otp.error.request_otp.invalid_route_type")
 	}
 	_ = tx.Commit(ctx)
 	otp.SetWithOtpRepository(saveOtpRes)

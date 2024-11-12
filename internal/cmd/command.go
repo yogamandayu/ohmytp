@@ -6,9 +6,9 @@ import (
 	"os"
 	"os/exec"
 
-	app2 "github.com/yogamandayu/ohmytp/internal/app"
+	"github.com/yogamandayu/ohmytp/internal/app"
 	"github.com/yogamandayu/ohmytp/internal/config"
-	rest2 "github.com/yogamandayu/ohmytp/internal/interfaces/rest"
+	"github.com/yogamandayu/ohmytp/internal/interfaces/rest"
 	"github.com/yogamandayu/ohmytp/pkg/db"
 	"github.com/yogamandayu/ohmytp/pkg/redis"
 	"github.com/yogamandayu/ohmytp/pkg/slog"
@@ -52,11 +52,11 @@ func (cmd *Command) Commands() cli.Commands {
 
 				slogger := slog.NewSlog()
 
-				a := app2.NewApp().WithOptions(app2.WithDB(dbConn), app2.WithRedis(redisConn), app2.WithSlog(slogger), app2.WithDBRepository(dbConn))
+				a := app.NewApp().WithOptions(app.WithDB(dbConn), app.WithRedis(redisConn), app.WithSlog(slogger), app.WithDBRepository(dbConn))
 
-				r := rest2.NewREST(a)
-				opts := []rest2.Option{
-					rest2.WithConfig(cmd.conf),
+				r := rest.NewREST(a)
+				opts := []rest.Option{
+					rest.WithConfig(cmd.conf),
 				}
 				if err := r.With(opts...).Run(); err != nil {
 					return err
