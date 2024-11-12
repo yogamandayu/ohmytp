@@ -14,6 +14,9 @@ type SuccessResponse struct {
 
 // NewHTTPSuccessResponse is a constructor.
 func NewHTTPSuccessResponse(data interface{}, message string) *SuccessResponse {
+	if data == nil {
+		data = ""
+	}
 	return &SuccessResponse{
 		Data:    data,
 		Message: message,
