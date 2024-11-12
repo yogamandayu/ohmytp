@@ -68,33 +68,33 @@ func (c *ConfirmOtpWorkflow) Confirm(ctx context.Context) error {
 
 	if otpEntity.ConfirmedAt.Valid {
 		err = errors.New("otp.error.confirm_otp.otp_already_confirmed")
-		c.UpdateOTP(ctx, otpEntity, err)
+		c.updateAttempt(ctx, otpEntity, err)
 		return err
 	}
 
 	if int(otpEntity.Attempt) >= util.GetEnvAsInt("MAX_CONFIRM_OTP_ATTEMPT", 3) {
 		err = errors.New("otp.error.confirm_otp.max_attempt_reached")
-		c.UpdateOTP(ctx, otpEntity, err)
+		c.updateAttempt(ctx, otpEntity, err)
 		return err
 	}
 
 	if time.Now().After(otpEntity.ExpiredAt.Time) {
 		err = errors.New("otp.error.confirm_otp.otp_is_expired")
-		c.UpdateOTP(ctx, otpEntity, err)
+		c.updateAttempt(ctx, otpEntity, err)
 		return err
 	}
 
 	if otpEntity.Code != c.Otp.Code {
 		err = errors.New("otp.error.confirm_otp.invalid_otp_code")
-		c.UpdateOTP(ctx, otpEntity, err)
+		c.updateAttempt(ctx, otpEntity, err)
 		return err
 	}
-	c.UpdateOTP(ctx, otpEntity, nil)
+	c.updateAttempt(ctx, otpEntity, nil)
 	return nil
 }
 
-// UpdateOTP is a post process after confirming otp to update otp.
-func (c *ConfirmOtpWorkflow) UpdateOTP(ctx context.Context, otpEntity entity.Otp, err error) {
+// updateAttempt is a post process after confirming otp to update otp.
+func (c *ConfirmOtpWorkflow) updateAttempt(ctx context.Context, otpEntity entity.Otp, err error) {
 	updateOtpParams := repository.UpdateOtpAttemptParams{
 		ID: otpEntity.ID,
 		Attempt: pgtype.Int2{
