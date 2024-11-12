@@ -2,11 +2,12 @@ package telegram_test
 
 import (
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/stretchr/testify/require"
 	"github.com/yogamandayu/ohmytp/internal/tests"
 	"github.com/yogamandayu/ohmytp/pkg/telegram"
-	"testing"
-	"time"
 )
 
 func TestTelegramBotSendMessage(t *testing.T) {

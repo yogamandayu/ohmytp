@@ -1,8 +1,9 @@
 package app
 
 import (
-	"github.com/yogamandayu/ohmytp/internal/config"
 	"log/slog"
+
+	"github.com/yogamandayu/ohmytp/internal/config"
 
 	"github.com/yogamandayu/ohmytp/internal/storage/repository"
 
