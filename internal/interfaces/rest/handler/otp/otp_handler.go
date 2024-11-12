@@ -31,11 +31,17 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 
 	th := throttle.NewThrottle(h.app.Redis, "request_otp", payload.Identifier).SetThresholds([]throttle.Threshold{
 		{
-			MaxAttempt:      3,
-			WaitingDuration: 30 * time.Second,
+			MaxAttempt:      1,
+			WaitingDuration: 2 * time.Minute,
 		}, {
-			MaxAttempt:      5,
-			WaitingDuration: 60 * time.Second,
+			MaxAttempt:      1,
+			WaitingDuration: 5 * time.Minute,
+		}, {
+			MaxAttempt:      1,
+			WaitingDuration: 15 * time.Minute,
+		}, {
+			MaxAttempt:      1,
+			WaitingDuration: 24 * time.Hour,
 		},
 	})
 	ok, _ := th.IsAllowed(ctx)
@@ -84,10 +90,16 @@ func (h *Handler) Confirm(w http.ResponseWriter, r *http.Request) {
 	th := throttle.NewThrottle(h.app.Redis, "confirm_otp", payload.Identifier).SetThresholds([]throttle.Threshold{
 		{
 			MaxAttempt:      3,
-			WaitingDuration: 30 * time.Second,
+			WaitingDuration: 2 * time.Minute,
 		}, {
-			MaxAttempt:      5,
-			WaitingDuration: 60 * time.Second,
+			MaxAttempt:      3,
+			WaitingDuration: 5 * time.Minute,
+		}, {
+			MaxAttempt:      3,
+			WaitingDuration: 15 * time.Minute,
+		}, {
+			MaxAttempt:      3,
+			WaitingDuration: 24 * time.Hour,
 		},
 	})
 
