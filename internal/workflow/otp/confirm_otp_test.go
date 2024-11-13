@@ -5,20 +5,19 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yogamandayu/ohmytp/internal/domain/entity"
-	"github.com/yogamandayu/ohmytp/internal/requester"
-	tests2 "github.com/yogamandayu/ohmytp/internal/tests"
-	otp2 "github.com/yogamandayu/ohmytp/internal/workflow/otp"
-
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/yogamandayu/ohmytp/consts"
+	"github.com/yogamandayu/ohmytp/internal/domain/entity"
+	"github.com/yogamandayu/ohmytp/internal/requester"
+	"github.com/yogamandayu/ohmytp/internal/tests"
+	"github.com/yogamandayu/ohmytp/internal/workflow/otp"
 	"github.com/yogamandayu/ohmytp/util"
 )
 
 func TestConfirmOtp(t *testing.T) {
-	ts := tests2.NewTestSuite()
+	ts := tests.NewTestSuite()
 	ts.LoadApp()
 	defer t.Cleanup(ts.Clean)
 
@@ -80,9 +79,9 @@ func TestConfirmOtp(t *testing.T) {
 	}
 	for _, scenario := range scenarios {
 		t.Run(scenario.description, func(t *testing.T) {
-			rqs := requester.NewRequester().SetMetadataFromREST(tests2.FakeHTTPRequest())
+			rqs := requester.NewRequester().SetMetadataFromREST(tests.FakeHTTPRequest())
 			rqs.Metadata.RequestID = uuid.NewString()
-			requestWorkflow := otp2.NewRequestOtpWorkflow(rqs, ts.App)
+			requestWorkflow := otp.NewRequestOtpWorkflow(rqs, ts.App)
 			requestWorkflow.SetOtp(&entity.Otp{
 				RouteType: consts.EmailRouteType.ToString(),
 				Purpose:   "TEST",
@@ -96,7 +95,7 @@ func TestConfirmOtp(t *testing.T) {
 			require.NoError(t, err)
 
 			for i := range scenario.totalAttempt {
-				confirmWorkflow := otp2.NewConfirmOtpWorkflow(rqs, ts.App)
+				confirmWorkflow := otp.NewConfirmOtpWorkflow(rqs, ts.App)
 				if scenario.otp.Code == "" {
 					scenario.otp.Code = resOtpEntity.Code
 				}

@@ -3,13 +3,13 @@ package entity
 import (
 	"database/sql"
 
-	repository2 "github.com/yogamandayu/ohmytp/internal/storage/repository"
+	"github.com/yogamandayu/ohmytp/internal/storage/repository"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
 // SetWithOtpRepository is to set entity otp with repository otp.
-func (o *Otp) SetWithOtpRepository(otp repository2.Otp) {
+func (o *Otp) SetWithOtpRepository(otp repository.Otp) {
 	o.ID = otp.ID
 	o.RequestID = otp.RequestID
 	o.Identifier = otp.Identifier.String
@@ -56,7 +56,7 @@ func (o *Otp) SetWithOtpRepository(otp repository2.Otp) {
 }
 
 // SetWithFindOtpRepositoryByIdentifierAndPurpose is to set entity otp with find otp by identifier and purpose repository.
-func (o *Otp) SetWithFindOtpRepositoryByIdentifierAndPurpose(otp repository2.FindOtpByIdentifierAndPurposeRow) {
+func (o *Otp) SetWithFindOtpRepositoryByIdentifierAndPurpose(otp repository.FindOtpByIdentifierAndPurposeRow) {
 	o.ID = otp.ID
 	o.RequestID = otp.RequestID
 	o.Identifier = otp.Identifier.String
@@ -98,7 +98,7 @@ func (o *Otp) SetWithFindOtpRepositoryByIdentifierAndPurpose(otp repository2.Fin
 }
 
 // SetWithUpdateOtpAttemptRepository is to set entity otp with update otp attempt repository.
-func (o *Otp) SetWithUpdateOtpAttemptRepository(otp repository2.UpdateOtpAttemptRow) {
+func (o *Otp) SetWithUpdateOtpAttemptRepository(otp repository.UpdateOtpAttemptRow) {
 	o.ID = otp.ID
 	o.RequestID = otp.RequestID
 	o.Identifier = otp.Identifier.String
@@ -140,7 +140,7 @@ func (o *Otp) SetWithUpdateOtpAttemptRepository(otp repository2.UpdateOtpAttempt
 }
 
 // TransformToOtpRepository is to transform entity otp to repository otp.
-func (o *Otp) TransformToOtpRepository() (otp repository2.Otp) {
+func (o *Otp) TransformToOtpRepository() (otp repository.Otp) {
 	otp.ID = o.ID
 	otp.RequestID = o.RequestID
 	otp.Identifier = pgtype.Text{

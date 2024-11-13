@@ -4,23 +4,22 @@ import (
 	"context"
 	"testing"
 
-	repository2 "github.com/yogamandayu/ohmytp/internal/storage/repository"
-	tests2 "github.com/yogamandayu/ohmytp/internal/tests"
-
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/yogamandayu/ohmytp/internal/storage/repository"
+	"github.com/yogamandayu/ohmytp/internal/tests"
 )
 
 func TestSaveOtp(t *testing.T) {
-	testSuite := tests2.NewTestSuite()
+	testSuite := tests.NewTestSuite()
 	testSuite.LoadApp()
 	t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
-	repo := repository2.New(testSuite.App.DB)
-	fakeOtp := tests2.FakeOtp().TransformToOtpRepository()
-	otp, err := repo.SaveOtp(ctx, repository2.SaveOtpParams{
+	repo := repository.New(testSuite.App.DB)
+	fakeOtp := tests.FakeOtp().TransformToOtpRepository()
+	otp, err := repo.SaveOtp(ctx, repository.SaveOtpParams{
 		ID:            fakeOtp.ID,
 		RequestID:     fakeOtp.RequestID,
 		Identifier:    fakeOtp.Identifier,
@@ -42,14 +41,14 @@ func TestSaveOtp(t *testing.T) {
 }
 
 func TestFindOtp(t *testing.T) {
-	testSuite := tests2.NewTestSuite()
+	testSuite := tests.NewTestSuite()
 	testSuite.LoadApp()
 	t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
-	repo := repository2.New(testSuite.App.DB)
-	fakeOtp := tests2.FakeOtp().TransformToOtpRepository()
-	resSave, err := repo.SaveOtp(ctx, repository2.SaveOtpParams{
+	repo := repository.New(testSuite.App.DB)
+	fakeOtp := tests.FakeOtp().TransformToOtpRepository()
+	resSave, err := repo.SaveOtp(ctx, repository.SaveOtpParams{
 		ID:            fakeOtp.ID,
 		RequestID:     fakeOtp.RequestID,
 		RouteType:     fakeOtp.RouteType,
@@ -73,14 +72,14 @@ func TestFindOtp(t *testing.T) {
 }
 
 func TestUpdateOtp(t *testing.T) {
-	testSuite := tests2.NewTestSuite()
+	testSuite := tests.NewTestSuite()
 	testSuite.LoadApp()
 	t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
-	repo := repository2.New(testSuite.App.DB)
-	fakeOtp := tests2.FakeOtp().TransformToOtpRepository()
-	otp, err := repo.SaveOtp(ctx, repository2.SaveOtpParams{
+	repo := repository.New(testSuite.App.DB)
+	fakeOtp := tests.FakeOtp().TransformToOtpRepository()
+	otp, err := repo.SaveOtp(ctx, repository.SaveOtpParams{
 		ID:            fakeOtp.ID,
 		RequestID:     fakeOtp.RequestID,
 		RouteType:     fakeOtp.RouteType,
@@ -102,7 +101,7 @@ func TestUpdateOtp(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, otp.Code.String, otp1.Code.String)
 
-	otp2, err := repo.UpdateOtp(ctx, repository2.UpdateOtpParams{
+	otp2, err := repo.UpdateOtp(ctx, repository.UpdateOtpParams{
 		ID:        fakeOtp.ID,
 		RequestID: fakeOtp.RequestID,
 		RouteType: fakeOtp.RouteType,

@@ -4,23 +4,22 @@ import (
 	"context"
 	"testing"
 
-	repository2 "github.com/yogamandayu/ohmytp/internal/storage/repository"
-	tests2 "github.com/yogamandayu/ohmytp/internal/tests"
-
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/yogamandayu/ohmytp/internal/storage/repository"
+	"github.com/yogamandayu/ohmytp/internal/tests"
 )
 
 func TestSaveOtpRouteTypeEmail(t *testing.T) {
-	testSuite := tests2.NewTestSuite()
+	testSuite := tests.NewTestSuite()
 	testSuite.LoadApp()
 	defer t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
-	repo := repository2.New(testSuite.App.DB)
-	fakeRouteType := tests2.FakeOtpRouteTypeEmail().TransformToOtpRepository()
-	routeType, err := repo.SaveOtpRouteTypeEmail(ctx, repository2.SaveOtpRouteTypeEmailParams{
+	repo := repository.New(testSuite.App.DB)
+	fakeRouteType := tests.FakeOtpRouteTypeEmail().TransformToOtpRepository()
+	routeType, err := repo.SaveOtpRouteTypeEmail(ctx, repository.SaveOtpRouteTypeEmailParams{
 		ID:        fakeRouteType.ID,
 		RequestID: fakeRouteType.RequestID,
 		OtpID:     fakeRouteType.OtpID,
@@ -31,14 +30,14 @@ func TestSaveOtpRouteTypeEmail(t *testing.T) {
 }
 
 func TestFindOtpRouteTypeEmail(t *testing.T) {
-	testSuite := tests2.NewTestSuite()
+	testSuite := tests.NewTestSuite()
 	testSuite.LoadApp()
 	t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
-	repo := repository2.New(testSuite.App.DB)
-	fakeRouteType := tests2.FakeOtpRouteTypeEmail().TransformToOtpRepository()
-	routeType, err := repo.SaveOtpRouteTypeEmail(ctx, repository2.SaveOtpRouteTypeEmailParams{
+	repo := repository.New(testSuite.App.DB)
+	fakeRouteType := tests.FakeOtpRouteTypeEmail().TransformToOtpRepository()
+	routeType, err := repo.SaveOtpRouteTypeEmail(ctx, repository.SaveOtpRouteTypeEmailParams{
 		ID:        fakeRouteType.ID,
 		RequestID: fakeRouteType.RequestID,
 		OtpID:     fakeRouteType.OtpID,
@@ -53,14 +52,14 @@ func TestFindOtpRouteTypeEmail(t *testing.T) {
 }
 
 func TestUpdateOtpRouteTypeEmail(t *testing.T) {
-	testSuite := tests2.NewTestSuite()
+	testSuite := tests.NewTestSuite()
 	testSuite.LoadApp()
 	t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
-	repo := repository2.New(testSuite.App.DB)
-	fakeRouteType := tests2.FakeOtpRouteTypeEmail().TransformToOtpRepository()
-	routeType, err := repo.SaveOtpRouteTypeEmail(ctx, repository2.SaveOtpRouteTypeEmailParams{
+	repo := repository.New(testSuite.App.DB)
+	fakeRouteType := tests.FakeOtpRouteTypeEmail().TransformToOtpRepository()
+	routeType, err := repo.SaveOtpRouteTypeEmail(ctx, repository.SaveOtpRouteTypeEmailParams{
 		ID:        fakeRouteType.ID,
 		RequestID: fakeRouteType.RequestID,
 		OtpID:     fakeRouteType.OtpID,
@@ -73,7 +72,7 @@ func TestUpdateOtpRouteTypeEmail(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, routeType.Email.String, routeType1.Email.String)
 
-	routeType2, err := repo.UpdateOtpRouteTypeEmail(ctx, repository2.UpdateOtpRouteTypeEmailParams{
+	routeType2, err := repo.UpdateOtpRouteTypeEmail(ctx, repository.UpdateOtpRouteTypeEmailParams{
 		ID:        fakeRouteType.ID,
 		RequestID: fakeRouteType.RequestID,
 		OtpID:     fakeRouteType.OtpID,

@@ -4,19 +4,18 @@ import (
 	"database/sql"
 	"time"
 
-	entity2 "github.com/yogamandayu/ohmytp/internal/domain/entity"
-
 	"github.com/google/uuid"
+	"github.com/yogamandayu/ohmytp/internal/domain/entity"
 )
 
 // FakeOtpRouteTypeSMS return faker otp route type sms entity.
-func FakeOtpRouteTypeSMS() *entity2.OTPRouteTypeSMS {
-	return &entity2.OTPRouteTypeSMS{
+func FakeOtpRouteTypeSMS() *entity.OTPRouteTypeSMS {
+	return &entity.OTPRouteTypeSMS{
 		ID:        uuid.NewString(),
 		OtpID:     uuid.NewString(),
 		RequestID: uuid.NewString(),
 		Phone:     "0987654321",
-		Timestamp: entity2.Timestamp{
+		Timestamp: entity.Timestamp{
 			CreatedAt: sql.NullTime{
 				Time:  time.Now(),
 				Valid: true,

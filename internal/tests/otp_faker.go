@@ -4,14 +4,13 @@ import (
 	"database/sql"
 	"time"
 
-	entity2 "github.com/yogamandayu/ohmytp/internal/domain/entity"
-
 	"github.com/google/uuid"
+	"github.com/yogamandayu/ohmytp/internal/domain/entity"
 )
 
 // FakeOtp return faker otp entity.
-func FakeOtp() *entity2.Otp {
-	return &entity2.Otp{
+func FakeOtp() *entity.Otp {
+	return &entity.Otp{
 		ID:         uuid.NewString(),
 		RequestID:  uuid.NewString(),
 		Identifier: uuid.NewString(),
@@ -33,7 +32,7 @@ func FakeOtp() *entity2.Otp {
 		ResendAt:      sql.NullTime{},
 		IPAddress:     "127.0.0.1",
 		UserAgent:     "",
-		Timestamp: entity2.Timestamp{
+		Timestamp: entity.Timestamp{
 			CreatedAt: sql.NullTime{
 				Time:  time.Now(),
 				Valid: true,

@@ -4,23 +4,22 @@ import (
 	"context"
 	"testing"
 
-	repository2 "github.com/yogamandayu/ohmytp/internal/storage/repository"
-	tests2 "github.com/yogamandayu/ohmytp/internal/tests"
-
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/yogamandayu/ohmytp/internal/storage/repository"
+	"github.com/yogamandayu/ohmytp/internal/tests"
 )
 
 func TestSaveOtpRouteTypeSMS(t *testing.T) {
-	testSuite := tests2.NewTestSuite()
+	testSuite := tests.NewTestSuite()
 	testSuite.LoadApp()
 	t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
-	repo := repository2.New(testSuite.App.DB)
-	fakeRouteType := tests2.FakeOtpRouteTypeSMS().TransformToOtpRepository()
-	routeType, err := repo.SaveOtpRouteTypeSMS(ctx, repository2.SaveOtpRouteTypeSMSParams{
+	repo := repository.New(testSuite.App.DB)
+	fakeRouteType := tests.FakeOtpRouteTypeSMS().TransformToOtpRepository()
+	routeType, err := repo.SaveOtpRouteTypeSMS(ctx, repository.SaveOtpRouteTypeSMSParams{
 		ID:        fakeRouteType.ID,
 		RequestID: fakeRouteType.RequestID,
 		OtpID:     fakeRouteType.OtpID,
@@ -31,14 +30,14 @@ func TestSaveOtpRouteTypeSMS(t *testing.T) {
 }
 
 func TestFindOtpRouteTypeSMS(t *testing.T) {
-	testSuite := tests2.NewTestSuite()
+	testSuite := tests.NewTestSuite()
 	testSuite.LoadApp()
 	t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
-	repo := repository2.New(testSuite.App.DB)
-	fakeRouteType := tests2.FakeOtpRouteTypeSMS().TransformToOtpRepository()
-	routeType, err := repo.SaveOtpRouteTypeSMS(ctx, repository2.SaveOtpRouteTypeSMSParams{
+	repo := repository.New(testSuite.App.DB)
+	fakeRouteType := tests.FakeOtpRouteTypeSMS().TransformToOtpRepository()
+	routeType, err := repo.SaveOtpRouteTypeSMS(ctx, repository.SaveOtpRouteTypeSMSParams{
 		ID:        fakeRouteType.ID,
 		RequestID: fakeRouteType.RequestID,
 		OtpID:     fakeRouteType.OtpID,
@@ -53,14 +52,14 @@ func TestFindOtpRouteTypeSMS(t *testing.T) {
 }
 
 func TestUpdateOtpRouteTypeSMS(t *testing.T) {
-	testSuite := tests2.NewTestSuite()
+	testSuite := tests.NewTestSuite()
 	testSuite.LoadApp()
 	t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
-	repo := repository2.New(testSuite.App.DB)
-	fakeRouteType := tests2.FakeOtpRouteTypeSMS().TransformToOtpRepository()
-	routeType, err := repo.SaveOtpRouteTypeSMS(ctx, repository2.SaveOtpRouteTypeSMSParams{
+	repo := repository.New(testSuite.App.DB)
+	fakeRouteType := tests.FakeOtpRouteTypeSMS().TransformToOtpRepository()
+	routeType, err := repo.SaveOtpRouteTypeSMS(ctx, repository.SaveOtpRouteTypeSMSParams{
 		ID:        fakeRouteType.ID,
 		RequestID: fakeRouteType.RequestID,
 		OtpID:     fakeRouteType.OtpID,
@@ -73,7 +72,7 @@ func TestUpdateOtpRouteTypeSMS(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, routeType.Phone.String, routeType1.Phone.String)
 
-	routeType2, err := repo.UpdateOtpRouteTypeSMS(ctx, repository2.UpdateOtpRouteTypeSMSParams{
+	routeType2, err := repo.UpdateOtpRouteTypeSMS(ctx, repository.UpdateOtpRouteTypeSMSParams{
 		ID:        fakeRouteType.ID,
 		RequestID: fakeRouteType.RequestID,
 		OtpID:     fakeRouteType.OtpID,
