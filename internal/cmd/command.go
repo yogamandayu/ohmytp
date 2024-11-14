@@ -2,11 +2,12 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/yogamandayu/ohmytp/internal/worker/handler"
-	"github.com/yogamandayu/ohmytp/pkg/worker"
 	"log"
 	"os"
 	"os/exec"
+
+	"github.com/yogamandayu/ohmytp/internal/worker/handler"
+	"github.com/yogamandayu/ohmytp/pkg/worker"
 
 	"github.com/yogamandayu/ohmytp/internal/app"
 	"github.com/yogamandayu/ohmytp/internal/config"

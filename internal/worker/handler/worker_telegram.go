@@ -2,8 +2,9 @@ package handler
 
 import (
 	"context"
-	"github.com/hibiken/asynq"
 	"log"
+
+	"github.com/hibiken/asynq"
 )
 
 func Telegram(ctx context.Context, task *asynq.Task) error {
