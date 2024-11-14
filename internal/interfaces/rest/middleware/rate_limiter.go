@@ -29,7 +29,7 @@ type RateLimiterMiddleware struct {
 // WithFixedWindow is to set rate limit with fixed window strategy.
 func (rl *RateLimiterMiddleware) WithFixedWindow(limit int64, duration time.Duration) *RateLimiterMiddleware {
 	rl.strategy = consts.FixedWindowStrategy
-	rl.fw = ratelimiter.NewFixedWindow(rl.app.Log, rl.app.Redis).SetLimit(limit).SetDuration(duration)
+	rl.fw = ratelimiter.NewFixedWindow(rl.app.Log, rl.app.RedisAPI).SetLimit(limit).SetDuration(duration)
 	return rl
 }
 

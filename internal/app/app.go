@@ -13,11 +13,12 @@ import (
 
 // App is a struct to hold all dependency that used in the otp service.
 type App struct {
-	DB           *pgxpool.Pool
-	Redis        *redis.Client
-	DBRepository *repository.Queries
-	Log          *slog.Logger
-	Config       *config.Config
+	DB                      *pgxpool.Pool
+	RedisAPI                *redis.Client
+	RedisWorkerNotification *redis.Client
+	DBRepository            *repository.Queries
+	Log                     *slog.Logger
+	Config                  *config.Config
 }
 
 // NewApp is a constructor.

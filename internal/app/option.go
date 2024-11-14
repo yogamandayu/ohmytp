@@ -25,9 +25,15 @@ func WithDBRepository(pgxConn *pgxpool.Pool) Option {
 	}
 }
 
-func WithRedis(redisConn *redis.Client) Option {
+func WithRedisAPI(redisConn *redis.Client) Option {
 	return func(a *App) {
-		a.Redis = redisConn
+		a.RedisAPI = redisConn
+	}
+}
+
+func WithRedisWorkerNotification(redisConn *redis.Client) Option {
+	return func(a *App) {
+		a.RedisWorkerNotification = redisConn
 	}
 }
 

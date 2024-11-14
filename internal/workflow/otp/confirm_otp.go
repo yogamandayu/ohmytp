@@ -43,8 +43,8 @@ func (c *ConfirmOtpWorkflow) Confirm(ctx context.Context) error {
 	var err error
 	var otpEntity entity.Otp
 
-	if c.App.Redis != nil {
-		otpCache := cache.NewOTPCache(c.App.Redis)
+	if c.App.RedisAPI != nil {
+		otpCache := cache.NewOTPCache(c.App.RedisAPI)
 		otpEntity = otpCache.GetOTP(ctx, c.Requester.Metadata.RequestID)
 	}
 	if otpEntity.Code == "" {
@@ -118,8 +118,8 @@ func (c *ConfirmOtpWorkflow) updateAttempt(ctx context.Context, otpEntity entity
 		c.App.Log.Error(fmt.Sprintf("error update otp attempt when confirming, err: %v", errUpdate))
 	}
 
-	if c.App.Redis != nil {
-		otpCache := cache.NewOTPCache(c.App.Redis)
+	if c.App.RedisAPI != nil {
+		otpCache := cache.NewOTPCache(c.App.RedisAPI)
 		otpCache.InvalidateOTP(ctx, c.Requester.Metadata.RequestID)
 		if err != nil {
 			var otp entity.Otp

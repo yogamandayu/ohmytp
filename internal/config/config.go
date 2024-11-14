@@ -9,10 +9,11 @@ import (
 
 // Config is a struct to hold all config.
 type Config struct {
-	REST        *RESTConfig
-	DB          *DBConfig
-	Redis       *RedisConfig
-	TelegramBot *TelegramBotConfig
+	REST                    *RESTConfig
+	DB                      *DBConfig
+	RedisAPI                *RedisConfig
+	RedisWorkerNotification *RedisConfig
+	TelegramBot             *TelegramBotConfig
 }
 
 // Option is an option for config.
@@ -49,18 +50,34 @@ func WithDBConfig() Option {
 	}
 }
 
-// WithRedisConfig is to set redis config.
-func WithRedisConfig() Option {
+// WithRedisAPIConfig is to set redis API config.
+func WithRedisAPIConfig() Option {
 	return func(c *Config) {
-		if c.Redis == nil {
-			c.Redis = &RedisConfig{}
+		if c.RedisAPI == nil {
+			c.RedisAPI = &RedisConfig{}
 		}
-		c.Redis.Config = &redis.Config{
-			DB:       util.GetEnvAsInt("REDIS_DB", 0),
-			Host:     util.GetEnv("REDIS_HOST", "localhost"),
-			Port:     util.GetEnv("REDIS_PORT", "6379"),
-			Password: util.GetEnv("REDIS_PASSWORD", "-"),
-			PoolSize: util.GetEnvAsInt("REDIS_POOL_SIZE", 0),
+		c.RedisAPI.Config = &redis.Config{
+			DB:       util.GetEnvAsInt("REDIS_API_DB", 0),
+			Host:     util.GetEnv("REDIS_API_HOST", "localhost"),
+			Port:     util.GetEnv("REDIS_API_PORT", "6379"),
+			Password: util.GetEnv("REDIS_API_PASSWORD", "-"),
+			PoolSize: util.GetEnvAsInt("REDIS_API_POOL_SIZE", 0),
+		}
+	}
+}
+
+// WithRedisWorkerNotificationConfig is to set redis worker config.
+func WithRedisWorkerNotificationConfig() Option {
+	return func(c *Config) {
+		if c.RedisWorkerNotification == nil {
+			c.RedisWorkerNotification = &RedisConfig{}
+		}
+		c.RedisWorkerNotification.Config = &redis.Config{
+			DB:       util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_DB", 1),
+			Host:     util.GetEnv("REDIS_WORKER_NOTIFICATION_HOST", "localhost"),
+			Port:     util.GetEnv("REDIS_WORKER_NOTIFICATION_PORT", "6379"),
+			Password: util.GetEnv("REDIS_WORKER_NOTIFICATION_PASSWORD", "-"),
+			PoolSize: util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_POOL_SIZE", 0),
 		}
 	}
 }

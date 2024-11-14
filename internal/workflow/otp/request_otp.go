@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/yogamandayu/ohmytp/pkg/worker"
 	"time"
 
 	"github.com/yogamandayu/ohmytp/pkg/telegram"
@@ -183,8 +184,8 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) (otpEntity entity.Otp,
 	}
 	_ = tx.Commit(ctx)
 	otpEntity.SetWithOtpRepository(saveOtpRes)
-	if r.App.Redis != nil {
-		otpCache := cache.NewOTPCache(r.App.Redis)
+	if r.App.RedisAPI != nil {
+		otpCache := cache.NewOTPCache(r.App.RedisAPI)
 		otpCache.SetOTP(ctx, r.Requester.Metadata.RequestID, otpEntity, r.Expiration+(30*time.Second))
 	}
 	if r.App.Config.TelegramBot != nil {
@@ -197,6 +198,13 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) (otpEntity entity.Otp,
 }
 
 func (r *RequestOtpWorkflow) SendOTPToTelegram(otpEntity entity.Otp) error {
+
+	workerPool := worker.NewWorker(r.App.RedisWorkerNotification)
+	workerPool.AsProducer(&worker.ProducerConfig{
+		MaxRetry: 3,
+	})
+	workerPool.Produce("worker:notification", []byte("Test Worker!"))
+
 	var message string
 	switch r.Otp.RouteType {
 	case "SMS":

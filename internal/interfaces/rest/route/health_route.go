@@ -9,6 +9,6 @@ import (
 
 // HealthRoute is a health route to monitor service health.
 func HealthRoute(mux *http.ServeMux, app *app.App) {
-	pingHandler := ping.NewHandler(app.DB, app.Redis)
+	pingHandler := ping.NewHandler(app.DB, app.RedisAPI)
 	mux.HandleFunc("/ping", pingHandler.Ping)
 }

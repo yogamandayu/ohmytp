@@ -6,3 +6,5 @@ db:
 	@go run main.go dbg
 hooks:
 	@go run main.go hooks
+worker-notification:
+	@go run main.go wkn

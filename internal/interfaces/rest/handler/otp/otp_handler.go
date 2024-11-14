@@ -29,7 +29,7 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	}
 	rq := requester.NewRequester().SetMetadataFromREST(r)
 
-	th := throttle.NewThrottle(h.app.Redis, "request_otp", payload.Identifier).SetThresholds([]throttle.Threshold{
+	th := throttle.NewThrottle(h.app.RedisAPI, "request_otp", payload.Identifier).SetThresholds([]throttle.Threshold{
 		{
 			MaxAttempt:      1,
 			WaitingDuration: 2 * time.Minute,
@@ -87,7 +87,7 @@ func (h *Handler) Confirm(w http.ResponseWriter, r *http.Request) {
 
 	rq := requester.NewRequester().SetMetadataFromREST(r)
 
-	th := throttle.NewThrottle(h.app.Redis, "confirm_otp", payload.Identifier).SetThresholds([]throttle.Threshold{
+	th := throttle.NewThrottle(h.app.RedisAPI, "confirm_otp", payload.Identifier).SetThresholds([]throttle.Threshold{
 		{
 			MaxAttempt:      3,
 			WaitingDuration: 2 * time.Minute,

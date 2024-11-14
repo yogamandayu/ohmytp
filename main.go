@@ -21,7 +21,8 @@ func main() {
 	conf.WithOptions(
 		config.WithDBConfig(),
 		config.WithRESTConfig(),
-		config.WithRedisConfig(),
+		config.WithRedisAPIConfig(),
+		config.WithRedisWorkerNotificationConfig(),
 		config.WithTelegramBotConfig(),
 	)
 

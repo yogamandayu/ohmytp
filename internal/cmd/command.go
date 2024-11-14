@@ -2,6 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/yogamandayu/ohmytp/internal/worker/handler"
+	"github.com/yogamandayu/ohmytp/pkg/worker"
 	"log"
 	"os"
 	"os/exec"
@@ -44,15 +46,28 @@ func (cmd *Command) Commands() cli.Commands {
 				}
 				defer dbConn.Close()
 
-				redisConn, err := redis.NewConnection(cmd.conf.Redis.Config)
+				redisAPIConn, err := redis.NewConnection(cmd.conf.RedisAPI.Config)
 				if err != nil {
 					log.Fatal(err)
 				}
-				defer redisConn.Close()
+				defer redisAPIConn.Close()
+
+				redisNotificationConn, err := redis.NewConnection(cmd.conf.RedisWorkerNotification.Config)
+				if err != nil {
+					log.Fatal(err)
+				}
+				defer redisAPIConn.Close()
 
 				slogger := slog.NewSlog()
 
-				a := app.NewApp().WithOptions(app.WithDB(dbConn), app.WithRedis(redisConn), app.WithSlog(slogger), app.WithDBRepository(dbConn), app.WithConfig(cmd.conf))
+				a := app.NewApp().WithOptions(
+					app.WithDB(dbConn),
+					app.WithRedisAPI(redisAPIConn),
+					app.WithRedisWorkerNotification(redisNotificationConn),
+					app.WithSlog(slogger),
+					app.WithDBRepository(dbConn),
+					app.WithConfig(cmd.conf),
+				)
 
 				r := rest.NewREST(a)
 				opts := []rest.Option{
@@ -140,6 +155,34 @@ func (cmd *Command) Commands() cli.Commands {
 				}
 
 				log.Println("Pre-commit installed!")
+				return nil
+			},
+		},
+		{
+			Name:    "worker:notification",
+			Aliases: []string{"wkn"},
+			Usage:   "Run notification queue worker",
+			Action: func(cCtx *cli.Context) error {
+				redisConn, err := redis.NewConnection(cmd.conf.RedisWorkerNotification.Config)
+				if err != nil {
+					log.Fatal(err)
+				}
+				defer redisConn.Close()
+
+				workerPool := worker.NewWorker(redisConn)
+				workerPool.AsConsumer(&worker.ConsumerConfig{
+					Concurrency: 10,
+					Priority: worker.Priority{
+						Low:      3,
+						Default:  5,
+						Critical: 2,
+					},
+				})
+
+				err = workerPool.Consume("worker:notification", handler.Telegram)
+				if err != nil {
+					return err
+				}
 				return nil
 			},
 		},
