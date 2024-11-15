@@ -31,7 +31,8 @@ func (t *TestSuite) LoadApp() {
 	conf.WithOptions(
 		config.WithDBConfig(),
 		config.WithRESTConfig(),
-		config.WithRedisConfig(),
+		config.WithRedisAPIConfig(),
+		config.WithRedisWorkerNotificationConfig(),
 		config.WithTelegramBotConfig(),
 	)
 	dbConn, err := db.NewConnection(conf.DB.Config)
@@ -39,17 +40,23 @@ func (t *TestSuite) LoadApp() {
 		log.Fatal(err)
 	}
 
-	redisConn, err := redis.NewConnection(conf.Redis.Config)
+	redisAPIConn, err := redis.NewConnection(conf.RedisAPI.Config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	redisNotificationConn, err := redis.NewConnection(conf.RedisAPI.Config)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	slogger := slog.NewSlog()
 
-	t.App = app.NewApp().WithOptions(app.WithDB(dbConn), app.WithRedis(redisConn), app.WithSlog(slogger), app.WithDBRepository(dbConn), app.WithConfig(conf))
+	t.App = app.NewApp().WithOptions(app.WithDB(dbConn), app.WithRedisAPI(redisAPIConn), app.WithRedisWorkerNotification(redisNotificationConn), app.WithSlog(slogger), app.WithDBRepository(dbConn), app.WithConfig(conf))
 }
 
 func (t *TestSuite) Clean() {
 	t.App.DB.Close()
-	t.App.Redis.Close()
+	t.App.RedisAPI.Close()
+	t.App.RedisWorkerNotification.Close()
 }

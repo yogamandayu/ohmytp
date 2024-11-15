@@ -21,7 +21,7 @@ func TestRateLimiterSlidingWindow(t *testing.T) {
 	testSuite.LoadApp()
 
 	t.Run("Positive case with 10 request and limit 10", func(t *testing.T) {
-		fw := ratelimiter.NewSlidingWindow(testSuite.App.Log, testSuite.App.Redis).SetLimit(10)
+		fw := ratelimiter.NewSlidingWindow(testSuite.App.Log, testSuite.App.RedisAPI).SetLimit(10)
 		fw.SetRedisKey(fmt.Sprintf("rate_limit:sliding_window:%s", uuid.NewString()))
 		var ok bool
 		var err error
@@ -34,7 +34,7 @@ func TestRateLimiterSlidingWindow(t *testing.T) {
 		require.False(t, ok)
 	})
 	t.Run("Positive case with 10 request and limit 9", func(t *testing.T) {
-		fw := ratelimiter.NewSlidingWindow(testSuite.App.Log, testSuite.App.Redis).SetLimit(9)
+		fw := ratelimiter.NewSlidingWindow(testSuite.App.Log, testSuite.App.RedisAPI).SetLimit(9)
 		fw.SetRedisKey(fmt.Sprintf("rate_limit:sliding_window:%s", uuid.NewString()))
 		var ok bool
 		var err error

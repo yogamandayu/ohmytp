@@ -22,7 +22,7 @@ func TestThrottle(t *testing.T) {
 	testSuite.LoadApp()
 
 	t.Run("Try to run process 3 times to test first threshold (3-5-7)", func(t *testing.T) {
-		th := throttle.NewThrottle(testSuite.App.Redis, "example_process", uuid.NewString()).SetThresholds([]throttle.Threshold{
+		th := throttle.NewThrottle(testSuite.App.RedisAPI, "example_process", uuid.NewString()).SetThresholds([]throttle.Threshold{
 			{
 				MaxAttempt:      3,
 				WaitingDuration: 30 * time.Minute,
@@ -44,7 +44,7 @@ func TestThrottle(t *testing.T) {
 	})
 
 	t.Run("Try to run process 4 times to test first threshold (3-5-7)", func(t *testing.T) {
-		th := throttle.NewThrottle(testSuite.App.Redis, "example_process", uuid.NewString()).SetThresholds([]throttle.Threshold{
+		th := throttle.NewThrottle(testSuite.App.RedisAPI, "example_process", uuid.NewString()).SetThresholds([]throttle.Threshold{
 			{
 				MaxAttempt:      3,
 				WaitingDuration: 30 * time.Minute,
@@ -68,7 +68,7 @@ func TestThrottle(t *testing.T) {
 	})
 
 	t.Run("Try to run process 8 times to test second threshold (3-5-7)", func(t *testing.T) {
-		th := throttle.NewThrottle(testSuite.App.Redis, "example_process", uuid.NewString()).SetThresholds([]throttle.Threshold{
+		th := throttle.NewThrottle(testSuite.App.RedisAPI, "example_process", uuid.NewString()).SetThresholds([]throttle.Threshold{
 			{
 				MaxAttempt:      3,
 				WaitingDuration: 1 * time.Second,
@@ -93,7 +93,7 @@ func TestThrottle(t *testing.T) {
 	})
 
 	t.Run("Try to run process 9 times to test second threshold (3-5-7)", func(t *testing.T) {
-		th := throttle.NewThrottle(testSuite.App.Redis, "example_process", uuid.NewString()).SetThresholds([]throttle.Threshold{
+		th := throttle.NewThrottle(testSuite.App.RedisAPI, "example_process", uuid.NewString()).SetThresholds([]throttle.Threshold{
 			{
 				MaxAttempt:      3,
 				WaitingDuration: 1 * time.Second,
@@ -120,7 +120,7 @@ func TestThrottle(t *testing.T) {
 	})
 
 	t.Run("Try to run process 15 times to test third threshold (3-5-7)", func(t *testing.T) {
-		th := throttle.NewThrottle(testSuite.App.Redis, "example_process", uuid.NewString()).SetThresholds([]throttle.Threshold{
+		th := throttle.NewThrottle(testSuite.App.RedisAPI, "example_process", uuid.NewString()).SetThresholds([]throttle.Threshold{
 			{
 				MaxAttempt:      3,
 				WaitingDuration: 1 * time.Second,
@@ -145,7 +145,7 @@ func TestThrottle(t *testing.T) {
 	})
 
 	t.Run("Try to run process 9 times to test third threshold (3-5-7)", func(t *testing.T) {
-		th := throttle.NewThrottle(testSuite.App.Redis, "example_process", uuid.NewString()).SetThresholds([]throttle.Threshold{
+		th := throttle.NewThrottle(testSuite.App.RedisAPI, "example_process", uuid.NewString()).SetThresholds([]throttle.Threshold{
 			{
 				MaxAttempt:      3,
 				WaitingDuration: 1 * time.Second,

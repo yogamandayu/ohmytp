@@ -20,7 +20,7 @@ func TestRateLimiterFixedWindow(t *testing.T) {
 	testSuite.LoadApp()
 
 	t.Run("Positive case with one request", func(t *testing.T) {
-		fw := ratelimiter.NewFixedWindow(testSuite.App.Log, testSuite.App.Redis).SetLimit(1)
+		fw := ratelimiter.NewFixedWindow(testSuite.App.Log, testSuite.App.RedisAPI).SetLimit(1)
 		fw.SetRedisKey("rate_limit:fixed_window:ip_address:127.0.0.1")
 
 		ok, err := fw.IsLimitReached(context.Background())
@@ -30,7 +30,7 @@ func TestRateLimiterFixedWindow(t *testing.T) {
 	})
 
 	t.Run("Negative case with 3 requests", func(t *testing.T) {
-		fw := ratelimiter.NewFixedWindow(testSuite.App.Log, testSuite.App.Redis).SetLimit(2)
+		fw := ratelimiter.NewFixedWindow(testSuite.App.Log, testSuite.App.RedisAPI).SetLimit(2)
 		fw.SetRedisKey("rate_limit:fixed_window:ip_address:127.0.0.1")
 
 		for i := 0; i < 3; i++ {

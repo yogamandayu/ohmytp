@@ -180,7 +180,10 @@ func (cmd *Command) Commands() cli.Commands {
 					},
 				})
 
-				err = workerPool.Consume("worker:notification", handler.Telegram)
+				a := app.NewApp().WithOptions(app.WithConfig(cmd.conf), app.WithSlog(slog.NewSlog()))
+				notificationHandler := handler.NewNotificationHandler(a)
+
+				err = workerPool.Consume("worker:notification", notificationHandler.Handler)
 				if err != nil {
 					return err
 				}

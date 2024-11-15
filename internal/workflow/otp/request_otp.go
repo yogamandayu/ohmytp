@@ -2,13 +2,12 @@ package otp
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
 
 	"github.com/yogamandayu/ohmytp/pkg/worker"
-
-	"github.com/yogamandayu/ohmytp/pkg/telegram"
 
 	"github.com/yogamandayu/ohmytp/internal/app"
 	"github.com/yogamandayu/ohmytp/internal/domain/entity"
@@ -149,7 +148,7 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) (otpEntity entity.Otp,
 	}
 
 	switch r.Otp.RouteType {
-	case "SMS":
+	case consts.SMSRouteType.ToString():
 		dataSMS := repository.SaveOtpRouteTypeSMSParams{
 			ID:        uid.String(),
 			RequestID: r.Requester.Metadata.RequestID,
@@ -164,7 +163,7 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) (otpEntity entity.Otp,
 			_ = tx.Rollback(ctx)
 			return entity.Otp{}, err
 		}
-	case "EMAIL":
+	case consts.EmailRouteType.ToString():
 		dataEmail := repository.SaveOtpRouteTypeEmailParams{
 			ID:        uid.String(),
 			RequestID: r.Requester.Metadata.RequestID,
@@ -199,20 +198,26 @@ func (r *RequestOtpWorkflow) Request(ctx context.Context) (otpEntity entity.Otp,
 }
 
 func (r *RequestOtpWorkflow) SendOTPToTelegram(otpEntity entity.Otp) error {
-
 	workerPool := worker.NewWorker(r.App.RedisWorkerNotification)
 	workerPool.AsProducer(&worker.ProducerConfig{
 		MaxRetry: 3,
 	})
-	workerPool.Produce("worker:notification", []byte("Test Worker!"))
 
 	var message string
 	switch r.Otp.RouteType {
-	case "SMS":
+	case consts.SMSRouteType.ToString():
 		message = fmt.Sprintf("Your OhMyTP via sms is %s", otpEntity.Code)
-	case "EMAIL":
+	case consts.EmailRouteType.ToString():
 		message = fmt.Sprintf("Your OhMyTP via email is %s", otpEntity.Code)
 	}
-	bot := telegram.NewTelegramBot(r.App.Log, r.App.Config.TelegramBot.Config)
-	return bot.SendMessage(message)
+
+	payload := entity.WorkerNotification{
+		Via: consts.ViaTelegramWorkerNotification,
+		Data: entity.WorkerNotificationViaTelegramData{
+			Message: message,
+		},
+	}
+
+	b, _ := json.Marshal(payload)
+	return workerPool.Produce("worker:notification", b)
 }
