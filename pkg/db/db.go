@@ -43,11 +43,21 @@ func NewConnection(config *Config) (*pgxpool.Pool, error) {
 	if err != nil {
 		return nil, err
 	}
-	pgxConfig.MaxConns = int32(config.MaxConns)
-	pgxConfig.MinConns = int32(config.MinConns)
-	pgxConfig.MaxConnIdleTime = config.MaxConnIdleTime
-	pgxConfig.MaxConnLifetime = config.MaxConnLifeTime
-	pgxConfig.HealthCheckPeriod = config.HealthCheckPeriod
+	if config.MaxConns > 0 {
+		pgxConfig.MaxConns = int32(config.MaxConns)
+	}
+	if config.MinConns > 0 {
+		pgxConfig.MinConns = int32(config.MinConns)
+	}
+	if config.MaxConnIdleTime > 0 {
+		pgxConfig.MaxConnIdleTime = config.MaxConnIdleTime
+	}
+	if config.MaxConnLifeTime > 0 {
+		pgxConfig.MaxConnLifetime = config.MaxConnLifeTime
+	}
+	if config.HealthCheckPeriod > 0 {
+		pgxConfig.HealthCheckPeriod = config.HealthCheckPeriod
+	}
 
 	if config.Log {
 		tracer := &CustomTracer{}
