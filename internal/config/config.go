@@ -5,6 +5,7 @@ import (
 	"github.com/yogamandayu/ohmytp/pkg/redis"
 	"github.com/yogamandayu/ohmytp/pkg/telegram"
 	"github.com/yogamandayu/ohmytp/util"
+	"time"
 )
 
 // Config is a struct to hold all config.
@@ -38,14 +39,18 @@ func WithDBConfig() Option {
 			c.DB = &DBConfig{}
 		}
 		c.DB.Config = &db.Config{
-			Driver:   util.GetEnv("DB_DRIVER", "mysql"),
-			Host:     util.GetEnv("DB_HOST", "localhost"),
-			Port:     util.GetEnv("DB_PORT", "3306"),
-			Username: util.GetEnv("DB_USER", "root"),
-			Password: util.GetEnv("DB_PASSWORD", "-"),
-			Database: util.GetEnv("DB_NAME", "ohmytp"),
-			TimeZone: util.GetEnv("APP_TIMEZONE", "Asia/Jakarta"),
-			Log:      util.GetEnvAsBool("DB_LOGGER", false),
+			Host:              util.GetEnv("DB_HOST", "localhost"),
+			Port:              util.GetEnv("DB_PORT", "3306"),
+			Username:          util.GetEnv("DB_USER", "root"),
+			Password:          util.GetEnv("DB_PASSWORD", "-"),
+			Database:          util.GetEnv("DB_NAME", "ohmytp"),
+			TimeZone:          util.GetEnv("APP_TIMEZONE", "Asia/Jakarta"),
+			Log:               util.GetEnvAsBool("DB_LOGGER", false),
+			MaxConns:          util.GetEnvAsInt("DB_MAX_CONNS", 0),
+			MinConns:          util.GetEnvAsInt("DB_MIN_CONNS", 0),
+			MaxConnIdleTime:   time.Duration(util.GetEnvAsInt("DB_MAX_CONN_IDLE_TIME", 0)) * time.Second,
+			MaxConnLifeTime:   time.Duration(util.GetEnvAsInt("DB_MAX_CONN_LIFE_TIME", 0)) * time.Second,
+			HealthCheckPeriod: time.Duration(util.GetEnvAsInt("DB_HEALTH_CHECK_PERIOD", 1)) * time.Second,
 		}
 	}
 }
@@ -57,11 +62,17 @@ func WithRedisAPIConfig() Option {
 			c.RedisAPI = &RedisConfig{}
 		}
 		c.RedisAPI.Config = &redis.Config{
-			DB:       util.GetEnvAsInt("REDIS_API_DB", 0),
-			Host:     util.GetEnv("REDIS_API_HOST", "localhost"),
-			Port:     util.GetEnv("REDIS_API_PORT", "6379"),
-			Password: util.GetEnv("REDIS_API_PASSWORD", "-"),
-			PoolSize: util.GetEnvAsInt("REDIS_API_POOL_SIZE", 0),
+			Password:        util.GetEnv("REDIS_API_PASSWORD", "-"),
+			Host:            util.GetEnv("REDIS_API_HOST", "localhost"),
+			Port:            util.GetEnv("REDIS_API_PORT", "6379"),
+			DB:              util.GetEnvAsInt("REDIS_API_DB", 0),
+			PoolSize:        util.GetEnvAsInt("REDIS_API_POOL_SIZE", 0),
+			MinIdleConns:    util.GetEnvAsInt("REDIS_API_MIN_IDLE_CONNS", 0),
+			DialTimeout:     time.Duration(util.GetEnvAsInt("REDIS_API_DIAL_TIMEOUT", 0)) * time.Second,
+			ReadTimeout:     time.Duration(util.GetEnvAsInt("REDIS_API_READ_TIMEOUT", 0)) * time.Second,
+			WriteTimeout:    time.Duration(util.GetEnvAsInt("REDIS_API_WRITE_TIMEOUT", 0)) * time.Second,
+			MaxConnIdleTime: time.Duration(util.GetEnvAsInt("REDIS_API_MAX_CONN_IDLE_TIME", 0)) * time.Second,
+			MaxConnLifeTime: time.Duration(util.GetEnvAsInt("REDIS_API_MAX_CONN_LIFE_TIME", 0)) * time.Second,
 		}
 	}
 }
@@ -73,11 +84,17 @@ func WithRedisWorkerNotificationConfig() Option {
 			c.RedisWorkerNotification = &RedisConfig{}
 		}
 		c.RedisWorkerNotification.Config = &redis.Config{
-			DB:       util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_DB", 1),
-			Host:     util.GetEnv("REDIS_WORKER_NOTIFICATION_HOST", "localhost"),
-			Port:     util.GetEnv("REDIS_WORKER_NOTIFICATION_PORT", "6379"),
-			Password: util.GetEnv("REDIS_WORKER_NOTIFICATION_PASSWORD", "-"),
-			PoolSize: util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_POOL_SIZE", 0),
+			DB:              util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_DB", 1),
+			Host:            util.GetEnv("REDIS_WORKER_NOTIFICATION_HOST", "localhost"),
+			Port:            util.GetEnv("REDIS_WORKER_NOTIFICATION_PORT", "6379"),
+			Password:        util.GetEnv("REDIS_WORKER_NOTIFICATION_PASSWORD", "-"),
+			PoolSize:        util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_POOL_SIZE", 0),
+			MinIdleConns:    util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_MIN_IDLE_CONNS", 0),
+			DialTimeout:     time.Duration(util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_DIAL_TIMEOUT", 0)) * time.Second,
+			ReadTimeout:     time.Duration(util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_READ_TIMEOUT", 0)) * time.Second,
+			WriteTimeout:    time.Duration(util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_WRITE_TIMEOUT", 0)) * time.Second,
+			MaxConnIdleTime: time.Duration(util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_MAX_CONN_IDLE_TIME", 0)) * time.Second,
+			MaxConnLifeTime: time.Duration(util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_MAX_CONN_LIFE_TIME", 0)) * time.Second,
 		}
 	}
 }

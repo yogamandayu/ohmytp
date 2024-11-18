@@ -15,12 +15,22 @@ func (h *Handler) Ping(w http.ResponseWriter, r *http.Request) {
 	ctx, _ := context.WithTimeout(r.Context(), 5*time.Second)
 	pingWorkflow := workflow.NewPingWorkflow(h.db, h.redis)
 	status := pingWorkflow.Ping(ctx)
-	data := PingResponseContract{
+	data := ResponseContract{
 		Message:   status.Message,
 		Timestamp: status.Timestamp,
 		StackStatus: StackStatus{
-			Db:    status.StackStatus.Db,
-			Redis: status.StackStatus.Redis,
+			Db: DbStatus{
+				Status:        status.StackStatus.Db.Status,
+				TotalConns:    status.StackStatus.Db.TotalConns,
+				IdleConns:     status.StackStatus.Db.IdleConns,
+				AcquiredConns: status.StackStatus.Db.AcquiredConns,
+			},
+			Redis: RedisStatus{
+				Status:     status.StackStatus.Redis.Status,
+				TotalConns: status.StackStatus.Redis.TotalConns,
+				IdleConns:  status.StackStatus.Redis.IdleConns,
+				StaleConns: status.StackStatus.Redis.StaleConns,
+			},
 		},
 	}
 

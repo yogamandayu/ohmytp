@@ -14,8 +14,22 @@ type PingWorkflow struct {
 }
 
 type StackStatus struct {
-	Db    string
-	Redis string
+	Db    DbStatus
+	Redis RedisStatus
+}
+
+type DbStatus struct {
+	Status        string
+	TotalConns    uint32
+	IdleConns     uint32
+	AcquiredConns uint32
+}
+
+type RedisStatus struct {
+	Status     string
+	TotalConns uint32
+	IdleConns  uint32
+	StaleConns uint32
 }
 
 type PingStatus struct {
@@ -36,20 +50,31 @@ func (p *PingWorkflow) Ping(ctx context.Context) PingStatus {
 		Message:   "Pong!",
 		Timestamp: time.Now().Format(time.RFC3339),
 		StackStatus: StackStatus{
-			Db:    "UNDEFINED",
-			Redis: "UNDEFINED",
+			Db: DbStatus{
+				Status: "ERROR",
+			},
+			Redis: RedisStatus{
+				Status: "ERROR",
+			},
 		},
 	}
+
 	err := p.db.Ping(ctx)
-	status.StackStatus.Db = "OK"
-	if err != nil {
-		status.StackStatus.Db = "ERROR"
+	if err == nil {
+		status.StackStatus.Db.Status = "OK"
+		status.StackStatus.Db.TotalConns = uint32(p.db.Stat().TotalConns())
+		status.StackStatus.Db.IdleConns = uint32(p.db.Stat().IdleConns())
+		status.StackStatus.Db.AcquiredConns = uint32(p.db.Stat().AcquiredConns())
 	}
 
 	redisStatus := p.redis.Ping(ctx)
-	status.StackStatus.Redis = "OK"
-	if redisStatus.Err() != nil {
-		status.StackStatus.Redis = "ERROR"
+	if redisStatus.Err() == nil {
+		status.StackStatus.Redis = RedisStatus{
+			Status:     "OK",
+			TotalConns: p.redis.PoolStats().TotalConns,
+			IdleConns:  p.redis.PoolStats().IdleConns,
+			StaleConns: p.redis.PoolStats().StaleConns,
+		}
 	}
 
 	return status

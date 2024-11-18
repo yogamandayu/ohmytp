@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 
@@ -17,14 +18,18 @@ import (
 
 // Config is db config.
 type Config struct {
-	Driver   string
-	Host     string
-	Port     string
-	Username string
-	Password string
-	Database string
-	TimeZone string
-	Log      bool
+	Host              string
+	Port              string
+	Username          string
+	Password          string
+	Database          string
+	TimeZone          string
+	Log               bool
+	MaxConns          int
+	MinConns          int
+	MaxConnIdleTime   time.Duration
+	MaxConnLifeTime   time.Duration
+	HealthCheckPeriod time.Duration
 }
 
 // NewConnection is to set new db connection.
@@ -38,6 +43,11 @@ func NewConnection(config *Config) (*pgxpool.Pool, error) {
 	if err != nil {
 		return nil, err
 	}
+	pgxConfig.MaxConns = int32(config.MaxConns)
+	pgxConfig.MinConns = int32(config.MinConns)
+	pgxConfig.MaxConnIdleTime = config.MaxConnIdleTime
+	pgxConfig.MaxConnLifetime = config.MaxConnLifeTime
+	pgxConfig.HealthCheckPeriod = config.HealthCheckPeriod
 
 	if config.Log {
 		tracer := &CustomTracer{}
