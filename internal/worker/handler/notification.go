@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/yogamandayu/ohmytp/util"
 
 	"github.com/hibiken/asynq"
 	"github.com/yogamandayu/ohmytp/consts"
@@ -41,7 +42,9 @@ func (n Notification) Handler(ctx context.Context, task *asynq.Task) error {
 			n.App.Log.Error("invalid assertion data via telegram")
 			return errors.New("worker.error.handler.telegram.invalid_assertion")
 		}
-		return bot.SendMessage(data["message"].(string))
+		if !util.GetEnvAsBool("DISABLE_TELEGRAM_NOTIFICATION", false) {
+			return bot.SendMessage(data["message"].(string))
+		}
 	}
 
 	return nil
