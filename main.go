@@ -20,9 +20,9 @@ func main() {
 	conf := config.NewConfig()
 	conf.WithOptions(
 		config.WithDBConfig(),
-		config.WithRESTConfig(),
 		config.WithRedisAPIConfig(),
 		config.WithRedisWorkerNotificationConfig(),
+		config.WithRESTConfig(),
 		config.WithTelegramBotConfig(),
 	)
 

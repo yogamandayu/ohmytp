@@ -5,19 +5,20 @@ import (
 	"testing"
 	"time"
 
+	tests2 "github.com/yogamandayu/ohmytp/tests"
+
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/yogamandayu/ohmytp/consts"
 	"github.com/yogamandayu/ohmytp/internal/domain/entity"
 	"github.com/yogamandayu/ohmytp/internal/requester"
-	"github.com/yogamandayu/ohmytp/internal/tests"
 	"github.com/yogamandayu/ohmytp/internal/workflow/otp"
 	"github.com/yogamandayu/ohmytp/util"
 )
 
 func TestConfirmOtp(t *testing.T) {
-	ts := tests.NewTestSuite()
+	ts := tests2.NewTestSuite()
 	ts.LoadApp()
 	defer t.Cleanup(ts.Clean)
 
@@ -79,7 +80,7 @@ func TestConfirmOtp(t *testing.T) {
 	}
 	for _, scenario := range scenarios {
 		t.Run(scenario.description, func(t *testing.T) {
-			rqs := requester.NewRequester().SetMetadataFromREST(tests.FakeHTTPRequest())
+			rqs := requester.NewRequester().SetMetadataFromREST(tests2.FakeHTTPRequest())
 			rqs.Metadata.RequestID = uuid.NewString()
 			requestWorkflow := otp.NewRequestOtpWorkflow(rqs, ts.App)
 			requestWorkflow.SetOtp(&entity.Otp{

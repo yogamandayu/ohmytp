@@ -4,21 +4,22 @@ import (
 	"context"
 	"testing"
 
+	tests2 "github.com/yogamandayu/ohmytp/tests"
+
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/yogamandayu/ohmytp/internal/storage/repository"
-	"github.com/yogamandayu/ohmytp/internal/tests"
 )
 
 func TestSaveOtp(t *testing.T) {
-	testSuite := tests.NewTestSuite()
+	testSuite := tests2.NewTestSuite()
 	testSuite.LoadApp()
 	t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
 	repo := repository.New(testSuite.App.DB)
-	fakeOtp := tests.FakeOtp().TransformToOtpRepository()
+	fakeOtp := tests2.FakeOtp().TransformToOtpRepository()
 	otp, err := repo.SaveOtp(ctx, repository.SaveOtpParams{
 		ID:            fakeOtp.ID,
 		RequestID:     fakeOtp.RequestID,
@@ -41,13 +42,13 @@ func TestSaveOtp(t *testing.T) {
 }
 
 func TestFindOtp(t *testing.T) {
-	testSuite := tests.NewTestSuite()
+	testSuite := tests2.NewTestSuite()
 	testSuite.LoadApp()
 	t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
 	repo := repository.New(testSuite.App.DB)
-	fakeOtp := tests.FakeOtp().TransformToOtpRepository()
+	fakeOtp := tests2.FakeOtp().TransformToOtpRepository()
 	resSave, err := repo.SaveOtp(ctx, repository.SaveOtpParams{
 		ID:            fakeOtp.ID,
 		RequestID:     fakeOtp.RequestID,
@@ -72,13 +73,13 @@ func TestFindOtp(t *testing.T) {
 }
 
 func TestUpdateOtp(t *testing.T) {
-	testSuite := tests.NewTestSuite()
+	testSuite := tests2.NewTestSuite()
 	testSuite.LoadApp()
 	t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
 	repo := repository.New(testSuite.App.DB)
-	fakeOtp := tests.FakeOtp().TransformToOtpRepository()
+	fakeOtp := tests2.FakeOtp().TransformToOtpRepository()
 	otp, err := repo.SaveOtp(ctx, repository.SaveOtpParams{
 		ID:            fakeOtp.ID,
 		RequestID:     fakeOtp.RequestID,

@@ -4,9 +4,10 @@ import (
 	"context"
 	"testing"
 
+	tests2 "github.com/yogamandayu/ohmytp/tests"
+
 	"github.com/yogamandayu/ohmytp/internal/domain/entity"
 	"github.com/yogamandayu/ohmytp/internal/requester"
-	"github.com/yogamandayu/ohmytp/internal/tests"
 	"github.com/yogamandayu/ohmytp/internal/workflow/otp"
 
 	"github.com/google/uuid"
@@ -15,7 +16,7 @@ import (
 )
 
 func TestRequestOtp(t *testing.T) {
-	ts := tests.NewTestSuite()
+	ts := tests2.NewTestSuite()
 	ts.LoadApp()
 	defer t.Cleanup(ts.Clean)
 
@@ -49,7 +50,7 @@ func TestRequestOtp(t *testing.T) {
 	}
 	for _, scenario := range scenarios {
 		t.Run(scenario.description, func(t *testing.T) {
-			rqs := requester.NewRequester().SetMetadataFromREST(tests.FakeHTTPRequest())
+			rqs := requester.NewRequester().SetMetadataFromREST(tests2.FakeHTTPRequest())
 			workflow := otp.NewRequestOtpWorkflow(rqs, ts.App)
 			workflow.SetOtp(&entity.Otp{
 				ID:        uuid.NewString(),

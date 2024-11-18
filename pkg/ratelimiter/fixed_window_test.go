@@ -4,7 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/yogamandayu/ohmytp/internal/tests"
+	"github.com/yogamandayu/ohmytp/tests"
+
 	"github.com/yogamandayu/ohmytp/pkg/ratelimiter"
 
 	"github.com/stretchr/testify/assert"

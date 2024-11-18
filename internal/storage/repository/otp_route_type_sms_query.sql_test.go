@@ -4,21 +4,22 @@ import (
 	"context"
 	"testing"
 
+	tests2 "github.com/yogamandayu/ohmytp/tests"
+
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/yogamandayu/ohmytp/internal/storage/repository"
-	"github.com/yogamandayu/ohmytp/internal/tests"
 )
 
 func TestSaveOtpRouteTypeSMS(t *testing.T) {
-	testSuite := tests.NewTestSuite()
+	testSuite := tests2.NewTestSuite()
 	testSuite.LoadApp()
 	t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
 	repo := repository.New(testSuite.App.DB)
-	fakeRouteType := tests.FakeOtpRouteTypeSMS().TransformToOtpRepository()
+	fakeRouteType := tests2.FakeOtpRouteTypeSMS().TransformToOtpRepository()
 	routeType, err := repo.SaveOtpRouteTypeSMS(ctx, repository.SaveOtpRouteTypeSMSParams{
 		ID:        fakeRouteType.ID,
 		RequestID: fakeRouteType.RequestID,
@@ -30,13 +31,13 @@ func TestSaveOtpRouteTypeSMS(t *testing.T) {
 }
 
 func TestFindOtpRouteTypeSMS(t *testing.T) {
-	testSuite := tests.NewTestSuite()
+	testSuite := tests2.NewTestSuite()
 	testSuite.LoadApp()
 	t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
 	repo := repository.New(testSuite.App.DB)
-	fakeRouteType := tests.FakeOtpRouteTypeSMS().TransformToOtpRepository()
+	fakeRouteType := tests2.FakeOtpRouteTypeSMS().TransformToOtpRepository()
 	routeType, err := repo.SaveOtpRouteTypeSMS(ctx, repository.SaveOtpRouteTypeSMSParams{
 		ID:        fakeRouteType.ID,
 		RequestID: fakeRouteType.RequestID,
@@ -52,13 +53,13 @@ func TestFindOtpRouteTypeSMS(t *testing.T) {
 }
 
 func TestUpdateOtpRouteTypeSMS(t *testing.T) {
-	testSuite := tests.NewTestSuite()
+	testSuite := tests2.NewTestSuite()
 	testSuite.LoadApp()
 	t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
 	repo := repository.New(testSuite.App.DB)
-	fakeRouteType := tests.FakeOtpRouteTypeSMS().TransformToOtpRepository()
+	fakeRouteType := tests2.FakeOtpRouteTypeSMS().TransformToOtpRepository()
 	routeType, err := repo.SaveOtpRouteTypeSMS(ctx, repository.SaveOtpRouteTypeSMSParams{
 		ID:        fakeRouteType.ID,
 		RequestID: fakeRouteType.RequestID,

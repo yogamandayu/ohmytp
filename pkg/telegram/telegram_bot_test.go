@@ -5,8 +5,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/yogamandayu/ohmytp/tests"
+
 	"github.com/stretchr/testify/require"
-	"github.com/yogamandayu/ohmytp/internal/tests"
 	"github.com/yogamandayu/ohmytp/pkg/telegram"
 )
 

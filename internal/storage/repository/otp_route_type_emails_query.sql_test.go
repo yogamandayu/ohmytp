@@ -4,21 +4,22 @@ import (
 	"context"
 	"testing"
 
+	tests2 "github.com/yogamandayu/ohmytp/tests"
+
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/yogamandayu/ohmytp/internal/storage/repository"
-	"github.com/yogamandayu/ohmytp/internal/tests"
 )
 
 func TestSaveOtpRouteTypeEmail(t *testing.T) {
-	testSuite := tests.NewTestSuite()
+	testSuite := tests2.NewTestSuite()
 	testSuite.LoadApp()
 	defer t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
 	repo := repository.New(testSuite.App.DB)
-	fakeRouteType := tests.FakeOtpRouteTypeEmail().TransformToOtpRepository()
+	fakeRouteType := tests2.FakeOtpRouteTypeEmail().TransformToOtpRepository()
 	routeType, err := repo.SaveOtpRouteTypeEmail(ctx, repository.SaveOtpRouteTypeEmailParams{
 		ID:        fakeRouteType.ID,
 		RequestID: fakeRouteType.RequestID,
@@ -30,13 +31,13 @@ func TestSaveOtpRouteTypeEmail(t *testing.T) {
 }
 
 func TestFindOtpRouteTypeEmail(t *testing.T) {
-	testSuite := tests.NewTestSuite()
+	testSuite := tests2.NewTestSuite()
 	testSuite.LoadApp()
 	t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
 	repo := repository.New(testSuite.App.DB)
-	fakeRouteType := tests.FakeOtpRouteTypeEmail().TransformToOtpRepository()
+	fakeRouteType := tests2.FakeOtpRouteTypeEmail().TransformToOtpRepository()
 	routeType, err := repo.SaveOtpRouteTypeEmail(ctx, repository.SaveOtpRouteTypeEmailParams{
 		ID:        fakeRouteType.ID,
 		RequestID: fakeRouteType.RequestID,
@@ -52,13 +53,13 @@ func TestFindOtpRouteTypeEmail(t *testing.T) {
 }
 
 func TestUpdateOtpRouteTypeEmail(t *testing.T) {
-	testSuite := tests.NewTestSuite()
+	testSuite := tests2.NewTestSuite()
 	testSuite.LoadApp()
 	t.Cleanup(testSuite.Clean)
 
 	ctx := context.Background()
 	repo := repository.New(testSuite.App.DB)
-	fakeRouteType := tests.FakeOtpRouteTypeEmail().TransformToOtpRepository()
+	fakeRouteType := tests2.FakeOtpRouteTypeEmail().TransformToOtpRepository()
 	routeType, err := repo.SaveOtpRouteTypeEmail(ctx, repository.SaveOtpRouteTypeEmailParams{
 		ID:        fakeRouteType.ID,
 		RequestID: fakeRouteType.RequestID,

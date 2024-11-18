@@ -5,7 +5,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/yogamandayu/ohmytp/internal/tests"
+	"github.com/yogamandayu/ohmytp/tests"
+
 	"github.com/yogamandayu/ohmytp/pkg/throttle"
 
 	"github.com/google/uuid"

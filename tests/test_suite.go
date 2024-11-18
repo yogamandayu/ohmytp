@@ -30,9 +30,9 @@ func (t *TestSuite) LoadApp() {
 	conf := config.NewConfig()
 	conf.WithOptions(
 		config.WithDBConfig(),
-		config.WithRESTConfig(),
 		config.WithRedisAPIConfig(),
 		config.WithRedisWorkerNotificationConfig(),
+		config.WithRESTConfig(),
 		config.WithTelegramBotConfig(),
 	)
 	dbConn, err := db.NewConnection(conf.DB.Config)
@@ -52,7 +52,14 @@ func (t *TestSuite) LoadApp() {
 
 	slogger := slog.NewSlog()
 
-	t.App = app.NewApp().WithOptions(app.WithDB(dbConn), app.WithRedisAPI(redisAPIConn), app.WithRedisWorkerNotification(redisNotificationConn), app.WithSlog(slogger), app.WithDBRepository(dbConn), app.WithConfig(conf))
+	t.App = app.NewApp().WithOptions(
+		app.WithDB(dbConn),
+		app.WithRedisAPI(redisAPIConn),
+		app.WithRedisWorkerNotification(redisNotificationConn),
+		app.WithSlog(slogger),
+		app.WithDBRepository(dbConn),
+		app.WithConfig(conf),
+	)
 }
 
 func (t *TestSuite) Clean() {

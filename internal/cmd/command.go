@@ -62,12 +62,12 @@ func (cmd *Command) Commands() cli.Commands {
 				slogger := slog.NewSlog()
 
 				a := app.NewApp().WithOptions(
+					app.WithConfig(cmd.conf),
 					app.WithDB(dbConn),
+					app.WithDBRepository(dbConn),
 					app.WithRedisAPI(redisAPIConn),
 					app.WithRedisWorkerNotification(redisNotificationConn),
 					app.WithSlog(slogger),
-					app.WithDBRepository(dbConn),
-					app.WithConfig(cmd.conf),
 				)
 
 				r := rest.NewREST(a)
@@ -164,13 +164,15 @@ func (cmd *Command) Commands() cli.Commands {
 			Aliases: []string{"wkn"},
 			Usage:   "Run notification queue worker",
 			Action: func(cCtx *cli.Context) error {
-				redisConn, err := redis.NewConnection(cmd.conf.RedisWorkerNotification.Config)
+				redisNotificationConn, err := redis.NewConnection(cmd.conf.RedisWorkerNotification.Config)
 				if err != nil {
 					log.Fatal(err)
 				}
-				defer redisConn.Close()
+				defer redisNotificationConn.Close()
 
-				workerPool := worker.NewWorker(redisConn)
+				slogger := slog.NewSlog()
+
+				workerPool := worker.NewWorker(redisNotificationConn)
 				workerPool.AsConsumer(&worker.ConsumerConfig{
 					Concurrency: 10,
 					Priority: worker.Priority{
@@ -180,7 +182,10 @@ func (cmd *Command) Commands() cli.Commands {
 					},
 				})
 
-				a := app.NewApp().WithOptions(app.WithConfig(cmd.conf), app.WithSlog(slog.NewSlog()))
+				a := app.NewApp().WithOptions(
+					app.WithConfig(cmd.conf),
+					app.WithSlog(slogger),
+				)
 				notificationHandler := handler.NewNotificationHandler(a)
 
 				err = workerPool.Consume("worker:notification", notificationHandler.Handler)
