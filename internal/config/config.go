@@ -1,11 +1,12 @@
 package config
 
 import (
+	"time"
+
 	"github.com/yogamandayu/ohmytp/pkg/db"
 	"github.com/yogamandayu/ohmytp/pkg/redis"
 	"github.com/yogamandayu/ohmytp/pkg/telegram"
 	"github.com/yogamandayu/ohmytp/util"
-	"time"
 )
 
 // Config is a struct to hold all config.
