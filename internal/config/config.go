@@ -94,8 +94,8 @@ func WithRedisWorkerNotificationConfig() Option {
 			DialTimeout:     time.Duration(util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_DIAL_TIMEOUT", 0)) * time.Second,
 			ReadTimeout:     time.Duration(util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_READ_TIMEOUT", 0)) * time.Second,
 			WriteTimeout:    time.Duration(util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_WRITE_TIMEOUT", 0)) * time.Second,
-			MaxConnIdleTime: time.Duration(util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_MAX_CONN_IDLE_TIME", 0)) * time.Second,
-			MaxConnLifeTime: time.Duration(util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_MAX_CONN_LIFE_TIME", 0)) * time.Second,
+			ConnMaxIdleTime: time.Duration(util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_MAX_CONN_IDLE_TIME", 0)) * time.Second,
+			ConnMaxLifeTime: time.Duration(util.GetEnvAsInt("REDIS_WORKER_NOTIFICATION_MAX_CONN_LIFE_TIME", 0)) * time.Second,
 		}
 	}
 }
