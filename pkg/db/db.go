@@ -8,12 +8,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
-
-	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/jackc/pgx"
 	"github.com/jackc/pgx/v5/pgxpool"
-	_ "github.com/jackc/pgx/v5/stdlib"
-	_ "github.com/lib/pq"
 )
 
 // Config is db config.
