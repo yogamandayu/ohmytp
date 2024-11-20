@@ -2,6 +2,7 @@ package requester
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -33,7 +34,13 @@ func (req *Requester) SetMetadataFromREST(r *http.Request) *Requester {
 			}
 			return requestID
 		}(),
-		IPAddress: r.RemoteAddr,
+		IPAddress: func() string {
+			addr := strings.Split(r.RemoteAddr, ":")
+			if len(addr) == 2 {
+				return addr[0]
+			}
+			return ""
+		}(),
 		UserAgent: r.UserAgent(),
 	}
 	return req
