@@ -3,9 +3,10 @@ package middleware
 import (
 	"context"
 	"errors"
-	"github.com/yogamandayu/ohmytp/internal/interfaces/rest/response"
 	"net/http"
 	"time"
+
+	"github.com/yogamandayu/ohmytp/internal/interfaces/rest/response"
 
 	"github.com/yogamandayu/ohmytp/consts"
 

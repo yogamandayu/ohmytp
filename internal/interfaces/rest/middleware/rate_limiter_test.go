@@ -1,10 +1,11 @@
 package middleware_test
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/yogamandayu/ohmytp/internal/interfaces/rest/middleware"
 	"github.com/yogamandayu/ohmytp/tests"
-	"testing"
 )
 
 func TestRateLimiter(t *testing.T) {
