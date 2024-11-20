@@ -13,16 +13,14 @@ import (
 func OTPRoute(mux *http.ServeMux, app *app.App) {
 	otpHandler := otp.NewHandler(app)
 
-	mux.HandleFunc("POST /api/v1/otp/request", middleware.RateLimit(app, "otp:v1:request_otp").
+	defaultRateLimit := middleware.NewRateLimit(app).
 		WithFixedWindow(1000, 1*time.Minute).
-		LimitByIPAddress().
-		Apply(
-			http.HandlerFunc(otpHandler.Request),
-		).ServeHTTP)
-	mux.HandleFunc("POST /api/v1/otp/confirm", middleware.RateLimit(app, "otp:v1:confirm_otp").
-		WithFixedWindow(1000, 1*time.Minute).
-		LimitByIPAddress().
-		Apply(
-			http.HandlerFunc(otpHandler.Confirm),
-		).ServeHTTP)
+		LimitByIPAddress()
+
+	mux.HandleFunc("POST /api/v1/otp/request", defaultRateLimit.SetProcessName("otp:v1:request_otp").Apply(
+		http.HandlerFunc(otpHandler.Request),
+	).ServeHTTP)
+	mux.HandleFunc("POST /api/v1/otp/confirm", defaultRateLimit.SetProcessName("otp:v1:confirm_otp").Apply(
+		http.HandlerFunc(otpHandler.Confirm),
+	).ServeHTTP)
 }
