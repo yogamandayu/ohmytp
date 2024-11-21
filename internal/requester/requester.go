@@ -1,6 +1,7 @@
 package requester
 
 import (
+	"net"
 	"net/http"
 	"strings"
 
@@ -34,14 +35,29 @@ func (req *Requester) SetMetadataFromREST(r *http.Request) *Requester {
 			}
 			return requestID
 		}(),
-		IPAddress: func() string {
-			addr := strings.Split(r.RemoteAddr, ":")
-			if len(addr) == 2 {
-				return addr[0]
-			}
-			return ""
-		}(),
+		IPAddress: getIPAddress(r),
 		UserAgent: r.UserAgent(),
 	}
 	return req
+}
+
+func getIPAddress(r *http.Request) string {
+	// Check X-Forwarded-For header
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		ips := strings.Split(xff, ",")
+		return strings.TrimSpace(ips[0]) // Return the first IP in the list
+	}
+
+	// Check X-Real-IP header
+	if xri := r.Header.Get("X-Real-IP"); xri != "" {
+		return xri
+	}
+
+	// Fallback to RemoteAddr
+	ip, _, err := net.SplitHostPort(r.RemoteAddr)
+	if err != nil {
+		return r.RemoteAddr // Return raw value if parsing fails
+	}
+
+	return ip
 }

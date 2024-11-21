@@ -55,7 +55,8 @@ func (f *FixedWindow) ResetLimit(ctx context.Context) {
 
 // IsLimitReached is to check is ip address already reach the rate limit.
 func (f *FixedWindow) IsLimitReached(ctx context.Context) (bool, error) {
-	count, err := f.RedisClient.Incr(ctx, f.RedisKey).Result()
+	cmd := f.RedisClient.Incr(ctx, f.RedisKey)
+	count, err := cmd.Result()
 	if err != nil {
 		f.Log.Warn(err.Error())
 		return true, err
