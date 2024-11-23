@@ -16,8 +16,13 @@ type FailedResponse struct {
 // NewHTTPFailedResponse is a constructor.
 func NewHTTPFailedResponse(errCode string, err error, message string) *FailedResponse {
 	return &FailedResponse{
-		Code:    errCode,
-		Error:   err.Error(),
+		Code: errCode,
+		Error: func() string {
+			if err != nil {
+				return err.Error()
+			}
+			return ""
+		}(),
 		Message: message,
 	}
 }
