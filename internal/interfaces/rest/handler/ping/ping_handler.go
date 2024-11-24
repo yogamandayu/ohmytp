@@ -5,12 +5,20 @@ import (
 	"net/http"
 	"time"
 
+	_ "github.com/yogamandayu/ohmytp/docs"
 	"github.com/yogamandayu/ohmytp/internal/workflow"
 
 	"encoding/json"
 )
 
 // Ping is ping handler.
+// @Summary      Ping
+// @Description  Responds with "pong"
+// @Tags         Health
+// @Accept       json
+// @Produce      json
+// @Success      200 {string} string "pong"
+// @Router       /ping [get]
 func (h *Handler) Ping(w http.ResponseWriter, r *http.Request) {
 	ctx, _ := context.WithTimeout(r.Context(), 5*time.Second)
 	pingWorkflow := workflow.NewPingWorkflow(h.db, h.redis)
