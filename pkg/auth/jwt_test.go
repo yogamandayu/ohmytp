@@ -2,13 +2,14 @@ package auth_test
 
 import (
 	"encoding/base64"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"github.com/yogamandayu/ohmytp/pkg/auth"
 	"log"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"github.com/yogamandayu/ohmytp/pkg/auth"
 )
 
 func TestJWT_Generate(t *testing.T) {
