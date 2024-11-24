@@ -42,7 +42,6 @@ func (j *JWT) ValidateToken(tokenString string) (jwt.MapClaims, error) {
 		}
 		return []byte(j.Secret), nil
 	})
-
 	if err != nil {
 		return nil, err
 	}
