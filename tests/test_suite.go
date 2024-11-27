@@ -2,8 +2,9 @@ package tests
 
 import (
 	"fmt"
-	"github.com/yogamandayu/ohmytp/pkg/rollbar"
 	"log"
+
+	"github.com/yogamandayu/ohmytp/pkg/rollbar"
 
 	"github.com/yogamandayu/ohmytp/internal/app"
 	"github.com/yogamandayu/ohmytp/internal/config"
