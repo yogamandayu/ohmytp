@@ -2,6 +2,7 @@ package tests
 
 import (
 	"fmt"
+	"github.com/yogamandayu/ohmytp/pkg/rollbar"
 	"log"
 
 	"github.com/yogamandayu/ohmytp/internal/app"
@@ -34,6 +35,7 @@ func (t *TestSuite) LoadApp() {
 		config.WithRedisWorkerNotificationConfig(),
 		config.WithRESTConfig(),
 		config.WithTelegramBotConfig(),
+		config.WithRollbarConfig(),
 	)
 	dbConn, err := db.NewConnection(conf.DB.Config)
 	if err != nil {
@@ -52,13 +54,17 @@ func (t *TestSuite) LoadApp() {
 
 	slogger := slog.NewSlog()
 
+	rollbarClient := rollbar.NewRollbar(conf.Rollbar.Config)
+	if util.GetEnvAsBool("ENABLE_ROLLBAR", false) {
+		rollbarClient.SetEnabled(true)
+	}
+
 	t.App = app.NewApp().WithOptions(
 		app.WithDB(dbConn),
 		app.WithRedisAPI(redisAPIConn),
 		app.WithRedisWorkerNotification(redisNotificationConn),
 		app.WithSlog(slogger),
-		app.WithDBRepository(dbConn),
-		app.WithConfig(conf),
+		app.WithRollbar(rollbarClient),
 	)
 }
 
@@ -66,4 +72,5 @@ func (t *TestSuite) Clean() {
 	t.App.DB.Close()
 	t.App.RedisAPI.Close()
 	t.App.RedisWorkerNotification.Close()
+	t.App.Rollbar.Close()
 }

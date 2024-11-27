@@ -3,6 +3,8 @@ package app
 import (
 	"log/slog"
 
+	"github.com/rollbar/rollbar-go"
+
 	"github.com/yogamandayu/ohmytp/internal/config"
 
 	"github.com/yogamandayu/ohmytp/internal/storage/repository"
@@ -18,6 +20,7 @@ type App struct {
 	RedisWorkerNotification *redis.Client
 	DBRepository            *repository.Queries
 	Log                     *slog.Logger
+	Rollbar                 *rollbar.Client
 	Config                  *config.Config
 }
 

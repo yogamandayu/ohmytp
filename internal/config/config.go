@@ -3,6 +3,8 @@ package config
 import (
 	"time"
 
+	"github.com/yogamandayu/ohmytp/pkg/rollbar"
+
 	"github.com/yogamandayu/ohmytp/pkg/db"
 	"github.com/yogamandayu/ohmytp/pkg/redis"
 	"github.com/yogamandayu/ohmytp/pkg/telegram"
@@ -16,6 +18,7 @@ type Config struct {
 	RedisAPI                *RedisConfig
 	RedisWorkerNotification *RedisConfig
 	TelegramBot             *TelegramBotConfig
+	Rollbar                 *RollbarConfig
 }
 
 // Option is an option for config.
@@ -121,6 +124,19 @@ func WithTelegramBotConfig() Option {
 		c.TelegramBot.Config = &telegram.Config{
 			Token:  util.GetEnv("TELEGRAM_BOT_TOKEN", "example-token"),
 			ChatID: util.GetEnv("TELEGRAM_BOT_CHAT_ID", "example-id"),
+		}
+	}
+}
+
+// WithRollbarConfig is to set Rollbar config.
+func WithRollbarConfig() Option {
+	return func(c *Config) {
+		if c.Rollbar == nil {
+			c.Rollbar = &RollbarConfig{}
+		}
+		c.Rollbar.Config = &rollbar.Config{
+			Token:       util.GetEnv("ROLLBAR_TOKEN", "example-token"),
+			Environment: util.GetEnv("ROLLBAR_ENVIRONMENT", "development"),
 		}
 	}
 }

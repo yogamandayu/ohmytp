@@ -4,12 +4,10 @@ import (
 	"log"
 	"os"
 
-	"github.com/yogamandayu/ohmytp/internal/config"
-
+	"github.com/joho/godotenv"
 	"github.com/urfave/cli/v2"
 	"github.com/yogamandayu/ohmytp/internal/cmd"
-
-	"github.com/joho/godotenv"
+	"github.com/yogamandayu/ohmytp/internal/config"
 )
 
 func main() {
@@ -24,6 +22,7 @@ func main() {
 		config.WithRedisWorkerNotificationConfig(),
 		config.WithRESTConfig(),
 		config.WithTelegramBotConfig(),
+		config.WithRollbarConfig(),
 	)
 
 	cliApp := cli.NewApp()

@@ -3,6 +3,8 @@ package app
 import (
 	"log/slog"
 
+	"github.com/rollbar/rollbar-go"
+
 	"github.com/yogamandayu/ohmytp/internal/config"
 
 	"github.com/yogamandayu/ohmytp/internal/storage/repository"
@@ -46,5 +48,11 @@ func WithSlog(slog *slog.Logger) Option {
 func WithConfig(config *config.Config) Option {
 	return func(a *App) {
 		a.Config = config
+	}
+}
+
+func WithRollbar(rollbar *rollbar.Client) Option {
+	return func(a *App) {
+		a.Rollbar = rollbar
 	}
 }

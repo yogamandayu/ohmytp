@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/yogamandayu/ohmytp/pkg/rollbar"
+
 	"github.com/yogamandayu/ohmytp/internal/worker/handler"
 	"github.com/yogamandayu/ohmytp/pkg/worker"
 
@@ -61,6 +63,13 @@ func (cmd *Command) Commands() cli.Commands {
 
 				slogger := slog.NewSlog()
 
+				rollbarClient := rollbar.NewRollbar(cmd.conf.Rollbar.Config)
+				if util.GetEnvAsBool("ENABLE_ROLLBAR", false) {
+					rollbarClient.SetEnabled(true)
+				}
+
+				defer rollbarClient.Close()
+
 				a := app.NewApp().WithOptions(
 					app.WithConfig(cmd.conf),
 					app.WithDB(dbConn),
@@ -68,6 +77,7 @@ func (cmd *Command) Commands() cli.Commands {
 					app.WithRedisAPI(redisAPIConn),
 					app.WithRedisWorkerNotification(redisNotificationConn),
 					app.WithSlog(slogger),
+					app.WithRollbar(rollbarClient),
 				)
 
 				r := rest.NewREST(a)
