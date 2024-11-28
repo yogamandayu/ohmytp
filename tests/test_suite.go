@@ -4,15 +4,13 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/yogamandayu/ohmytp/pkg/rollbar"
-
+	"github.com/joho/godotenv"
 	"github.com/yogamandayu/ohmytp/internal/app"
 	"github.com/yogamandayu/ohmytp/internal/config"
 	"github.com/yogamandayu/ohmytp/pkg/db"
 	"github.com/yogamandayu/ohmytp/pkg/redis"
+	"github.com/yogamandayu/ohmytp/pkg/rollbar"
 	"github.com/yogamandayu/ohmytp/pkg/slog"
-
-	"github.com/joho/godotenv"
 	"github.com/yogamandayu/ohmytp/util"
 )
 
@@ -38,6 +36,7 @@ func (t *TestSuite) LoadApp() {
 		config.WithTelegramBotConfig(),
 		config.WithRollbarConfig(),
 	)
+
 	dbConn, err := db.NewConnection(conf.DB.Config)
 	if err != nil {
 		log.Fatal(err)
