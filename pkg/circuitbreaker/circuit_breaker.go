@@ -3,9 +3,10 @@ package circuitbreaker
 import (
 	"context"
 	"errors"
+	"time"
+
 	"github.com/redis/go-redis/v9"
 	"github.com/yogamandayu/ohmytp/consts"
-	"time"
 )
 
 type CircuitBreaker struct {

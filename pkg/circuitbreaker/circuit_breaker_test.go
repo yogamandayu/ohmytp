@@ -2,12 +2,13 @@ package circuitbreaker_test
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/yogamandayu/ohmytp/pkg/circuitbreaker"
 	"github.com/yogamandayu/ohmytp/tests"
-	"testing"
-	"time"
 )
 
 func TestCircuitBreaker(t *testing.T) {
