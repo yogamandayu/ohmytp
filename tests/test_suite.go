@@ -60,6 +60,7 @@ func (t *TestSuite) LoadApp() {
 	}
 
 	t.App = app.NewApp().WithOptions(
+		app.WithConfig(conf),
 		app.WithDB(dbConn),
 		app.WithRedisAPI(redisAPIConn),
 		app.WithRedisWorkerNotification(redisNotificationConn),
