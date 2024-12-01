@@ -2,9 +2,10 @@ package circuitbreaker_test
 
 import (
 	"context"
-	"github.com/yogamandayu/ohmytp/consts"
 	"testing"
 	"time"
+
+	"github.com/yogamandayu/ohmytp/consts"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
