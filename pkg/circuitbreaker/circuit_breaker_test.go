@@ -2,6 +2,7 @@ package circuitbreaker_test
 
 import (
 	"context"
+	"github.com/yogamandayu/ohmytp/consts"
 	"testing"
 	"time"
 
@@ -59,5 +60,121 @@ func TestCircuitBreaker(t *testing.T) {
 				require.NoError(t, err)
 			}
 		}
+	})
+
+	t.Run("Initial state should be CLOSED", func(t *testing.T) {
+		cb := circuitbreaker.NewCircuitBreaker(testSuite.App.RedisAPI).SetRedisKey("test_cb").SetPolicy(circuitbreaker.Policy{
+			Timeframe:                 10 * time.Second,
+			CloseStateFailRate:        50.0,
+			CloseStateFailDuration:    10 * time.Second,
+			HalfOpenStateFailRate:     25.0,
+			HalfOpenStateSuccessRate:  75.0,
+			HalfOpenStateFailDuration: 5 * time.Second,
+			OpenStateDuration:         15 * time.Second,
+		})
+		state, err := cb.DefineCurrentState(context.Background())
+		assert.NoError(t, err)
+		assert.Equal(t, consts.CircuitBreakerStateClose.String(), state)
+	})
+
+	t.Run("Allow requests when state is CLOSED", func(t *testing.T) {
+		cb := circuitbreaker.NewCircuitBreaker(testSuite.App.RedisAPI).SetRedisKey("test_cb").SetPolicy(circuitbreaker.Policy{
+			Timeframe:                 10 * time.Second,
+			CloseStateFailRate:        50.0,
+			CloseStateFailDuration:    10 * time.Second,
+			HalfOpenStateFailRate:     25.0,
+			HalfOpenStateSuccessRate:  75.0,
+			HalfOpenStateFailDuration: 5 * time.Second,
+			OpenStateDuration:         15 * time.Second,
+		})
+		isAllowed, err := cb.IsAllowed(context.Background())
+		assert.NoError(t, err)
+		assert.True(t, isAllowed)
+	})
+
+	t.Run("Move to OPEN state after exceeding fail rate", func(t *testing.T) {
+		cb := circuitbreaker.NewCircuitBreaker(testSuite.App.RedisAPI).SetRedisKey("test_cb").SetPolicy(circuitbreaker.Policy{
+			Timeframe:                 10 * time.Second,
+			CloseStateFailRate:        50.0,
+			CloseStateFailDuration:    10 * time.Second,
+			HalfOpenStateFailRate:     25.0,
+			HalfOpenStateSuccessRate:  75.0,
+			HalfOpenStateFailDuration: 5 * time.Second,
+			OpenStateDuration:         15 * time.Second,
+		})
+		// Simulate errors
+		for i := 0; i < 10; i++ {
+			err := cb.RecordError(context.Background())
+			assert.NoError(t, err)
+		}
+
+		state, err := cb.DefineCurrentState(context.Background())
+		assert.NoError(t, err)
+		assert.Equal(t, consts.CircuitBreakerStateOpen.String(), state)
+	})
+
+	t.Run("Allow requests in HALF-OPEN state after open duration", func(t *testing.T) {
+		cb := circuitbreaker.NewCircuitBreaker(testSuite.App.RedisAPI).SetRedisKey("test_cb").SetPolicy(circuitbreaker.Policy{
+			Timeframe:                 10 * time.Second,
+			CloseStateFailRate:        50.0,
+			CloseStateFailDuration:    10 * time.Second,
+			HalfOpenStateFailRate:     25.0,
+			HalfOpenStateSuccessRate:  75.0,
+			HalfOpenStateFailDuration: 5 * time.Second,
+			OpenStateDuration:         15 * time.Second,
+		})
+		// Wait for OpenStateDuration
+		time.Sleep(16 * time.Second)
+
+		isAllowed, err := cb.IsAllowed(context.Background())
+		assert.NoError(t, err)
+		assert.True(t, isAllowed)
+
+		state, err := cb.DefineCurrentState(context.Background())
+		assert.NoError(t, err)
+		assert.Equal(t, consts.CircuitBreakerStateHalfOpen.String(), state)
+	})
+
+	t.Run("Transition back to CLOSED after successful requests in HALF-OPEN", func(t *testing.T) {
+		cb := circuitbreaker.NewCircuitBreaker(testSuite.App.RedisAPI).SetRedisKey("test_cb").SetPolicy(circuitbreaker.Policy{
+			Timeframe:                 10 * time.Second,
+			CloseStateFailRate:        50.0,
+			CloseStateFailDuration:    10 * time.Second,
+			HalfOpenStateFailRate:     25.0,
+			HalfOpenStateSuccessRate:  75.0,
+			HalfOpenStateFailDuration: 5 * time.Second,
+			OpenStateDuration:         15 * time.Second,
+		})
+		// Simulate successful requests
+		for i := 0; i < 10; i++ {
+			err := cb.RecordSuccess(context.Background())
+			assert.NoError(t, err)
+		}
+
+		state, err := cb.DefineCurrentState(context.Background())
+		assert.NoError(t, err)
+		assert.Equal(t, consts.CircuitBreakerStateClose.String(), state)
+	})
+
+	t.Run("Remain in HALF-OPEN after exceeding fail rate", func(t *testing.T) {
+		cb := circuitbreaker.NewCircuitBreaker(testSuite.App.RedisAPI).SetRedisKey("test_cb").SetPolicy(circuitbreaker.Policy{
+			Timeframe:                 10 * time.Second,
+			CloseStateFailRate:        50.0,
+			CloseStateFailDuration:    10 * time.Second,
+			HalfOpenStateFailRate:     25.0,
+			HalfOpenStateSuccessRate:  75.0,
+			HalfOpenStateFailDuration: 5 * time.Second,
+			OpenStateDuration:         15 * time.Second,
+		})
+		// Simulate errors in HALF-OPEN state
+		cb.SetState(context.Background(), consts.CircuitBreakerStateHalfOpen)
+		for i := 0; i < 5; i++ {
+			err := cb.RecordError(context.Background())
+			assert.NoError(t, err)
+		}
+
+		state, err := cb.DefineCurrentState(context.Background())
+		assert.NoError(t, err)
+		assert.Equal(t, consts.CircuitBreakerStateOpen.String(), state)
 	})
 }
