@@ -1,6 +1,9 @@
 package ping
 
 // ResponseContract is ping response contract.
+//
+// @tag.name ResponseContract
+// @tag.description Ping response API contract.
 type ResponseContract struct {
 	Message     string      `json:"message"`
 	Timestamp   string      `json:"timestamp"`

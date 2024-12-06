@@ -10,6 +10,12 @@ import (
 	"github.com/yogamandayu/ohmytp/internal/config"
 )
 
+// @title OhMyTP API
+// @version 1.0
+// @description OhMyTP is an simple API for request and confirm OTP.
+// @contact.name Yoga
+// @contact.email yoga.grahadi@gmail.com
+// @accept application/json
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("no .env file provided")

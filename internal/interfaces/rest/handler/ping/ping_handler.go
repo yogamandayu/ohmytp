@@ -13,11 +13,11 @@ import (
 
 // Ping is ping handler.
 // @Summary      Ping
-// @Description  Responds with "pong"
+// @Description  Responds with "Pong" and stack status.
 // @Tags         Health
 // @Accept       json
 // @Produce      json
-// @Success      200 {string} string "pong"
+// @Success      200 {object} ResponseContract
 // @Router       /ping [get]
 func (h *Handler) Ping(w http.ResponseWriter, r *http.Request) {
 	ctx, _ := context.WithTimeout(r.Context(), 5*time.Second)

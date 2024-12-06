@@ -5,19 +5,129 @@ import "github.com/swaggo/swag"
 
 const docTemplate = `{
     "schemes": {{ marshal .Schemes }},
+    "consumes": [
+        "application/json"
+    ],
     "swagger": "2.0",
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "Yoga",
+            "email": "yoga.grahadi@gmail.com"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/otp/confirm": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OTP"
+                ],
+                "summary": "Confirm OTP",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.FailedResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.FailedResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.FailedResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/otp/request": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OTP"
+                ],
+                "summary": "Request OTP",
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/response.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/otp.RequestOtpResponseContract"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/response.FailedResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/response.FailedResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/response.FailedResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/ping": {
             "get": {
-                "description": "Responds with \"pong\"",
+                "description": "Responds with \"Pong\" and stack status.",
                 "consumes": [
                     "application/json"
                 ],
@@ -30,11 +140,103 @@ const docTemplate = `{
                 "summary": "Ping",
                 "responses": {
                     "200": {
-                        "description": "pong",
+                        "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/ping.ResponseContract"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "otp.RequestOtpResponseContract": {
+            "type": "object",
+            "properties": {
+                "expired_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "ping.DbStatus": {
+            "type": "object",
+            "properties": {
+                "acquired_conns": {
+                    "type": "integer"
+                },
+                "idle_conns": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "total_conns": {
+                    "type": "integer"
+                }
+            }
+        },
+        "ping.RedisStatus": {
+            "type": "object",
+            "properties": {
+                "idle_conns": {
+                    "type": "integer"
+                },
+                "stale_conns": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "total_conns": {
+                    "type": "integer"
+                }
+            }
+        },
+        "ping.ResponseContract": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "stack_status": {
+                    "$ref": "#/definitions/ping.StackStatus"
+                },
+                "timestamp": {
+                    "type": "string"
+                }
+            }
+        },
+        "ping.StackStatus": {
+            "type": "object",
+            "properties": {
+                "db": {
+                    "$ref": "#/definitions/ping.DbStatus"
+                },
+                "redis": {
+                    "$ref": "#/definitions/ping.RedisStatus"
+                }
+            }
+        },
+        "response.FailedResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "error": {
+                    "type": "string"
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.SuccessResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
                 }
             }
         }
@@ -43,12 +245,12 @@ const docTemplate = `{
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "OhMyTP API",
+	Description:      "OhMyTP is an simple API for request and confirm OTP.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

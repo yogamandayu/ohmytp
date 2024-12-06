@@ -1,18 +1,146 @@
+consumes:
+- application/json
+definitions:
+  otp.RequestOtpResponseContract:
+    properties:
+      expired_at:
+        type: string
+    type: object
+  ping.DbStatus:
+    properties:
+      acquired_conns:
+        type: integer
+      idle_conns:
+        type: integer
+      status:
+        type: string
+      total_conns:
+        type: integer
+    type: object
+  ping.RedisStatus:
+    properties:
+      idle_conns:
+        type: integer
+      stale_conns:
+        type: integer
+      status:
+        type: string
+      total_conns:
+        type: integer
+    type: object
+  ping.ResponseContract:
+    properties:
+      message:
+        type: string
+      stack_status:
+        $ref: '#/definitions/ping.StackStatus'
+      timestamp:
+        type: string
+    type: object
+  ping.StackStatus:
+    properties:
+      db:
+        $ref: '#/definitions/ping.DbStatus'
+      redis:
+        $ref: '#/definitions/ping.RedisStatus'
+    type: object
+  response.FailedResponse:
+    properties:
+      code:
+        type: string
+      error:
+        type: string
+      message:
+        type: string
+    type: object
+  response.SuccessResponse:
+    properties:
+      data: {}
+      message:
+        type: string
+    type: object
 info:
-  contact: {}
+  contact:
+    email: yoga.grahadi@gmail.com
+    name: Yoga
+  description: OhMyTP is an simple API for request and confirm OTP.
+  title: OhMyTP API
+  version: "1.0"
 paths:
+  /api/v1/otp/confirm:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.FailedResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.FailedResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.FailedResponse'
+      summary: Confirm OTP
+      tags:
+      - OTP
+  /api/v1/otp/request:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/response.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/otp.RequestOtpResponseContract'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.FailedResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/response.FailedResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.FailedResponse'
+      summary: Request OTP
+      tags:
+      - OTP
   /ping:
     get:
       consumes:
       - application/json
-      description: Responds with "pong"
+      description: Responds with "Pong" and stack status.
       produces:
       - application/json
       responses:
         "200":
-          description: pong
+          description: OK
           schema:
-            type: string
+            $ref: '#/definitions/ping.ResponseContract'
       summary: Ping
       tags:
       - Health

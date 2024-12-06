@@ -17,6 +17,16 @@ import (
 )
 
 // Request is request otp request handler.
+// @Summary Request OTP
+// @Description
+// @Tags OTP
+// @Accept json
+// @Produce json
+// @Success 201 {object} response.SuccessResponse{data=RequestOtpResponseContract}
+// @Failure 400 {object} response.FailedResponse
+// @Failure 422 {object} response.FailedResponse
+// @Failure 500 {object} response.FailedResponse
+// @Router /api/v1/otp/request [post]
 func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 	ctx, _ := context.WithTimeout(r.Context(), 5*time.Second)
 
@@ -74,6 +84,16 @@ func (h *Handler) Request(w http.ResponseWriter, r *http.Request) {
 }
 
 // Confirm is request otp confirm handler.
+// @Summary Confirm OTP
+// @Description
+// @Tags OTP
+// @Accept json
+// @Produce json
+// @Success 201 {object} response.SuccessResponse{data=nil}
+// @Failure 400 {object} response.FailedResponse
+// @Failure 422 {object} response.FailedResponse
+// @Failure 500 {object} response.FailedResponse
+// @Router /api/v1/otp/confirm [post]
 func (h *Handler) Confirm(w http.ResponseWriter, r *http.Request) {
 	ctx, _ := context.WithTimeout(r.Context(), 5*time.Second)
 

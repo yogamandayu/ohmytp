@@ -31,6 +31,9 @@ type RequestOtpResponseContract struct {
 }
 
 // ConfirmOtpRequestContract is request otp request contract.
+//
+// @tag.name ConfirmOtpRequestContract
+// @tag.description Confirm OTP response API contract.
 type ConfirmOtpRequestContract struct {
 	Identifier string `json:"identifier"`
 	Code       string `json:"code"`

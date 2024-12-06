@@ -6,8 +6,10 @@ import (
 )
 
 // SuccessResponse is a struct to hold http success response data.
+// @tag.name SuccessResponse
+// @tag.description Response for success request
 type SuccessResponse struct {
-	Data           interface{} `json:"data"`
+	Data           interface{} `json:"data,omitempty"`
 	Message        string      `json:"message"`
 	HTTPStatusCode int         `json:"-"`
 }
