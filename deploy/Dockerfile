@@ -1,4 +1,4 @@
-FROM golang:1.23.3-alpine3.19 as builder
+FROM golang:1.23.3-alpine3.19 AS builder
 
 RUN set -ex \
     && apk --no-cache update \

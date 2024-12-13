@@ -1,0 +1,33 @@
+services:
+  ohmytp:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - postgres
+  redis:
+    image: "redis"
+    volumes:
+      - redis_data:/var/lib/redis/data
+    ports:
+      - "6379:6379"
+    env_file:
+      - .env
+    command: [ "sh", "-c", "redis-server --requirepass $REDIS_API_PASSWORD" ]
+  postgres:
+    image: "postgres:latest"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    command: [ "-e POSTGRES_USER=$DB_USER -e POSTGRES_PASSWORD=$DB_PASSWORD" ]
+volumes:
+  redis_data:
+  postgres_data:
