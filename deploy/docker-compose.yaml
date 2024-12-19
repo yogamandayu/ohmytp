@@ -10,6 +10,7 @@ services:
     depends_on:
       - redis
       - postgres
+    command: ["r"]
   redis:
     image: "redis"
     volumes:
@@ -19,15 +20,20 @@ services:
     env_file:
       - .env
     command: [ "sh", "-c", "redis-server --requirepass $REDIS_API_PASSWORD" ]
+    restart: unless-stopped
   postgres:
     image: "postgres:latest"
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    environment: # MUST list the variables here
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_USER}
     env_file:
       - .env
-    command: [ "-e POSTGRES_USER=$DB_USER -e POSTGRES_PASSWORD=$DB_PASSWORD" ]
+    restart: unless-stopped
 volumes:
   redis_data:
   postgres_data:

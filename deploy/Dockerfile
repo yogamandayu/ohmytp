@@ -2,7 +2,7 @@ FROM golang:1.23.3-alpine3.19 AS builder
 
 RUN apk --no-cache update && apk add --no-cache build-base git
 
-WORKDIR /go/src/ohmytp
+WORKDIR /app
 
 COPY go.mod go.sum ./
 
@@ -16,12 +16,12 @@ RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-X 'main.Version=${BUILD_VERSION
 
 FROM alpine:3.20
 
-WORKDIR /go/src/ohmytp
+WORKDIR /app
 
 RUN apk add --no-cache --upgrade tzdata
 
-COPY --from=builder /go/src/ohmytp/main .
+COPY --from=builder /app/main .
 
-COPY --from=builder /go/src/ohmytp/internal/domain/migrations /go/src/ohmytp/internal/domain/migrations
+COPY --from=builder /app/internal/domain/migrations /app/internal/domain/migrations
 
 ENTRYPOINT ["./main"]
