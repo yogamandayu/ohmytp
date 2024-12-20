@@ -21,7 +21,7 @@ import (
 // @Router       /ping [get]
 func (h *Handler) Ping(w http.ResponseWriter, r *http.Request) {
 	ctx, _ := context.WithTimeout(r.Context(), 5*time.Second)
-	pingWorkflow := workflow.NewPingWorkflow(h.db, h.redis)
+	pingWorkflow := workflow.NewPingWorkflow(h.app)
 	status := pingWorkflow.Ping(ctx)
 	data := ResponseContract{
 		Message:   status.Message,
@@ -38,6 +38,9 @@ func (h *Handler) Ping(w http.ResponseWriter, r *http.Request) {
 				TotalConns: status.StackStatus.Redis.TotalConns,
 				IdleConns:  status.StackStatus.Redis.IdleConns,
 				StaleConns: status.StackStatus.Redis.StaleConns,
+			},
+			Minio: MinioStatus{
+				Status: status.StackStatus.Minio.Status,
 			},
 		},
 	}

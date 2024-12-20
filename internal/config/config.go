@@ -3,6 +3,8 @@ package config
 import (
 	"time"
 
+	"github.com/yogamandayu/ohmytp/pkg/minio"
+
 	"github.com/yogamandayu/ohmytp/pkg/rollbar"
 
 	"github.com/yogamandayu/ohmytp/pkg/db"
@@ -19,6 +21,7 @@ type Config struct {
 	RedisWorkerNotification *RedisConfig
 	TelegramBot             *TelegramBotConfig
 	Rollbar                 *RollbarConfig
+	Minio                   *MinioConfig
 }
 
 // Option is an option for config.
@@ -137,6 +140,20 @@ func WithRollbarConfig() Option {
 		c.Rollbar.Config = &rollbar.Config{
 			Token:       util.GetEnv("ROLLBAR_TOKEN", "example-token"),
 			Environment: util.GetEnv("ROLLBAR_ENVIRONMENT", "development"),
+		}
+	}
+}
+
+// WithMinioConfig is to set minio config.
+func WithMinioConfig() Option {
+	return func(c *Config) {
+		if c.Minio == nil {
+			c.Minio = &MinioConfig{}
+		}
+		c.Minio.Config = &minio.Config{
+			Host:            util.GetEnv("MINIO_HOST", "localhost"),
+			AccessKeyID:     util.GetEnv("MINIO_ACCESS_KEY", "example-access-key"),
+			SecretAccessKey: util.GetEnv("MINIO_SECRET_KEY", "example-secret-key"),
 		}
 	}
 }

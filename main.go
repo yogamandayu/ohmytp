@@ -29,6 +29,7 @@ func main() {
 		config.WithRESTConfig(),
 		config.WithTelegramBotConfig(),
 		config.WithRollbarConfig(),
+		config.WithMinioConfig(),
 	)
 
 	cliApp := cli.NewApp()

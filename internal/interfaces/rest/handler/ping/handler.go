@@ -1,20 +1,17 @@
 package ping
 
 import (
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/redis/go-redis/v9"
+	"github.com/yogamandayu/ohmytp/internal/app"
 )
 
 // Handler is a struct to hold dependency.
 type Handler struct {
-	db    *pgxpool.Pool
-	redis *redis.Client
+	app *app.App
 }
 
 // NewHandler is a constructor.
-func NewHandler(db *pgxpool.Pool, redis *redis.Client) *Handler {
+func NewHandler(app *app.App) *Handler {
 	return &Handler{
-		db:    db,
-		redis: redis,
+		app: app,
 	}
 }

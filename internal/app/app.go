@@ -3,6 +3,8 @@ package app
 import (
 	"log/slog"
 
+	"github.com/minio/minio-go/v7"
+
 	"github.com/rollbar/rollbar-go"
 
 	"github.com/yogamandayu/ohmytp/internal/config"
@@ -21,6 +23,7 @@ type App struct {
 	DBRepository            *repository.Queries
 	Log                     *slog.Logger
 	Rollbar                 *rollbar.Client
+	Minio                   *minio.Client
 	Config                  *config.Config
 }
 

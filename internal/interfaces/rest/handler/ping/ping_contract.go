@@ -14,6 +14,7 @@ type ResponseContract struct {
 type StackStatus struct {
 	Db    DbStatus    `json:"db"`
 	Redis RedisStatus `json:"redis"`
+	Minio MinioStatus `json:"minio"`
 }
 
 type DbStatus struct {
@@ -28,6 +29,10 @@ type RedisStatus struct {
 	TotalConns uint32 `json:"total_conns"`
 	IdleConns  uint32 `json:"idle_conns"`
 	StaleConns uint32 `json:"stale_conns"`
+}
+
+type MinioStatus struct {
+	Status string `json:"status"`
 }
 
 // ErrResponseContract is ping error response contract.

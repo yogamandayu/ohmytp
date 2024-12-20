@@ -4,18 +4,17 @@ import (
 	"context"
 	"time"
 
-	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/redis/go-redis/v9"
+	"github.com/yogamandayu/ohmytp/internal/app"
 )
 
 type PingWorkflow struct {
-	db    *pgxpool.Pool
-	redis *redis.Client
+	app *app.App
 }
 
 type StackStatus struct {
 	Db    DbStatus
 	Redis RedisStatus
+	Minio MinioStatus
 }
 
 type DbStatus struct {
@@ -32,16 +31,19 @@ type RedisStatus struct {
 	StaleConns uint32
 }
 
+type MinioStatus struct {
+	Status string
+}
+
 type PingStatus struct {
 	Message     string
 	Timestamp   string
 	StackStatus StackStatus
 }
 
-func NewPingWorkflow(db *pgxpool.Pool, redis *redis.Client) *PingWorkflow {
+func NewPingWorkflow(app *app.App) *PingWorkflow {
 	return &PingWorkflow{
-		db:    db,
-		redis: redis,
+		app: app,
 	}
 }
 
@@ -49,31 +51,39 @@ func (p *PingWorkflow) Ping(ctx context.Context) PingStatus {
 	status := PingStatus{
 		Message:   "Pong!",
 		Timestamp: time.Now().Format(time.RFC3339),
-		StackStatus: StackStatus{
-			Db: DbStatus{
-				Status: "ERROR",
-			},
-			Redis: RedisStatus{
-				Status: "ERROR",
-			},
-		},
 	}
 
-	err := p.db.Ping(ctx)
-	if err == nil {
+	err := p.app.DB.Ping(ctx)
+	if err != nil {
+		p.app.Log.Error(err.Error())
+		status.StackStatus.Db.Status = "ERROR"
+	} else {
 		status.StackStatus.Db.Status = "OK"
-		status.StackStatus.Db.TotalConns = uint32(p.db.Stat().TotalConns())
-		status.StackStatus.Db.IdleConns = uint32(p.db.Stat().IdleConns())
-		status.StackStatus.Db.AcquiredConns = uint32(p.db.Stat().AcquiredConns())
+		status.StackStatus.Db.TotalConns = uint32(p.app.DB.Stat().TotalConns())
+		status.StackStatus.Db.IdleConns = uint32(p.app.DB.Stat().IdleConns())
+		status.StackStatus.Db.AcquiredConns = uint32(p.app.DB.Stat().AcquiredConns())
 	}
 
-	redisStatus := p.redis.Ping(ctx)
-	if redisStatus.Err() == nil {
+	redisStatus := p.app.RedisAPI.Ping(ctx)
+	if redisStatus.Err() != nil {
+		p.app.Log.Error(redisStatus.Err().Error())
+		status.StackStatus.Redis.Status = "ERROR"
+	} else {
 		status.StackStatus.Redis = RedisStatus{
 			Status:     "OK",
-			TotalConns: p.redis.PoolStats().TotalConns,
-			IdleConns:  p.redis.PoolStats().IdleConns,
-			StaleConns: p.redis.PoolStats().StaleConns,
+			TotalConns: p.app.RedisAPI.PoolStats().TotalConns,
+			IdleConns:  p.app.RedisAPI.PoolStats().IdleConns,
+			StaleConns: p.app.RedisAPI.PoolStats().StaleConns,
+		}
+	}
+
+	_, err = p.app.Minio.ListBuckets(ctx)
+	if err != nil {
+		p.app.Log.Error(err.Error())
+		status.StackStatus.Minio.Status = "ERROR"
+	} else {
+		status.StackStatus.Minio = MinioStatus{
+			Status: "OK",
 		}
 	}
 

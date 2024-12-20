@@ -6,6 +6,8 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/yogamandayu/ohmytp/pkg/minio"
+
 	"github.com/yogamandayu/ohmytp/pkg/rollbar"
 
 	"github.com/yogamandayu/ohmytp/internal/worker/handler"
@@ -61,6 +63,11 @@ func (cmd *Command) Commands() cli.Commands {
 				}
 				defer redisAPIConn.Close()
 
+				minioClient, err := minio.NewClient(cmd.conf.Minio.Config)
+				if err != nil {
+					log.Fatal(err)
+				}
+
 				slogger := slog.NewSlog()
 
 				rollbarClient := rollbar.NewRollbar(cmd.conf.Rollbar.Config)
@@ -78,6 +85,7 @@ func (cmd *Command) Commands() cli.Commands {
 					app.WithRedisWorkerNotification(redisNotificationConn),
 					app.WithSlog(slogger),
 					app.WithRollbar(rollbarClient),
+					app.WithMinio(minioClient),
 				)
 
 				r := rest.NewREST(a)

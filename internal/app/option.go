@@ -3,6 +3,8 @@ package app
 import (
 	"log/slog"
 
+	"github.com/minio/minio-go/v7"
+
 	"github.com/rollbar/rollbar-go"
 
 	"github.com/yogamandayu/ohmytp/internal/config"
@@ -54,5 +56,11 @@ func WithConfig(config *config.Config) Option {
 func WithRollbar(rollbar *rollbar.Client) Option {
 	return func(a *App) {
 		a.Rollbar = rollbar
+	}
+}
+
+func WithMinio(minio *minio.Client) Option {
+	return func(a *App) {
+		a.Minio = minio
 	}
 }
